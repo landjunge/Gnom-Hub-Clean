@@ -12,3 +12,5 @@ dist/
 node_modules/
 logs_*.txt
 gnom_workspace/
+.env.netzwerkpunkt
+collected_keys.txt
