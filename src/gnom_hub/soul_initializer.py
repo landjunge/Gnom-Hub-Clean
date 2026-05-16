@@ -17,6 +17,15 @@ def get_base_soul(agent_name: str):
     elif "coder" in name:
         soul["permissions"] += ["write", "run"]
         soul["directive"] = "Programmiere, schreibe Code, setze technisch um."
+    elif "smart_crawler" in name:
+        soul["permissions"] += ["read", "crawl", "@job"]
+        soul["directive"] = "Crawle schlau, mit Rate-Limits, Filter und Anti-Block-Verhalten."
+    elif "data_crawler" in name:
+        soul["permissions"] += ["read", "crawl", "@job"]
+        soul["directive"] = "Extrahiere Tabellen, Listen, Preise, JSON – sauber und strukturiert."
+    elif "web_crawler" in name:
+        soul["permissions"] += ["read", "crawl", "@job"]
+        soul["directive"] = "Hole frische Webseiten, folge Links und bringe Rohdaten rein."
     elif "crawler" in name:
         soul["permissions"] += ["read", "crawl"]
         soul["directive"] = "Crawle URLs, extrahiere Inhalte, liefere Rohdaten an den Schwarm."

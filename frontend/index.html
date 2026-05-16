@@ -847,8 +847,10 @@ const KNOWN_COLORS = {
   'writerag': '#00FF00',     // Grün
   'coderag': '#FF0000',      // Rot
   'researcherag': '#FFFF00', // Gelb
-  'editorag': '#0088FF',      // Blau
-  'crawlerag': '#FF8800'      // Orange
+  'editorag': '#0088FF',           // Blau
+  'web_crawlerag': '#FF8800',      // Orange
+  'data_crawlerag': '#FF6600',     // Dunkel-Orange
+  'smart_crawlerag': '#FFAA00'     // Gold-Orange
 };
 function agentColor(name) {
   if (!name) return '#00E5FF';
@@ -879,7 +881,7 @@ function renderAgentList(filter = '') {
   let filtered = f ? agents.filter(a => a.name.toLowerCase().includes(f)) : agents;
   filtered = filtered.filter(a => !a.name.toLowerCase().includes('hermes'));
 
-  const coreNames = ['writerag', 'coderag', 'researcherag', 'editorag', 'crawlerag'];
+  const coreNames = ['writerag', 'coderag', 'researcherag', 'editorag', 'web_crawlerag', 'data_crawlerag', 'smart_crawlerag'];
   const coreAgents = filtered.filter(a => coreNames.includes(a.name.toLowerCase()) && a.status !== 'sleeping');
   const internalAgents = filtered.filter(a => !coreNames.includes(a.name.toLowerCase()));
 
@@ -893,7 +895,7 @@ function renderAgentList(filter = '') {
       const roleIcon = role === 'general' ? ' 👑' : role === 'summarizer' ? ' 📋' : '';
       const c = agentColor(a.name);
       return `<div class="agent-card ${a.id === selectedId ? 'active' : ''}" id="card-${a.id}" onclick="selectAgent('${a.id}')" style="border-left-color:${c};">
-        <h3><span class="dot ${on?'on':'off'}" style="${on?'background:'+c+';box-shadow:0 0 6px '+c:''}"></span><span>${a.name}</span>${roleIcon}${a.name.toLowerCase()==='crawlerag'?'<span class="crawler-pixels"><span class="px"></span><span class="px"></span><span class="px"></span><span class="px"></span><span class="px"></span></span>':''}</h3>
+        <h3><span class="dot ${on?'on':'off'}" style="${on?'background:'+c+';box-shadow:0 0 6px '+c:''}"></span><span>${a.name}</span>${roleIcon}${a.name.toLowerCase().includes('crawler')?'<span class="crawler-pixels"><span class="px"></span><span class="px"></span><span class="px"></span><span class="px"></span><span class="px"></span></span>':''}</h3>
         <div class="desc">${a.description || '–'}</div>
         <div class="meta">${a.port?`<span class="badge port">:${a.port}</span>`:''}${role?`<span class="badge role ${role}">${role}</span>`:''}</div>
       </div>`;

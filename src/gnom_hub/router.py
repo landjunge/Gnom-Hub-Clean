@@ -14,15 +14,16 @@ OR_KEYS = {
 }
 DS_KEY = os.getenv("DEEPSEEK_API_KEY")
 
-# === MODELL-PROFILE pro Agent (getestet 2026-05-17) ===
 AGENT_MODELS = {
-    "coderag":       ["deepseek/deepseek-v4-flash:free", "openai/gpt-oss-120b:free"],  # Max Context + Speed
-    "crawlerag":     ["openai/gpt-oss-20b:free", "nvidia/nemotron-nano-9b-v2:free"],   # Speed first
-    "writerag":      ["minimax/minimax-m2.5:free", "deepseek/deepseek-v4-flash:free"],  # Qualität
-    "researcherag":  ["deepseek/deepseek-v4-flash:free", "minimax/minimax-m2.5:free"],  # Viel Context
-    "editorag":      ["openai/gpt-oss-120b:free", "minimax/minimax-m2.5:free"],         # Qualität
-    "summarizerag":  ["openai/gpt-oss-20b:free", "nvidia/nemotron-nano-9b-v2:free"],    # Schnell + kompakt
-    "generalag":     ["deepseek/deepseek-v4-flash:free", "openai/gpt-oss-120b:free"],   # Überblick
+    "coderag":          ["deepseek/deepseek-v4-flash:free", "openai/gpt-oss-120b:free"],
+    "writerag":         ["minimax/minimax-m2.5:free", "deepseek/deepseek-v4-flash:free"],
+    "researcherag":     ["deepseek/deepseek-v4-flash:free", "minimax/minimax-m2.5:free"],
+    "editorag":         ["openai/gpt-oss-120b:free", "minimax/minimax-m2.5:free"],
+    "web_crawlerag":    ["openai/gpt-oss-20b:free", "nvidia/nemotron-nano-9b-v2:free"],
+    "data_crawlerag":   ["openai/gpt-oss-20b:free", "deepseek/deepseek-v4-flash:free"],
+    "smart_crawlerag":  ["nvidia/nemotron-nano-9b-v2:free", "openai/gpt-oss-20b:free"],
+    "summarizerag":     ["openai/gpt-oss-20b:free", "nvidia/nemotron-nano-9b-v2:free"],
+    "generalag":        ["deepseek/deepseek-v4-flash:free", "openai/gpt-oss-120b:free"],
 }
 DEFAULT_MODELS = ["deepseek/deepseek-v4-flash:free", "openai/gpt-oss-120b:free", "minimax/minimax-m2.5:free"]
 
@@ -46,7 +47,11 @@ def _track_tokens(key_name, model, usage):
 
 def _get_key_for(agent_name):
     """Holt den richtigen Key für den Agenten."""
-    n = agent_name.lower().replace("ag", "") if agent_name else ""
+    n = (agent_name or "").lower()
+    if "web_crawler" in n:   return OR_KEYS["crawler"]
+    if "data_crawler" in n:  return OR_KEYS["crawler"]
+    if "smart_crawler" in n: return OR_KEYS["crawler"]
+    n = n.replace("ag", "")
     return OR_KEYS.get(n, OR_KEYS["default"])
 
 def ask_router(prompt, sys_prompt="Du bist ein hilfreicher Assistent.", agent_name=None):
