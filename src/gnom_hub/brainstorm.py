@@ -43,12 +43,17 @@ def _ask_llm(agent, question, context, bs_mode=False):
     try:
         answer = ask_router(user_msg, sys_prompt)
         
-        # --- WRITE LOGIC (nur im Einzelauftrag, nie im @bs) ---
+        perms = soul.get("permissions", [])
+        
+        # --- WRITE LOGIC (Permission: "write") ---
         write_matches = re.finditer(r"\[WRITE:\s*(.*?)\](.*?)\[/WRITE\]", answer, re.DOTALL)
         for match in write_matches:
             fname = match.group(1).strip()
             if bs_mode:
                 answer = answer.replace(match.group(0), f"[System: WRITE blockiert im Brainstorm-Modus. Nutze @{agent['name']} für Einzelauftrag.]")
+                continue
+            if "write" not in perms:
+                answer = answer.replace(match.group(0), f"[System: {agent['name']} hat keine WRITE-Berechtigung.]")
                 continue
             content = match.group(2).strip()
             try:
@@ -61,7 +66,7 @@ def _ask_llm(agent, question, context, bs_mode=False):
             except Exception as e:
                 answer = answer.replace(match.group(0), f"[System-Fehler beim Speichern von {fname}: {e}]")
                 
-        # --- READ LOGIC ---
+        # --- READ LOGIC (jeder darf lesen) ---
         read_matches = re.finditer(r"\[READ:\s*(.*?)\]", answer)
         for match in read_matches:
             fname = match.group(1).strip()
@@ -72,6 +77,26 @@ def _ask_llm(agent, question, context, bs_mode=False):
                 answer = answer.replace(match.group(0), f"[Hat {fname} gelesen:\n{file_content}\n...]")
             else:
                 answer = answer.replace(match.group(0), f"[Fehler: Datei {fname} nicht gefunden]")
+        
+        # --- SHELL LOGIC (Permission: "run") ---
+        shell_matches = re.finditer(r"\[SHELL:\s*(.*?)\]", answer)
+        for match in shell_matches:
+            cmd = match.group(1).strip()
+            if bs_mode:
+                answer = answer.replace(match.group(0), f"[System: SHELL blockiert im Brainstorm-Modus.]")
+                continue
+            if "run" not in perms and "godmode" not in perms:
+                answer = answer.replace(match.group(0), f"[System: {agent['name']} hat keine SHELL-Berechtigung.]")
+                continue
+            try:
+                import subprocess
+                result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=30, cwd=wd)
+                out = (result.stdout + result.stderr)[:1500]
+                answer = answer.replace(match.group(0), f"[Shell-Ausgabe ({cmd}):\n{out}]")
+            except subprocess.TimeoutExpired:
+                answer = answer.replace(match.group(0), f"[System: Timeout nach 30s für: {cmd}]")
+            except Exception as e:
+                answer = answer.replace(match.group(0), f"[Shell-Fehler: {str(e)[:80]}]")
                 
         _post(agent["name"], answer)
     except Exception as e: _post(agent["name"], f"[Fehler: {str(e)[:80]}]")
