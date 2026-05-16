@@ -43,7 +43,7 @@ def correct_ecc(zwc_bits: str) -> str:
             corrected += '1'
     return corrected
 
-def decode_soul(text: str) -> dict | None:
+def decode_soul(text: str):
     """ZWC + ECC → Soul-Dict zurück (für War-Room)."""
     zwc_bits = extract_zwc(text)
     if not zwc_bits or len(zwc_bits) % 3 != 0:

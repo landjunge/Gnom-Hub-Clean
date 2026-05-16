@@ -62,20 +62,21 @@ body {
 .lamp.on { 
   opacity: 0.8; 
   box-shadow: 0 0 8px currentColor; 
-  animation: lamp-breathe 3s infinite ease-in-out alternate;
+  animation: lamp-breathe var(--dur, 3s) infinite ease-in-out alternate;
+  animation-delay: var(--delay, 0s);
 }
 .lamp.busy { 
   opacity: 1; 
-  box-shadow: 0 0 15px currentColor; 
-  animation: lamp-pulse 1s infinite ease-in-out alternate; 
+  box-shadow: 0 0 20px currentColor; 
+  animation: lamp-pulse 0.25s infinite alternate; 
 }
 @keyframes lamp-breathe {
-  0% { opacity: 0.4; box-shadow: 0 0 4px currentColor; }
-  100% { opacity: 0.8; box-shadow: 0 0 12px currentColor; }
+  0% { opacity: 0.35; box-shadow: 0 0 3px currentColor; }
+  100% { opacity: 0.85; box-shadow: 0 0 14px currentColor; }
 }
 @keyframes lamp-pulse {
-  0% { transform: scaleX(0.9); filter: brightness(1); }
-  100% { transform: scaleX(1.1); filter: brightness(1.5); }
+  0% { transform: scaleX(0.85); filter: brightness(1.2); opacity: 0.8; box-shadow: 0 0 10px currentColor; }
+  100% { transform: scaleX(1.15); filter: brightness(2); opacity: 1; box-shadow: 0 0 25px currentColor, 0 0 5px #fff; }
 }
 
 /* ── Header ── */
@@ -337,37 +338,34 @@ button:hover {
 .agent-card {
   background: var(--bg-card);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius); padding: 5px 8px;
-  margin-bottom: 3px; cursor: pointer;
+  border-radius: var(--radius); padding: 4px 6px;
+  margin-bottom: 2px; cursor: pointer;
   transition: var(--transition);
   border-left: 3px solid transparent;
 }
 .agent-card:hover {
-  background: rgba(255, 255, 255, 0.03);
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), 0 0 12px rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.05);
 }
 .agent-card.active {
   background: rgba(61, 220, 132, 0.04);
   border-color: var(--glass-border);
 }
 .agent-card h3 {
-  font-size: 0.78rem; font-weight: 600;
-  display: flex; align-items: center; gap: 6px;
+  font-size: 0.65rem; font-weight: 600;
+  display: flex; align-items: center; gap: 4px;
   margin-bottom: 1px;
 }
 .agent-card .desc {
-  font-size: 0.65rem; color: var(--text-dim);
-  margin-bottom: 3px;
+  font-size: 0.52rem; color: var(--text-dim);
+  margin-bottom: 2px;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.agent-card .meta { display: flex; gap: 6px; flex-wrap: wrap; }
-.agent-card.small { padding: 8px 10px; margin-bottom: 4px; }
-.agent-card.small h3 { font-size: 0.75rem; margin-bottom: 2px; }
-.agent-card.small .desc { font-size: 0.62rem; margin-bottom: 4px; }
-.agent-card.small .meta { gap: 4px; }
-.agent-card.small .badge { padding: 1px 5px; font-size: 0.6rem; }
+.agent-card .meta { display: flex; gap: 4px; flex-wrap: wrap; }
+.agent-card.small { padding: 3px 5px; margin-bottom: 2px; }
+.agent-card.small h3 { font-size: 0.55rem; margin-bottom: 1px; }
+.agent-card.small .desc { font-size: 0.45rem; margin-bottom: 2px; }
+.agent-card.small .meta { gap: 3px; }
+.agent-card.small .badge { padding: 1px 3px; font-size: 0.42rem; }
 
 /* ── Dots & Badges ── */
 .dot {
@@ -827,7 +825,11 @@ const KNOWN_COLORS = {
   'testag1': '#0000FF',      // Pure Blue
   'testag2': '#800080',      // Deep Purple
   'testag3': '#008080',      // Teal
-  'hermes-agent': '#8B4513'  // Brown
+  'hermes-agent': '#8B4513', // Brown
+  'writerag': '#00FF00',     // Grün
+  'coderag': '#FF0000',      // Rot
+  'researcherag': '#FFFF00', // Gelb
+  'editorag': '#0088FF'      // Blau
 };
 function agentColor(name) {
   if (!name) return '#00E5FF';
@@ -858,8 +860,8 @@ function renderAgentList(filter = '') {
   let filtered = f ? agents.filter(a => a.name.toLowerCase().includes(f)) : agents;
   filtered = filtered.filter(a => !a.name.toLowerCase().includes('hermes'));
 
-  const coreNames = ['kira', 'lian', 'elara'];
-  const coreAgents = filtered.filter(a => coreNames.includes(a.name.toLowerCase()));
+  const coreNames = ['writerag', 'coderag', 'researcherag', 'editorag'];
+  const coreAgents = filtered.filter(a => coreNames.includes(a.name.toLowerCase()) && a.status !== 'sleeping');
   const internalAgents = filtered.filter(a => !coreNames.includes(a.name.toLowerCase()));
 
   // Render Core Agents to Sidebar
@@ -874,7 +876,7 @@ function renderAgentList(filter = '') {
       return `<div class="agent-card ${a.id === selectedId ? 'active' : ''}" id="card-${a.id}" onclick="selectAgent('${a.id}')" style="border-left-color:${c};">
         <h3><span class="dot ${on?'on':'off'}"></span><span>${a.name}</span>${roleIcon}</h3>
         <div class="desc">${a.description || '–'}</div>
-        <div class="meta"><span class="badge">${on?'online':'offline'}</span>${a.port?`<span class="badge port">:${a.port}</span>`:''}${role?`<span class="badge role ${role}">${role}</span>`:''}</div>
+        <div class="meta">${a.port?`<span class="badge port">:${a.port}</span>`:''}${role?`<span class="badge role ${role}">${role}</span>`:''}</div>
       </div>`;
     };
     el.innerHTML = coreAgents.map(renderCard).join('');
@@ -1044,7 +1046,11 @@ async function doNudge(id) {
 async function updateStats() {
   const s = await api('GET', '/stats');
   if (s) {
-    document.getElementById('s-agents').textContent = s.agents ?? agents.length;
+    const sysNames = ['watchdogag', 'skillsag', 'backupag', 'cronjobag', 'soulag', 'summarizerag', 'generalag'];
+    const totalA = (s.agents ?? agents.length) + 4; // +4 for Watchdog, Skills, Cronjob, Soul
+    const sysA = agents.filter(a => sysNames.includes((a.name || '').toLowerCase())).length + 4;
+    const workA = totalA - sysA;
+    document.getElementById('s-agents').textContent = `${totalA} (Sys: ${sysA} | Work: ${workA})`;
     document.getElementById('s-memory').textContent = s.memory ?? 0;
     if (document.getElementById('s-tokens')) {
       document.getElementById('s-tokens').textContent = (s.tokens ?? 0) + ' / 100k';
@@ -1056,7 +1062,10 @@ async function updateStats() {
 function buildWarRoomHTML() {
   const ttsChecked = document.getElementById('tts-enabled')?.checked ?? false;
   return `<div class="panel" id="war-room">
-    <h2>War Room</h2>
+    <h2 style="display:flex; align-items:center;">War Room <span id="project-indicator" style="font-size:0.75rem; color:var(--text-muted); background:rgba(255,255,255,0.05); padding:3px 8px; border-radius:12px; margin-left:10px; border:1px solid rgba(255,255,255,0.1);">MAIN HUB</span>
+      <button id="project-help-btn" onclick="const e=document.getElementById('project-explanation'); e.style.display = e.style.display==='none' ? 'block' : 'none';" style="display:none; margin-left:8px; padding:3px 8px; font-size:0.7rem; border-radius:12px; border:1px solid var(--green); background:rgba(57,255,20,0.1); color:var(--green); cursor:pointer;">ℹ️ Info</button>
+    </h2>
+    <div id="project-explanation" style="display:none; font-size:0.8rem; color:#fff; background:rgba(61,220,132,0.1); border-left:3px solid var(--green); padding:10px 14px; margin-bottom:12px; border-radius:4px; line-height:1.5;"></div>
     <div id="chat-display"></div>
     <div class="chat-bar">
       <div class="chat-input-wrap">
@@ -1070,27 +1079,25 @@ function buildWarRoomHTML() {
       </div>
     </div>
     <div class="chat-hints">
-      <span data-tooltip="Brainstorm: Trigger a multi-agent ideation session.">@bs</span>
-      <span data-tooltip="Direct Message: Send a private command to a specific agent.">@Name</span>
-      <span data-tooltip="Desktop: Execute OS-level action via PyAutoGUI.">@desktop</span>
-      <span data-tooltip="Vision: Analyze screen and execute actions visually.">@vision</span>
-      <span data-tooltip="Git: Run any Git command in the project repo.">@git</span>
-      <span data-tooltip="Rollback: Git reset & restore swarm checkpoint.">@rollback</span>
-      <span data-tooltip="Checkpoint: Save or restore swarm memory state.">@checkpoint</span>
-      <span data-tooltip="Provider: Switch LLM backend (e.g. ollama, openrouter).">@provider</span>
-      <span data-tooltip="Skill: Extract and assign a new skill to an agent.">@skill</span>
-      <span data-tooltip="Free: Release bound jobs from an agent.">@free</span>
-      <span data-tooltip="General: Assign a generic task to the primary agent.">@general</span>
-      <span data-tooltip="Summarize: Generate a concise summary of the chat history.">@summarizer</span>
-      <span data-tooltip="Research: Initiate a deep-dive research task.">@research</span>
-      <span data-tooltip="Job Task: Create and dispatch a background worker task.">@job</span>
-      <span data-tooltip="Idea: Save this thought as an idea note to system memory.">@idea</span>
-      <span data-tooltip="Status: Request a system status report from all agents.">@status</span>
-      <span data-tooltip="Clear Chat: Wipes the display. Memory remains intact.">@clear</span>
-      <span data-tooltip="Coffee Break: Trigger the coffee cup animation.">/coffee</span>
-      <span data-tooltip="UFO Event: Call a 60s alien invasion animation.">/ufo</span>
-      <span data-tooltip="Ghost: Summon a subtle 2-minute ghost apparition.">/ghost</span>
-      <span data-tooltip="TTS: Toggle Text-to-Speech (@tts on / @tts off).">@tts</span>
+      <span data-tooltip="Brainstorm: Aktiviere den Schwarm für komplexe Ideen.">@bs</span>
+      <span data-tooltip="Research: Starte einen autonomen Recherche-Job.">@research</span>
+      <span data-tooltip="Job Task: Verteile Hintergrundaufgaben an Agenten.">@job</span>
+      <span data-tooltip="Idea: Notiere einen Gedanken in der System-Memory.">@idea</span>
+      <span data-tooltip="Skill: Injiziere einem Agenten eine neue Fähigkeit.">@skill</span>
+      <span data-tooltip="Free: Löse aktive Jobs von einem Agenten.">@free</span>
+      <span data-tooltip="Projekt wechseln: (z.B. @@projekt netzwerkpunkt)">@@projekt</span>
+      <span data-tooltip="Löschen: (@@clear chat, @@clear @projekt, @@clear all agents)">@@clear</span>
+      <span data-tooltip="Status: System- und Agenten-Status abrufen.">@@status</span>
+      <span data-tooltip="Provider wechseln: (z.B. @@provider ollama llama3)">@@provider</span>
+      <span data-tooltip="Git: Git Befehle ausführen (z.B. @@git status)">@@git</span>
+      <span data-tooltip="Rollback: Mache Änderungen rückgängig (Swarm-Checkpoint)">@@rollback</span>
+      <span data-tooltip="Checkpoint: Aktuellen Memory-Status erzwingen">@@checkpoint</span>
+      <span data-tooltip="Summarize: Generiere eine kurze Zusammenfassung">@@summary</span>
+      <span data-tooltip="Desktop: Kontrolliere das OS via PyAutoGUI.">@@desktop</span>
+      <span data-tooltip="Vision: Bildschirm analysieren.">@@vision</span>
+      <span data-tooltip="Kaffeepause: (Animation)">/coffee</span>
+      <span data-tooltip="UFO Event: (Animation)">/ufo</span>
+      <span data-tooltip="Ghost: (Animation)">/ghost</span>
     </div>
   </div>`;
 }
@@ -1111,28 +1118,73 @@ async function loadWorkspace() {
   const list = document.getElementById('workspace-list');
   if(!list) return;
   const files = await api('GET', '/workspace');
+  const projRes = await api('GET', '/project');
+  const projName = projRes && projRes.project ? projRes.project : 'default';
+  
+  const panelTitle = document.querySelector('#workspace-panel h2');
+  if (panelTitle) {
+      panelTitle.innerHTML = `📁 gnom_workspace / <span style="color:var(--green)">${projName}</span> <div class="actions"><button onclick="loadWorkspace()">Refresh</button></div>`;
+  }
+
   if(!files || files.error) {
       list.innerHTML = '<div class="empty">Fehler beim Laden des Workspaces.</div>';
       return;
   }
   if(files.length === 0) {
-      list.innerHTML = '<div class="empty">Workspace ist leer.</div>';
+      list.innerHTML = '<div class="empty">Dieser Projekt-Ordner ist leer.</div>';
       return;
   }
   let html = '';
   files.forEach(f => {
-      html += `<div class="mem-item" style="cursor:pointer;" onclick="readWorkspaceFile('${f.name}')">
-          <strong style="color:#0096ff">${f.name}</strong> 
-          <span style="font-size:0.8em;color:var(--text-dim);margin-left:10px;">${f.size} Bytes</span>
+      const date = new Date(f.mtime * 1000).toLocaleString('de-DE', {day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute:'2-digit', second:'2-digit'});
+      const ext = f.name.split('.').pop().toLowerCase();
+      const isWeb = ['html','htm','css','js','svg'].includes(ext);
+      const isPy = ext === 'py';
+      let actionBtn = '';
+      if (isWeb) {
+          actionBtn = `<button onclick="event.stopPropagation(); openWorkspaceFile('${f.name}')" title="Im Browser öffnen" style="background:var(--green);color:#000;border:none;border-radius:var(--radius);padding:4px 10px;cursor:pointer;font-size:0.85em;">🌐 Open</button>`;
+      } else if (isPy) {
+          actionBtn = `<button onclick="event.stopPropagation(); runWorkspaceFile('${f.name}')" title="Python ausführen" style="background:#f0c040;color:#000;border:none;border-radius:var(--radius);padding:4px 10px;cursor:pointer;font-size:0.85em;">▶ Run</button>`;
+      }
+      html += `<div class="mem-item" style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="cursor:pointer; flex:1;" onclick="readWorkspaceFile('${f.name}')">
+            <strong style="color:#0096ff">${f.name}</strong> 
+            <span style="font-size:0.8em;color:var(--text-dim);margin-left:10px;">${f.size} Bytes</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:0.75rem; color:var(--text-muted);">${date}</span>
+            ${actionBtn}
+          </div>
       </div>`;
   });
   list.innerHTML = html;
 }
 
+function openWorkspaceFile(name) {
+    window.open(`/api/workspace/${name}/serve`, '_blank');
+}
+
+async function runWorkspaceFile(name) {
+    toast('Starte ' + name + '...', 'info');
+    const res = await api('POST', `/workspace/${name}/run`);
+    if (!res) { toast('Ausführung fehlgeschlagen', 'error'); return; }
+    const modal = document.createElement('div');
+    modal.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;";
+    const hasErr = res.stderr && res.stderr.trim();
+    const statusColor = res.code === 0 ? 'var(--green)' : '#ff4444';
+    modal.innerHTML = `
+      <div class="panel" style="width:70%; max-height:80%; display:flex; flex-direction:column;">
+        <h2>▶ ${name} <span style="color:${statusColor};font-size:0.8em;">Exit: ${res.code}</span> <button onclick="this.parentElement.parentElement.parentElement.remove()" style="float:right">X</button></h2>
+        <pre style="flex-grow:1; overflow:auto; background:var(--bg-input); color:var(--text); border:1px solid var(--border); border-radius:var(--radius); padding:10px; font-family:monospace; white-space:pre-wrap; max-height:60vh;">${res.stdout || '(keine Ausgabe)'}</pre>
+        ${hasErr ? `<pre style="margin-top:8px; background:#1a0000; color:#ff6666; border:1px solid #ff4444; border-radius:var(--radius); padding:10px; font-family:monospace; white-space:pre-wrap; max-height:20vh; overflow:auto;">STDERR:\n${res.stderr}</pre>` : ''}
+      </div>
+    `;
+    document.body.appendChild(modal);
+}
+
 async function readWorkspaceFile(name) {
    const res = await api('GET', `/workspace/${name}`);
    if(res && res.content !== undefined) {
-       // Zeige in einem modalen Overlay
        const modal = document.createElement('div');
        modal.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;";
        modal.innerHTML = `
@@ -1147,10 +1199,38 @@ async function readWorkspaceFile(name) {
    }
 }
 
+async function updateProjectIndicator() {
+  const res = await api('GET', '/project');
+  const p = res && res.project ? res.project : 'default';
+  const ind = document.getElementById('project-indicator');
+  const expl = document.getElementById('project-explanation');
+  const helpBtn = document.getElementById('project-help-btn');
+  if(ind) {
+    if(p === 'default') {
+      ind.textContent = 'MAIN HUB';
+      ind.style.color = 'var(--text-muted)';
+      ind.style.borderColor = 'rgba(255,255,255,0.1)';
+      ind.style.background = 'rgba(255,255,255,0.05)';
+      if(helpBtn) helpBtn.style.display = 'none';
+      if(expl) expl.style.display = 'none';
+    } else {
+      ind.textContent = p.toUpperCase();
+      ind.style.color = 'var(--green)';
+      ind.style.borderColor = 'rgba(57,255,20,0.3)';
+      ind.style.background = 'rgba(57,255,20,0.05)';
+      if(helpBtn) helpBtn.style.display = 'inline-block';
+    }
+  }
+  if(expl && p !== 'default') {
+    expl.innerHTML = `🛡️ <strong>Projekt-Modus aktiv: ${p}</strong><br>Du bist im Projekt <b>${p}</b>. Die Kommunikation, alle Dateien und Agenten-Gedanken werden exklusiv für dieses Projekt gespeichert. Wenn du in 10 Jahren weiter machen willst, findest du alles exakt so wieder. <i>(Tippe <code>@projekt default</code> um das Projekt zu verlassen)</i>`;
+  }
+}
+
 function showWarRoom() {
   selectedId = null;
   renderAgentList(document.getElementById('agent-search').value);
   document.getElementById('content').innerHTML = buildWarRoomHTML();
+  updateProjectIndicator();
   refreshChat();
 }
 
@@ -1357,15 +1437,28 @@ function updateLamps(hubAgents) {
   const el = document.getElementById('status-lamps');
   if (!hubAgents) return;
   
-  // Filter out Hermes for the lamps
-  const displayAgents = hubAgents.filter(a => !a.name.toLowerCase().includes('hermes'));
+  // Nur die 7 System-Agenten als Lämpchen anzeigen
+  const sysNames = ['watchdogag', 'skillsag', 'backupag', 'cronjobag', 'soulag', 'summarizerag', 'generalag'];
+  const hiddenSys = [
+    {name: 'WatchdogAG', status: 'online'},
+    {name: 'SkillsAG', status: 'online'},
+    {name: 'CronjobAG', status: 'online'},
+    {name: 'SoulAG', status: 'online'}
+  ];
+  
+  // Kombiniere die DB-System-Agenten und die unsichtbaren System-Agenten
+  let displayAgents = [...hiddenSys.filter(h => !hubAgents.some(a => a.name === h.name)), ...hubAgents];
+  // Filtere strikt nur die System-Agenten (keine Work-Agenten wie Lian, Elara, Kira!)
+  displayAgents = displayAgents.filter(a => sysNames.includes((a.name || '').toLowerCase()));
+  
   const names = displayAgents.map(a => a.name).join(',');
   
   if (_lastInternals !== names) {
     el.innerHTML = displayAgents.map((a, i) => {
-      const delay = (i * 0.2).toFixed(2);
-      const col = agentColor(a.name);
-      return `<div class="lamp" data-ag="${a.name}" title="${a.name}" style="color:${col};background:${col};animation-delay:-${delay}s"></div>`;
+      const dur  = (2.5 + Math.random() * 2.0).toFixed(2);   // 2.5s – 4.5s
+      const dly  = (-(Math.random() * 6.0)).toFixed(2);       // -0 … -6s offset
+      const col  = agentColor(a.name);
+      return `<div class="lamp" data-ag="${a.name}" title="${a.name}" style="color:${col};background:${col};--dur:${dur}s;--delay:${dly}s"></div>`;
     }).join('');
     _lastInternals = names;
   }

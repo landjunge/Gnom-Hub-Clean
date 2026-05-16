@@ -103,6 +103,14 @@ Das System reagiert auf Befehle wie eine Konsole:
 Dieses Projekt ist eine Rebellion gegen bloated Boilerplate-Code. 
 **Wenn ein Feature mehr als 40 Zeilen braucht, ist es falsch konzipiert.** Jede Logik-Einheit muss so kompakt sein, dass man sie ohne Scrollen auf einem Monitor erfassen kann. 
 
+### 🔀 Provider-Routing: Mit dem Skalpell, nicht mit der Axt
+
+Der Gnom-Hub nutzt **nicht** den bequemen, aber intransparenten "Ein Key für alles"-Standardweg. Wenn du das API-Routing (z.B. über OpenRouter, DeepSeek oder Replicate) aufbaust, lautet unsere Maxime: **Chirurgische Präzision statt roher Gewalt.**
+
+- **Strikte Isolation:** Erstelle für jeden Provider und jede spezifische Aufgabe (z.B. Code, Bilder, Audio) einen eigenen, dedizierten API-Key. 
+- **Absolute Kostenkontrolle:** Jeder Key bekommt sein eigenes Budget-Limit. Dreht ein Modell durch, blockiert nur dieses eine Gleis – der Rest des Hubs läuft sicher und ungestört weiter. Keine Single Points of Failure.
+- **Transparenz ohne "Nebelwände":** Wir machen uns nicht abhängig vom intransparenten Auto-Routing externer Anbieter. Wenn ein Modell offline geht, sagt uns *unser* Hub-interner Weichensteller exakt, wer versagt hat, und schaltet blitzschnell und kontrolliert auf das nächste Gleis um. Wir behalten die absolute Kontrolle.
+
 **Lizenz:** MIT
 
 ---

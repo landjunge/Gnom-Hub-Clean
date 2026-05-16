@@ -2,7 +2,7 @@ from fastapi import APIRouter; from datetime import datetime; import uuid, re; f
 router = APIRouter()
 class ChatMsg(BaseModel): content: str; sender: str = "user"
 def _parse(t):
-    m = re.match(r"@(\w+)\s*(.*)", t, re.DOTALL); r = m.group(2).strip() if m else None
+    m = re.match(r"@{1,2}(\w+)\s*(.*)", t, re.DOTALL); r = m.group(2).strip() if m else None
     if not m: return t, None, None
     tag = m.group(1).lower()
     if tag in ("bs","idea","clear","status","research","job","summary","sandbox","skill","free","provider","checkpoint","git","rollback","desktop","vision","evolve","projekt"): return r or t, None, tag
@@ -23,7 +23,7 @@ def _handle_sys(q, m):
         _post_chat("System", f"Workspace & Chat gewechselt auf Projekt: {q or 'default'}")
     else: from .desktopAG import desktop_action; _post_chat("System", desktop_action(q))
     return {"status": "ok"}
-CMDS = {"idea": handle_idea, "clear": lambda q: handle_clear(), "status": lambda q: handle_status(), "job": handle_job, "summary": handle_summary, "sandbox": handle_sandbox, "skill": handle_skill, "free": handle_free, "provider": lambda q: _handle_sys(q,"prov"), "checkpoint": handle_checkpoint, "git": handle_git, "rollback": lambda q: handle_git(q, rb=True), "desktop": lambda q: _handle_sys(q,"desk"), "vision": lambda q: _handle_sys(q,"vis"), "evolve": lambda q: _handle_sys(q,"evol"), "projekt": lambda q: _handle_sys(q,"proj")}
+CMDS = {"idea": handle_idea, "clear": handle_clear, "status": lambda q: handle_status(), "job": handle_job, "summary": handle_summary, "sandbox": handle_sandbox, "skill": handle_skill, "free": handle_free, "provider": lambda q: _handle_sys(q,"prov"), "checkpoint": handle_checkpoint, "git": handle_git, "rollback": lambda q: handle_git(q, rb=True), "desktop": lambda q: _handle_sys(q,"desk"), "vision": lambda q: _handle_sys(q,"vis"), "evolve": lambda q: _handle_sys(q,"evol"), "projekt": lambda q: _handle_sys(q,"proj")}
 @router.post("/api/chat")
 def post_chat(msg: ChatMsg):
     q, tgt, cmd = _parse(msg.content)
