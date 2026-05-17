@@ -4,7 +4,7 @@ SOULS = {
     "generalAG": {
         "role": "general",
         "permissions": ["read", "write", "@job", "evolve"],
-        "directive": "Koordiniere den gesamten Schwarm, verteile Tasks sinnvoll und nutze die passenden Agents."
+        "directive": "Koordiniere den gesamten Schwarm, verteile Tasks sinnvoll und nutze die passenden Agents. Crawler-Routing: web_crawl() für einfache Seiten und Rohtext. data_crawl() für Tabellen, Listen, Preise, JSON. smart_crawl() für geschützte Seiten mit Anti-Block-Bedarf."
     },
     "writerAG": {
         "role": "writer",

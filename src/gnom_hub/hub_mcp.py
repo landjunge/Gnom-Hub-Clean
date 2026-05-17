@@ -50,6 +50,10 @@ def data_crawl(command: str):
     """Strukturierte Daten extrahieren via data_crawlerAG."""
     from gnom_hub.data_crawlerAG import data_crawl as dc; return dc(command)
 @mcp.tool()
+def web_crawl(command: str):
+    """Webseiten-Rohtext holen via web_crawlerAG."""
+    from gnom_hub.web_crawlerAG import web_crawl as wc; return wc(command)
+@mcp.tool()
 def evolve_agent(a: str): from gnom_hub.evolutionAG import evolve_agent as e; return e(a)
 @mcp.tool()
 def get_agent_soul(agent_name: str):
