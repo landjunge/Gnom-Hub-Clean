@@ -43,4 +43,22 @@ def desktop_control(c: str): from gnom_hub.desktopAG import desktop_action as d;
 def vision_loop(c: str): from gnom_hub.visionAG import vision_loop as v; return v(c)
 @mcp.tool()
 def evolve_agent(a: str): from gnom_hub.evolutionAG import evolve_agent as e; return e(a)
-def main(): from gnom_hub.gitAG import setup_git_hooks as G; G(); from gnom_hub.swarm_checkpoint import load_latest_checkpoint as L; from gnom_hub.db import save_db as S; c = L(); (S("agents", c["souls"]), S("memory", c["war_room_state"])) if c else None; mcp.run(transport="sse")
+@mcp.tool()
+def get_agent_soul(agent_name: str):
+    """Gibt die Soul (role, permissions, directive) eines Agenten zurück."""
+    from gnom_hub.soul_initializer import get_soul
+    return _json.dumps(get_soul(agent_name))
+@mcp.tool()
+def create_agent_with_soul(name: str, description: str = ""):
+    """Erstellt einen neuen Agenten und hängt automatisch die passende Soul an."""
+    from gnom_hub.soul_initializer import get_soul
+    soul = get_soul(name)
+    desc = description or soul.get("directive", "")
+    result = api("POST", "/agents", json={"name": name, "description": desc, "status": "online"})
+    # Soul als role-Memory speichern
+    agents = _json.loads(api("GET", "/agents"))
+    agent = next((a for a in agents if a["name"] == name), None)
+    if agent:
+        api("POST", "/memory", json={"agent_id": agent["id"], "content": _json.dumps(soul), "type": "role"})
+    return _json.dumps({"agent": _json.loads(result), "soul": soul})
+def main(): from gnom_hub.gitAG import setup_git_hooks as G; G(); from gnom_hub.swarm_checkpoint import load_latest_checkpoint as L; from gnom_hub.db import save_db as S; c = L(); (S("agents", c["souls"]), S("war_room_state", c["war_room_state"])) if c else None; mcp.run(transport="sse")
