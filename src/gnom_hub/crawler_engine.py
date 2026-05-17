@@ -1,6 +1,6 @@
 """Crawler-Engine: Dispatch auf die 3 Crawl-Strategien."""
 import re, json, random, requests, time
-from .smart_crawl import smart_request, rotate_user_agent, _mem, _save, _dom
+from .smart_crawl import smart_request, rotate_user_agent, _load, _save, _dom
 
 def crawl_simple(url, timeout=15):
     """web_crawlerAG: Einfacher Crawl, ein UA, kein Memory."""
@@ -18,7 +18,7 @@ def crawl_data(url, timeout=20):
     h = {"User-Agent": rotate_user_agent(), "Accept": "application/json, text/html, */*"}
     try:
         r = requests.get(url, timeout=timeout, headers=h)
-        db, dom = _mem(), _dom(url)
+        db, dom = _load(), _dom(url)
         db.setdefault(dom, {"blocks": 0, "last": 0})["last"] = time.time()
         _save(db)
         ct = r.headers.get("Content-Type", "")
@@ -41,3 +41,4 @@ def crawl_data(url, timeout=20):
         return result[:3000]
     except Exception as e:
         return f"[DATA-FEHLER] {str(e)[:100]}"
+
