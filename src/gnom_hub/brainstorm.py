@@ -32,8 +32,9 @@ def _ask_llm(agent, question, context, bs_mode=False):
     sys_prompt += f"\n\n[WORKSPACE: {wd} | Vorhandene Dateien: {files_str}]"
     from .zwc_soul import decode_soul
     from .tool_registry import format_tools_prompt
+    from .soul_initializer import get_soul
     role_text = role_mem[-1]["content"] if role_mem else ""
-    soul = decode_soul(role_text) or {"role": desc, "permissions": ["read", "write"]}
+    soul = get_soul(agent["name"]) or decode_soul(role_text) or {"role": desc, "permissions": ["read"]}
     sys_prompt += f"\n{format_tools_prompt(soul, agent['name'])}"
     if bs_mode:
         sys_prompt += "\n[MODUS: BRAINSTORM — Nur diskutieren! KEIN [WRITE:] erlaubt. Dateien werden nur auf Einzelauftrag (@AgentName) geschrieben.]"
