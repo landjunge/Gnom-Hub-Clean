@@ -29,4 +29,15 @@ def delete_agent(a_id: str): save_db("agents", [a for a in get_db("agents") if a
 def get_system_stats(): 
     tok = get_db("tokens")
     t_count = tok[0].get("total", 0) if tok else 0
-    return {"agents": len(get_db("agents")), "memory": len(get_db("memory")), "chat": len(get_db("chat")), "tokens": t_count}
+    t_free = 0
+    t_pay = 0
+    import os, json
+    tf = os.path.join(os.path.dirname(__file__), "../../.gnom-hub-tokens.json")
+    if os.path.exists(tf):
+        try:
+            d = json.load(open(tf))
+            t_free = d.get("total_free", 0)
+            t_pay = d.get("total_pay", 0)
+            t_count = d.get("total", t_count)
+        except: pass
+    return {"agents": len(get_db("agents")), "memory": len(get_db("memory")), "chat": len(get_db("chat")), "tokens": t_count, "tokens_free": t_free, "tokens_pay": t_pay}

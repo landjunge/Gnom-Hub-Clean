@@ -36,8 +36,12 @@ def _track_tokens(key_name, model, usage):
         prompt_t = usage.get("prompt_tokens", 0)
         comp_t = usage.get("completion_tokens", 0)
         total_t = usage.get("total_tokens", prompt_t + comp_t)
-        data["total"] += total_t
-        data["calls"] += 1
+        data["total"] = data.get("total", 0) + total_t
+        if ":free" in model:
+            data["total_free"] = data.get("total_free", 0) + total_t
+        else:
+            data["total_pay"] = data.get("total_pay", 0) + total_t
+        data["calls"] = data.get("calls", 0) + 1
         data["history"].append({"key": key_name, "model": model, "prompt": prompt_t, "completion": comp_t, "total": total_t})
         if len(data["history"]) > 200: data["history"] = data["history"][-200:]
         json.dump(data, open(LLM_TOKENS_FILE, "w"), indent=2)

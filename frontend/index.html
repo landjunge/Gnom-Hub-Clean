@@ -1725,7 +1725,9 @@
         document.getElementById('s-agents').textContent = `${totalA} (Sys: ${sysA} | Work: ${workA})`;
         document.getElementById('s-memory').textContent = s.memory ?? 0;
         if (document.getElementById('s-tokens')) {
-          document.getElementById('s-tokens').textContent = (s.tokens ?? 0) + ' / 100k';
+          const tFree = s.tokens_free ?? 0;
+          const tPay = s.tokens_pay ?? 0;
+          document.getElementById('s-tokens').textContent = `Free: ${tFree} | Pay: ${tPay}`;
         }
       }
     }
