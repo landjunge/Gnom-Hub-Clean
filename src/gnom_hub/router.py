@@ -3,14 +3,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# === KEYS (dediziert pro Worker für parallele Brainstorms) ===
+# === KEYS ===
+OR_KEY = os.getenv("OPENROUTER_KEY_FREE_1")
 OR_KEYS = {
-    "writer":     os.getenv("OPENROUTER_KEY_FREE_1"),
-    "coder":      os.getenv("OPENROUTER_KEY_FREE_2"),
-    "researcher": os.getenv("OPENROUTER_KEY_FREE_1"),
-    "editor":     os.getenv("OPENROUTER_KEY_FREE_4"),
-    "crawler":    os.getenv("OPENROUTER_KEY_FREE_5"),
-    "default":    os.getenv("OPENROUTER_KEY_FREE_1"),
+    "writer":     OR_KEY,
+    "coder":      OR_KEY,
+    "researcher": OR_KEY,
+    "editor":     OR_KEY,
+    "crawler":    OR_KEY,
+    "default":    OR_KEY,
 }
 DS_KEY = os.getenv("DEEPSEEK_API_KEY")
 
