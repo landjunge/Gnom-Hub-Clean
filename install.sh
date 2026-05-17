@@ -95,9 +95,11 @@ echo " ════════════════════════�
 echo "  ✅ Installation abgeschlossen!"
 echo " ═══════════════════════════════════════════"
 echo ""
-echo "  Starten:    source .venv/bin/activate && python -m gnom_hub"
-echo "  Agenten:    bash start_agents.sh"
 echo "  Frontend:   http://127.0.0.1:3002"
+echo "  Agenten:    bash start_agents.sh"
 echo ""
-echo "  ⚠️  Vergiss nicht, API-Keys in .env einzutragen!"
-echo ""
+
+# 8. Hub starten
+echo "▸ Gnom-Hub starten..."
+source "$VENV_DIR/bin/activate"
+python -m gnom_hub
