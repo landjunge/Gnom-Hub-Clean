@@ -7,7 +7,7 @@ load_dotenv()
 OR_KEYS = {
     "writer":     os.getenv("OPENROUTER_KEY_FREE_1"),
     "coder":      os.getenv("OPENROUTER_KEY_FREE_2"),
-    "researcher": os.getenv("OPENROUTER_KEY_FREE_3"),
+    "researcher": os.getenv("OPENROUTER_KEY_FREE_1"),
     "editor":     os.getenv("OPENROUTER_KEY_FREE_4"),
     "crawler":    os.getenv("OPENROUTER_KEY_FREE_5"),
     "default":    os.getenv("OPENROUTER_KEY_FREE_1"),
