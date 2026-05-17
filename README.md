@@ -69,6 +69,9 @@ Agenten liegen isoliert im Root-Verzeichnis. Jeder ist auf seinen System-Prompt 
 | `desktopAG.py` | **(God-Mode)** Steuert Maus, Tastatur und führt OS-Aktionen aus. |
 | `visionAG.py` | **(God-Mode)** Sieht deinen Screen. Kugelsicherer, selbstheilender 5-Step-Loop mit Schema-Validierung. |
 | `evolutionAG.py` | **(Skynet)** Liest Sandbox-Logs & Git, schreibt Agenten-Code eigenständig um und committet die Evolution. |
+| `securityAG.py`| **(Zero-Trust)** Signiert alle ausgehenden Aktionen und Agenten-Daten mit kryptographischen Hashes (HMAC-SHA256). |
+| `watchdogAG.py`| **(Wächter)** Scant asynchron den Workspace und vernichtet gnadenlos alle unversiegelten (manipulierten) Dateien. |
+| `soulAG.py`    | **(Stenograph)** Verwebt unsichtbaren Goldstaub (Zero-Width Characters) als untrennbare Signatur in Code und Text. |
 | `gitAG.py` | Auto-versioniert Code-Änderungen und setzt Rollbacks. |
 | `sandboxAG.py` | Der Türsteher. Blockiert zerstörerische Eingriffe der KI. |
 | `tinyAG.py` | Das leere Template. Basis für jede Neuerschaffung. |
