@@ -33,7 +33,6 @@ class BaseAgent:
             for m in chat: self.seen.add(m.get("id"))
             
             for m in new:
-                self.post(f"/api/agents/{self.n}/status", {"status": "busy"})
                 msgs = [{"role": "system", "content": self.sys}, {"role": "user", "content": m["content"]}]
                 try:
                     r2 = requests.post("https://api.deepseek.com/chat/completions", headers={"Authorization": f"Bearer {KEY}"}, json={"model": self.model, "messages": msgs}).json()
@@ -41,5 +40,5 @@ class BaseAgent:
                     self.post("/api/chat", {"content": reply, "sender": self.n})
                 except Exception as e:
                     print(f"[{self.n}] Error: {e}")
-                self.post(f"/api/agents/{self.n}/status", {"status": "online"})
+                pass
             await asyncio.sleep(self.p)
