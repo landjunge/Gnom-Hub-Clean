@@ -18,7 +18,7 @@ def create_agent(a: AgentEntry):
     if any(x.get("name") == a.name for x in d): raise HTTPException(400, "")
     n = {"id": str(uuid.uuid4()), "name": a.name, "description": a.description, "status": a.status, "created_at": datetime.utcnow().isoformat() + "Z"}
     save_db("agents", d + [n]); return n
-@router.put("/api/agents/{a_id}/status")
+@router.api_route("/api/agents/{a_id}/status", methods=["PUT", "POST"])
 def set_status(a_id: str, status: str):
     d = get_db("agents")
     for a in d:
