@@ -32,7 +32,7 @@ async def run():
         for m in chat: seen.add(m.get("id"))
         
         for m in new:
-            pass  # status via register
+            requests.post(f"{HUB_URL}/api/agents/{NAME}/status", json={"status": "busy"})
             sn, sz = rotate_snap()
             if changed(): git("add","-A"); git("commit","-m",f"backup: {ts()}")
             p = unpushed() and git("push","origin","master")
@@ -40,7 +40,7 @@ async def run():
             
         if changed(): rotate_snap(); git("add","-A"); git("commit","-m",f"auto {ts()}")
         if unpushed(): git("push","origin","master")
-        pass  # status via register
+        requests.post(f"{HUB_URL}/api/agents/{NAME}/status", json={"status": "online"})
         await asyncio.sleep(POLL)
 
 if __name__ == "__main__": asyncio.run(run())
