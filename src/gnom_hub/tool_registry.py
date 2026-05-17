@@ -45,4 +45,5 @@ def format_tools_prompt(soul: dict, agent_name: str):
         syntax += "\n  [SHELL: befehl] — Terminal-Befehl ausführen"
     if "generate_image" in tools:
         syntax += "\n  [IMAGE: bildprompt] — Bild generieren"
+    syntax += "\n  [SHOWBOX: {\"title\": \"Titel\", \"content\": \"HTML Inhalt\"}] — UI-Showbox anzeigen"
     return f"Du bist {agent_name} ({role}).\nVerfügbare Tools:\n" + "\n".join(lines) + syntax

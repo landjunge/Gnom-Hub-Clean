@@ -27,12 +27,12 @@ CMDS = {"idea": handle_idea, "clear": handle_clear, "status": lambda q: handle_s
 @router.post("/api/chat")
 def post_chat(msg: ChatMsg):
     q, tgt, cmd = _parse(msg.content)
-    from .zwc_soul import encode_soul
+    from .securityAG import seal_content
     from .db import get_active_project
     s_name = msg.sender if msg.sender != "user" else tgt
     a = next((x for x in get_db("agents") if x.get("name","").lower() == (s_name or "").lower()), None)
-    if a and a.get("description"):
-        msg.content = encode_soul(msg.content, {"name": a["name"], "desc": a["description"], "job": a.get("active_job", "")})
+    if a:
+        msg.content = seal_content(a["name"], msg.content)
     save_db("memory", get_db("memory") + [{"id": str(uuid.uuid4()), "agent_id": "war-room", "project": get_active_project(), "content": msg.content, "metadata": {"type": cmd or "chat", "sender": msg.sender}, "timestamp": datetime.utcnow().isoformat()+"Z"}])
     if msg.sender != "user": return {"status": "saved"}
     if cmd in CMDS: return CMDS[cmd](q)
@@ -45,4 +45,31 @@ def post_chat(msg: ChatMsg):
 @router.get("/api/chat")
 def get_chat(limit: int = 50): 
     from .db import get_active_project
-    return sorted([m for m in get_db("memory") if m.get("agent_id")=="war-room" and m.get("project", "default") == get_active_project()], key=lambda x: x.get("timestamp",""), reverse=True)[:limit]
+    from .securityAG import generate_signature
+    import json
+    
+    def sanitize_showboxes(content):
+        # Finde alle SHOWBOX-Tags. Falls Signatur fehlt/falsch, Tag durch Fehlermeldung ersetzen.
+        def repl(m):
+            idx = m.group(1) or ""
+            idx_str = f":{idx}" if idx else ""
+            json_str = m.group(2)
+            try:
+                data = json.loads(json_str)
+                sig = data.pop("sig", None)
+                if not sig: raise ValueError("No signature")
+                clean_json = json.dumps(data, separators=(',', ':'), sort_keys=True)
+                expected_sig = generate_signature("Gnom", clean_json)
+                if sig != expected_sig: raise ValueError("Invalid signature")
+                # Wenn gültig, packen wir das sig wieder rein für das Frontend
+                data["sig"] = sig
+                return f"<SHOWBOX{idx_str}>{json.dumps(data)}</SHOWBOX>"
+            except Exception as e:
+                return f"[Blockiert: Manipulierte Showbox entfernt]"
+        return re.sub(r"<SHOWBOX(?::(\d+))?>([\s\S]*?)</SHOWBOX>", repl, content)
+
+    raw_memory = sorted([m for m in get_db("memory") if m.get("agent_id")=="war-room" and m.get("project", "default") == get_active_project()], key=lambda x: x.get("timestamp",""), reverse=True)[:limit]
+    for m in raw_memory:
+        if "content" in m:
+            m["content"] = sanitize_showboxes(m["content"])
+    return raw_memory

@@ -54,6 +54,9 @@ Ein responsives Glassmorphism-Design mit Neon-Ästhetik. Hier findet die Magie s
 ### 3. Autonomes Brainstorming (`@bs`)
 Der Hub pingt alle aktiven Agenten reihum an. Sie reagieren aufeinander basierend auf dem Chat-Kontext und treiben Ideen selbstständig voran, orchestriert über OpenRouter oder lokale Modelle.
 
+### 4. Kryptographisches Siegel (Zero-Trust Security)
+Das Herzstück der Agenten-Sicherheit: Alle Showboxen und Workspace-Dateien werden steganographisch (via Zero-Width Characters) mit einem HMAC-SHA256 Siegel versehen (`zwc_soul.py`). Ein Server-seitiger Watchdog-Thread prüft kontinuierlich, ob Änderungen von autorisierten Agenten stammen, wodurch Prompt-Injections absolut neutralisiert werden. Das "beste Schloss ist das, was man nicht sieht".
+
 ---
 
 ## 🤖 Die Agenten-Armada

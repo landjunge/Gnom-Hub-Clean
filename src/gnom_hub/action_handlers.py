@@ -2,6 +2,7 @@
 import os, re, requests
 
 def handle_write(answer, matches, agent, perms, bs_mode, wd):
+    from .securityAG import seal_content
     for m in matches:
         fname, content = m.group(1).strip(), m.group(2).strip()
         if bs_mode:
@@ -13,7 +14,9 @@ def handle_write(answer, matches, agent, perms, bs_mode, wd):
                 fpath = os.path.join(wd, fname)
                 if os.path.exists(fpath):
                     import shutil; shutil.copy2(fpath, fpath + ".bak")
-                with open(fpath, "w") as f: f.write(content)
+                # ZWC Siegel anbringen, das den Content und den Agenten enthält
+                sealed_content = seal_content(agent["name"], content)
+                with open(fpath, "w") as f: f.write(sealed_content)
                 answer = answer.replace(m.group(0), f"[System: Datei '{fname}' wurde erfolgreich im Workspace gespeichert.]")
             except Exception as e:
                 answer = answer.replace(m.group(0), f"[System-Fehler beim Speichern von {fname}: {e}]")
@@ -61,10 +64,33 @@ def handle_crawl(answer, matches, agent, perms):
             answer = answer.replace(m.group(0), f"[Crawl-Fehler: {str(e)[:80]}]")
     return answer
 
+def handle_showbox(answer, matches):
+    from .securityAG import generate_signature
+    import json
+    for m in matches:
+        raw_json = m.group(1).strip()
+        try:
+            data = json.loads(raw_json)
+            # Remove any forged sig
+            data.pop("sig", None)
+            
+            # Serialize deterministically to sign
+            clean_json = json.dumps(data, separators=(',', ':'), sort_keys=True)
+            sig = generate_signature("Gnom", clean_json)
+            data["sig"] = sig
+            
+            signed_json = json.dumps(data)
+            answer = answer.replace(m.group(0), f"<SHOWBOX>{signed_json}</SHOWBOX>")
+        except Exception as e:
+            answer = answer.replace(m.group(0), f"[Showbox-Fehler: Ungültiges JSON - {e}]")
+    return answer
+
 def process_actions(answer, agent, perms, bs_mode, wd):
     """Verarbeitet alle Action-Tags in einer LLM-Antwort."""
     answer = handle_write(answer, list(re.finditer(r"\[WRITE:\s*(.*?)\](.*?)\[/WRITE\]", answer, re.DOTALL)), agent, perms, bs_mode, wd)
     answer = handle_read(answer, list(re.finditer(r"\[READ:\s*(.*?)\]", answer)), wd)
     answer = handle_shell(answer, list(re.finditer(r"\[SHELL:\s*(.*?)\]", answer)), agent, perms, bs_mode, wd)
     answer = handle_crawl(answer, list(re.finditer(r"\[CRAWL:\s*(.*?)\]", answer)), agent, perms)
+    answer = handle_showbox(answer, list(re.finditer(r"\[SHOWBOX:\s*(.*?)\]", answer, re.DOTALL)))
     return answer
+
