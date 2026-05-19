@@ -1465,6 +1465,7 @@
         Memory: <span id="s-memory">0</span>
       </div>
       <button class="btn-primary" onclick="showWorkspace()">Workspace</button>
+      <button class="btn-primary" onclick="showLLMConfig()" style="background:#5522aa;">LLM</button>
       <button class="btn-primary" onclick="openAddAgent()">+ Agent</button>
     </div>
   </header>
@@ -2600,6 +2601,154 @@
         if(newL) newL.classList.add('active');
       }, 5000);
     })();
+
+    // ── LLM Config ──
+    async function showLLMConfig() {
+      selectedId = null;
+      document.getElementById('content').innerHTML = `
+        <div class="panel" id="llm-panel">
+          <h2>LLM Konfiguration</h2>
+          <div style="display:flex; gap: 20px; flex-wrap: wrap;">
+            <div style="flex:1; min-width: 300px; background:var(--bg-card); padding:20px; border-radius:var(--radius); border:1px solid rgba(255,255,255,0.1);">
+              <h3>API Keys hinterlegen</h3>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:10px;">Ein Key pro Zeile</p>
+              <textarea id="llm-keys-input" rows="5" style="width:100%; margin-bottom:10px; background:var(--bg); border:1px solid rgba(255,255,255,0.2); color:white; padding:10px; border-radius:4px;" placeholder="sk-12345..."></textarea>
+              <button class="btn-primary" onclick="saveAndTestKeys()">Keys Speichern & Testen</button>
+              <div id="llm-keys-status" style="margin-top:10px; font-size:0.9rem;"></div>
+            </div>
+            <div style="flex:2; min-width: 400px; background:var(--bg-card); padding:20px; border-radius:var(--radius); border:1px solid rgba(255,255,255,0.1);">
+              <h3>Agenten Zuweisung</h3>
+              <div id="llm-agents-list" style="margin-bottom:20px; max-height:400px; overflow-y:auto; padding-right:10px;">Lade Agenten...</div>
+              <div style="display:flex; gap:10px;">
+                <button class="btn-primary" onclick="saveAgentLLMs()">Agenten-Settings Speichern</button>
+                <button class="btn-primary" onclick="api('POST', '/restart')" style="background:#cc3333;">Server Neustart</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      loadLLMConfig();
+    }
+
+    let globalKeys = [];
+    async function loadLLMConfig() {
+      const keysRes = await api('GET', '/llm/keys');
+      if (keysRes) {
+        globalKeys = Object.keys(keysRes).length > 0 ? Object.values(keysRes) : [];
+        if (globalKeys.length > 0 && globalKeys[0].key) {
+           document.getElementById('llm-keys-input').value = globalKeys.map(k => k.key).join('\\n');
+           renderKeyStatus(globalKeys);
+        }
+      }
+
+      const agentsRes = await api('GET', '/agents');
+      const llmAgentsRes = await api('GET', '/llm/agents');
+      
+      let html = '';
+      const providers = ['deepseek', 'openrouter', 'ollama'];
+      const models = {
+        'deepseek': ['deepseek-chat', 'deepseek-reasoner'],
+        'openrouter': ['deepseek/deepseek-v4-flash:free', 'openai/gpt-oss-120b:free', 'minimax/minimax-m2.5:free', 'nvidia/nemotron-nano-9b-v2:free', 'openai/gpt-oss-20b:free', 'anthropic/claude-3-opus', 'anthropic/claude-3.5-sonnet'],
+        'ollama': ['llama3', 'mistral', 'qwen2']
+      };
+
+      if (agentsRes && Array.isArray(agentsRes)) {
+        agentsRes.forEach(a => {
+           let conf = llmAgentsRes[a.name.toLowerCase()] || {};
+           let pSel = conf.provider || 'deepseek';
+           let mSel = conf.model || 'deepseek-chat';
+           let kSel = conf.key_id || '';
+           
+           html += \`<div style="display:flex; align-items:center; gap:10px; margin-bottom:10px; padding:10px; background:rgba(255,255,255,0.05); border-radius:8px;">
+             <div style="flex:1; font-weight:bold;">\${a.name}</div>
+             <select id="prov-\${a.name}" onchange="updateModels('\${a.name}')" style="background:var(--bg); color:white; border:1px solid rgba(255,255,255,0.2); padding:5px; border-radius:4px;">
+               \${providers.map(p => \`<option value="\${p}" \${p === pSel ? 'selected':''}>\${p}</option>\`).join('')}
+             </select>
+             <select id="mod-\${a.name}" style="background:var(--bg); color:white; border:1px solid rgba(255,255,255,0.2); padding:5px; border-radius:4px; max-width:150px;">
+               \${(models[pSel]||[]).map(m => \`<option value="\${m}" \${m === mSel ? 'selected':''}>\${m}</option>\`).join('')}
+             </select>
+             <select id="key-\${a.name}" style="background:var(--bg); color:white; border:1px solid rgba(255,255,255,0.2); padding:5px; border-radius:4px; max-width:150px;">
+               <option value="">Kein Key (Env)</option>
+               \${globalKeys.map(k => {
+                 let isV = k.valid ? '🟢' : '🔴';
+                 return \`<option value="\${k.id}" \${k.id === kSel ? 'selected':''} style="color:\${k.valid?'#39ff14':'#ff3333'}">\${isV} \${k.key.substring(0,8)}...</option>\`
+               }).join('')}
+             </select>
+           </div>\`;
+        });
+      }
+      document.getElementById('llm-agents-list').innerHTML = html;
+      window.llmModelsMap = models;
+    }
+
+    window.updateModels = function(aName) {
+      const p = document.getElementById(\`prov-\${aName}\`).value;
+      const modSelect = document.getElementById(\`mod-\${aName}\`);
+      const mods = window.llmModelsMap[p] || [];
+      modSelect.innerHTML = mods.map(m => \`<option value="\${m}">\${m}</option>\`).join('');
+    };
+
+    async function saveAndTestKeys() {
+      const input = document.getElementById('llm-keys-input').value;
+      const rawKeys = input.split('\\n').map(k => k.trim()).filter(k => k);
+      
+      document.getElementById('llm-keys-status').innerHTML = 'Teste Keys...';
+      
+      let testedKeys = [];
+      let nextId = Date.now();
+      
+      for(let k of rawKeys) {
+        let prov = 'deepseek';
+        if (k.startsWith('sk-or-')) prov = 'openrouter';
+        
+        let res = await api('POST', '/llm/test', { key: k, provider: prov });
+        testedKeys.push({
+          id: 'k_' + (nextId++),
+          key: k,
+          provider: prov,
+          valid: res && res.valid,
+          info: res ? res.info : 'Error'
+        });
+      }
+      
+      let toSave = {};
+      testedKeys.forEach(k => toSave[k.id] = k);
+      await api('POST', '/llm/keys', toSave);
+      
+      globalKeys = testedKeys;
+      renderKeyStatus(testedKeys);
+      loadLLMConfig();
+    }
+
+    function renderKeyStatus(keys) {
+      let h = '';
+      keys.forEach(k => {
+        let c = k.valid ? 'var(--green)' : '#ff3333';
+        h += \`<div style="color:\${c}; margin-bottom:5px;">\${k.valid ? '✅' : '❌'} \${k.provider}: \${k.key.substring(0,12)}... \${k.info !== 'OK' ? '('+k.info.substring(0,20)+')' : ''}</div>\`;
+      });
+      document.getElementById('llm-keys-status').innerHTML = h;
+    }
+
+    async function saveAgentLLMs() {
+      const agentsRes = await api('GET', '/agents');
+      let config = {};
+      if (agentsRes && Array.isArray(agentsRes)) {
+        agentsRes.forEach(a => {
+          let p = document.getElementById(\`prov-\${a.name}\`);
+          let m = document.getElementById(\`mod-\${a.name}\`);
+          let k = document.getElementById(\`key-\${a.name}\`);
+          if(p && m && k) {
+            config[a.name.toLowerCase()] = {
+              provider: p.value,
+              model: m.value,
+              key_id: k.value
+            };
+          }
+        });
+      }
+      await api('POST', '/llm/agents', config);
+      alert('Agenten-Settings gespeichert!');
+    }
   </script>
 </body>
 
