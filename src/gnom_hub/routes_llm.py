@@ -23,7 +23,7 @@ async def test_agent(req: Request):
     j = await req.json(); p, m = j.get("provider"), j.get("model"); kdb = get_db("llm_keys") or {}
     k = next((x.get("key") for x in (kdb.values() if isinstance(kdb, dict) else kdb) if x.get("provider") == p and x.get("valid")), None)
     if not k:
-        from .config import DS_KEY, OR_KEY
+        from .router import DS_KEY, OR_KEY
         if p == "deepseek" and DS_KEY: k = DS_KEY
         elif p == "openrouter" and OR_KEY: k = OR_KEY
     if not k and p != "lokal": return {"valid": False, "info": f"Kein gültiger Key für {p}"}

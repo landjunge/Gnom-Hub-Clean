@@ -13,17 +13,25 @@ def kill_process(target):
     """Killt Prozess nach Name oder Port."""
     pids = find_process(target)
     for pid in pids:
+        if pid == os.getpid(): continue
         try: os.kill(pid, signal.SIGTERM)
         except: pass
-    return f"Killed {len(pids)} processes: {pids}" if pids else f"No process found for {target}"
+    return f"Killed processes: {pids}"
 def restart_hub():
     """Startet Gnom-Hub neu."""
     kill_process("gnom-hub")
     kill_process("3002")
     kill_process("3100")
-    subprocess.Popen(
-        ["python3", "-m", "gnom_hub"], cwd=os.path.dirname(os.path.dirname(__file__)),
-        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+    import sys
+    try:
+        import resource
+        maxfd = resource.getrlimit(resource.RLIMIT_NOFILE)[1]
+        if maxfd == resource.RLIM_INFINITY: maxfd = 1024
+        for fd in range(3, 1024):
+            try: os.close(fd)
+            except: pass
+    except: pass
+    os.execv(sys.executable, [sys.executable, "-m", "gnom_hub"])
     return "Hub restart initiated — ports 3002+3100"
 def process_status():
     """Zeigt laufende Gnom-Hub Prozesse."""

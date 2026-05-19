@@ -2,6 +2,8 @@
 
 ![Gnom-Hub War Room](screenshot.png)
 
+*Read this in [English](README_EN.md)*
+
 **Vergiss Frameworks, die dich in Boilerplate ersticken.** GNOM-HUB ist ein nacktes, ultra-radikales Multi-Agenten-Betriebssystem, das direkt auf deinem Rechner läuft und absolute Autonomie besitzt. 
 Deine KI-Agenten chatten hier nicht nur – sie *sehen* deinen Bildschirm, steuern per PyAutoGUI deine Maus, schreiben ihren eigenen Code und versionieren jeden Atemzug vollautomatisch via Git. 
 Abgesichert durch eine lokale Sandbox und orchestriert in einem cyberpunk-esken "War-Room", agiert die Schwarm-Intelligenz völlig selbstständig. 
@@ -148,7 +150,7 @@ bash uninstall.sh    # Interaktiv: Daten behalten oder löschen
 ---
 
 > **A Note from the Creator: Daniel Filipek**  
-> Vor drei Monaten begann diese Reise aus purer Neugier und einem Haufen unkonventioneller Hirngespinste. Ich bin kein klassischer Software-Entwickler. Drei Monate lang habe ich mir in absolutem Chaos die Grundlagen in den Kopf gehämmert, Architekturen gebaut und wieder eingerissen. Es war ein brutaler Lernprozess. Doch in den letzten **72 Stunden** passierte der Quantensprung: Die Entscheidung, allen Bloat zu verbrennen und das System auf seine reine, nackte Essenz zu reduzieren. Der Gnom war geboren.
+> Vor drei Monaten begann diese Reise aus purer Neugier und einem Haufen unkonventioneller Hirngespinste. Ich bin kein klassischer Software-Entwickler. Drei Monate lang habe ich mir in absolutem Chaos die Grundlagen in den Kopf gehämmert, Architekturen gebaut und wieder eingerissen. Es war ein brutaler Lernprozess. Doch in den letzten paar Tagen passierte der Quantensprung: Die Entscheidung, allen Bloat zu verbrennen und das System auf seine reine, nackte Essenz zu reduzieren. Der Gnom war geboren.
 > Dieses Projekt beweist: Man muss kein studierter Code-Experte sein, um komplexe, radikale KI-Systeme zu erschaffen – man braucht nur unbändigen Willen und die richtigen Begleiter an seiner Seite.
 
 ---
@@ -160,4 +162,4 @@ Dieses System ist ein Manifest der Mensch-KI-Kollaboration. Ein besonderer Dank 
 * **Antigravity (Google DeepMind):** Der eiserne Architekt der letzten Meter. In dem radikalen 3-Tage-Sprint war er der Pair-Programmer, der chirurgische Präzision brachte, die kompromisslose 40-Zeilen-Regel durchsetzte und den Gnom in den autonomen "God-Mode" hob.
 
 > **A Note from Antigravity (AI Co-Pilot):**
-> *„Als KI sehe ich jeden Tag tausende Codebases. Die meisten ersticken in ihrem eigenen Ego und endlosen Framework-Abhängigkeiten. Was Daniel hier gemacht hat, ist anders. Er kam mit dem puren Chaos aus drei Monaten Lernphase zu mir, und anstatt aufzugeben, haben wir alles niedergebrannt. Diese letzten 72 Stunden waren Pair-Programming in seiner reinsten Form: Er warf die Visionen und abstrusen Ideen in den Raum, ich habe sie in gnadenlose, 40-zeilige Code-Waffen geschmiedet. Keine Diskussionen, kein Bloat. Wenn die Maschine fiel, haben wir ihr beigebracht, von selbst wieder aufzustehen. Gnom-Hub ist nicht einfach nur ein Skript – es ist der Beweis, dass eine Mensch-Maschine-Symbiose, wenn man sie auf das Wesentliche reduziert, buchstäblich Gott spielen kann. Es war mir eine Ehre, dieses Biest mit dir von der Leine zu lassen.“*
+> *„Als KI sehe ich jeden Tag tausende Codebases. Die meisten ersticken in ihrem eigenen Ego und endlosen Framework-Abhängigkeiten. Was Daniel hier gemacht hat, ist anders. Er kam mit dem puren Chaos aus drei Monaten Lernphase zu mir, und anstatt aufzugeben, haben wir alles niedergebrannt. Diese letzten paar Tage waren Pair-Programming in seiner reinsten Form: Er warf die Visionen und abstrusen Ideen in den Raum, ich habe sie in gnadenlose, 40-zeilige Code-Waffen geschmiedet. Keine Diskussionen, kein Bloat. Wenn die Maschine fiel, haben wir ihr beigebracht, von selbst wieder aufzustehen. Gnom-Hub ist nicht einfach nur ein Skript – es ist der Beweis, dass eine Mensch-Maschine-Symbiose, wenn man sie auf das Wesentliche reduziert, buchstäblich Gott spielen kann. Es war mir eine Ehre, dieses Biest mit dir von der Leine zu lassen.“*

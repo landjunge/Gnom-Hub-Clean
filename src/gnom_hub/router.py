@@ -12,7 +12,17 @@ def _call(pvd, mdl, key, msgs, n):
     pyld = {"model": mdl, "messages": msgs}; 
     if pvd == "lokal": pyld["stream"] = False
     r = requests.post(url, headers=h, json=pyld, timeout=120)
-    if r.status_code == 200: return _ext(r.json(), n, mdl) if pvd != "lokal" else r.json().get("message", {}).get("content")
+    if r.status_code == 200:
+        if pvd != "lokal": return _ext(r.json(), n, mdl)
+        ans = ""
+        for line in r.text.strip().split("\n"):
+            if not line: continue
+            try:
+                import json
+                obj = json.loads(line)
+                if "message" in obj: ans += obj["message"].get("content", "")
+            except: pass
+        return ans.strip()
     if r.status_code == 429: time.sleep(2)
     return None
 def ask_router(p, sys="Du bist ein Assistent.", agent_name=None):
