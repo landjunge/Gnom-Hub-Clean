@@ -1,54 +1,24 @@
-"""Brainstorm Helpers — Workspace, Chat-Post, LLM-Calls."""
-import os, uuid
-from datetime import datetime
-from .db import get_db, save_db
-from .router import ask_router
-
-BASE_WORKSPACE = "/Users/landjunge/Documents/AG-Flega/gnom_workspace"
-
+import os, uuid; from datetime import datetime; from .db import get_db, save_db, get_active_project; from .router import ask_router
 def get_workspace_dir():
-    from .db import get_active_project
-    d = os.path.join(BASE_WORKSPACE, get_active_project())
-    os.makedirs(d, exist_ok=True)
-    return d
-
+    d = os.path.join("/Users/landjunge/Documents/AG-Flega/gnom_workspace", get_active_project()); os.makedirs(d, exist_ok=True); return d
 def post(sender, content):
-    from .db import get_active_project
-    entry = {"id": str(uuid.uuid4()), "agent_id": "war-room", "project": get_active_project(), "content": content,
-             "metadata": {"type": "brainstorm", "status": "open", "sender": sender},
-             "timestamp": datetime.utcnow().isoformat() + "Z"}
-    save_db("memory", get_db("memory") + [entry])
-
+    save_db("memory", get_db("memory") + [{"id": str(uuid.uuid4()), "agent_id": "war-room", "project": get_active_project(), "content": content, "metadata": {"type": "brainstorm", "status": "open", "sender": sender}, "timestamp": datetime.utcnow().isoformat() + "Z"}])
 def get_ctx():
-    """Holt die letzten 8 Chat-Nachrichten als Kontext."""
-    from .db import get_active_project
-    from .zwc_soul import strip_zwc
-    chat = [m for m in get_db("memory") if m.get("agent_id") == "war-room" and m.get("project", "default") == get_active_project()]
-    return "\n".join(f"[{m.get('metadata',{}).get('sender','?')}] {strip_zwc(m['content'])[:1000]}"
-                    for m in sorted(chat, key=lambda x: x.get("timestamp",""))[-8:])
-
-def ask_llm(agent, question, context, bs_mode=False):
-    desc = agent.get("description", "")
-    role_mem = [m for m in get_db("memory") if m.get("agent_id") == agent.get("id") and m.get("type") == "role"]
-    sys_prompt = role_mem[-1]["content"].replace("[SYSTEM-ROLLE] ", "") if role_mem else f"Du bist {agent['name']} ({desc}), ein KI-Agent im Gnom-Hub."
-    wd = get_workspace_dir()
-    files_str = ", ".join(os.listdir(wd)) if os.path.exists(wd) else ""
-    sys_prompt += f"\n\n[WORKSPACE: {wd} | Dateien: {files_str}]"
-    from .zwc_soul import decode_soul
-    from .tool_registry import format_tools_prompt
-    from .soul_initializer import get_soul
-    role_text = role_mem[-1]["content"] if role_mem else ""
-    soul = get_soul(agent["name"]) or decode_soul(role_text) or {"role": desc, "permissions": ["read"]}
-    sys_prompt += f"\n{format_tools_prompt(soul, agent['name'])}"
-    if bs_mode:
-        sys_prompt += "\n[MODUS: BRAINSTORM — Nur diskutieren! KEIN [WRITE:] erlaubt.]"
-    user_msg = question
-    if context: user_msg += f"\n\nBisherige Diskussion:\n{context}"
+    from .zwc_soul import strip_zwc; c = [m for m in get_db("memory") if m.get("agent_id") == "war-room" and m.get("project", "default") == get_active_project()]
+    return "\n".join(f"[{m.get('metadata',{}).get('sender','?')}] {strip_zwc(m['content'])[:1000]}" for m in sorted(c, key=lambda x: x.get("timestamp",""))[-8:])
+def ask_llm(ag, q, ctx, bs_mode=False):
+    from .zwc_soul import decode_soul; from .tool_registry import format_tools_prompt; from .soul_initializer import get_soul; from .action_handlers import process_actions
+    rm = [m for m in get_db("memory") if m.get("agent_id") == ag.get("id") and m.get("type") == "role"]
+    rt = rm[-1]["content"] if rm else ""
+    sys = rt.replace("[SYSTEM-ROLLE] ", "") if rm else f"Du bist {ag['name']} ({ag.get('description', '')}), ein KI-Agent im Gnom-Hub."
+    wd = get_workspace_dir(); fs = ", ".join(os.listdir(wd)) if os.path.exists(wd) else ""
+    sys += f"\n\n[WORKSPACE: {wd} | Dateien: {fs}]"
+    soul = get_soul(ag["name"]) or decode_soul(rt) or {"role": ag.get('description', ''), "permissions": ["read"]}
+    sys += f"\n{format_tools_prompt(soul, ag['name'])}"
+    if bs_mode: sys += "\n[MODUS: BRAINSTORM — Nur diskutieren! KEIN [WRITE:] erlaubt.]"
+    u_msg = f"{q}\n\nBisherige Diskussion:\n{ctx}" if ctx else q
     try:
-        answer = ask_router(user_msg, sys_prompt, agent_name=agent.get("name", ""))
-        if not answer or not isinstance(answer, str):
-            post(agent["name"], f"[Fehler: Keine Antwort vom LLM für {agent['name']}]"); return
-        from .action_handlers import process_actions
-        answer = process_actions(answer, agent, soul.get("permissions", []), bs_mode, wd)
-        post(agent["name"], answer)
-    except Exception as e: post(agent["name"], f"[Fehler: {str(e)[:80]}]")
+        ans = ask_router(u_msg, sys, agent_name=ag.get("name", ""))
+        if not ans or not isinstance(ans, str): return post(ag["name"], f"[Fehler: Keine Antwort vom LLM]")
+        post(ag["name"], process_actions(ans, ag, soul.get("permissions", []), bs_mode, wd))
+    except Exception as e: post(ag["name"], f"[Fehler: {str(e)[:80]}]")

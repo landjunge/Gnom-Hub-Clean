@@ -2,43 +2,7 @@ import uuid, re, subprocess; from datetime import datetime; from fastapi import 
 router = APIRouter()
 def _post_chat(s, c): save_db("memory", get_db("memory") + [{"id":str(uuid.uuid4()),"agent_id":"war-room","content":c,"metadata":{"type":"role_response","sender":s},"timestamp":datetime.utcnow().isoformat()+"Z"}])
 def handle_idea(t): save_db("ideas", get_db("ideas") + [{"id":str(uuid.uuid4()),"content":t,"ts":datetime.utcnow().isoformat()+"Z"}]); return {"status": "idea_saved"}
-def handle_clear(q=""):
-    q = q.strip().lower()
-    if q == "all agents":
-        sys_ags = ['watchdogag','skillsag','backupag','cronjobag','soulag']
-        save_db("agents", [a for a in get_db("agents") if a["name"].lower() in sys_ags])
-        _post_chat("System", "Alle externen Agenten (inklusive Hermes) wurden gelöscht. System-Infrastruktur bleibt intakt.")
-        return {"status": "agents_cleared"}
-    
-    from .db import get_active_project
-    p = get_active_project()
-    
-    if q == "@projekt":
-        save_db("memory", [m for m in get_db("memory") if not (m.get("agent_id") == "war-room" and m.get("project", "default") == p)])
-        import os, shutil
-        from .routes_workspace import get_workspace_dir
-        wd = get_workspace_dir()
-        for f in os.listdir(wd):
-            fp = os.path.join(wd, f)
-            if os.path.isfile(fp): os.unlink(fp)
-            elif os.path.isdir(fp): shutil.rmtree(fp)
-        _post_chat("System", f"Projekt '{p}' komplett geleert (Chat + Workspace-Dateien gelöscht).")
-        return {"status": "project_cleared"}
-        
-    if q.startswith("chat"):
-        parts = q.split()
-        if len(parts) > 1:
-            target_agent = parts[1].replace("@", "").lower()
-            save_db("memory", [m for m in get_db("memory") if not (m.get("agent_id") == "war-room" and m.get("project", "default") == p and m.get("metadata", {}).get("sender", "").lower() == target_agent)])
-            _post_chat("System", f"Chat-Historie von Agent '{target_agent}' im Projekt '{p}' gelöscht.")
-        else:
-            save_db("memory", [m for m in get_db("memory") if not (m.get("agent_id") == "war-room" and m.get("project", "default") == p)])
-            _post_chat("System", f"Kompletter Chat im Projekt '{p}' gelöscht.")
-        return {"status": "cleared"}
-        
-    # Fallback Standard: Clear all chat for the active project
-    save_db("memory", [m for m in get_db("memory") if not (m.get("agent_id") == "war-room" and m.get("project", "default") == p)])
-    return {"status": "cleared"}
+def handle_clear(q=""): from .chat_clear import handle_clear as _hc; return _hc(q)
 def handle_status(): return {"agents": [{"name":a["name"],"role":a.get("role","—"),"st":a.get("skill",a.get("status"))} for a in get_db("agents")]}
 def handle_free(q): ags=get_db("agents"); t=q.replace("@","").strip().lower(); [a.update({"active_job":""}) for a in ags if not t or a["name"].lower()==t]; save_db("agents", ags); _post_chat("System", f"Jobs cleared: {t or 'ALL'}"); return {"status": "ok"}
 def handle_skill(q):

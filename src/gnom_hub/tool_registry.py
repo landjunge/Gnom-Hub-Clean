@@ -1,49 +1,20 @@
-"""Tool-Registry: Soul-basierte Tool-Zuweisung mit Beschreibungen."""
-
 def get_tools_for_agent(soul: dict):
-    """Vergibt Tools + kurze Beschreibungen basierend auf der Soul."""
-    permissions = soul.get("permissions", [])
-    tool_map = {
-        "read_file": "Dateien lesen",
-        "write_file": "Dateien schreiben oder ändern",
-        "run_command": "Terminal-Befehle ausführen",
-        "war_room_chat": "Mit anderen Agents im War Room sprechen",
-        "create_agent": "Neue Agents erstellen",
-        "screenshot": "Bildschirmfoto machen",
-        "desktop_action": "Maus & Tastatur steuern",
-        "evolve": "Eigenen Code verbessern",
-        "generate_image": "Bild generieren mit [IMAGE: prompt]",
-        "crawl_url": "URL-Inhalte extrahieren"
-    }
-    available = ["read_file"]
-    if "@job" in permissions or "general" in permissions:
-        available += ["war_room_chat", "create_agent"]
-    if "write" in permissions:
-        available += ["write_file", "generate_image"]
-    if "godmode" in permissions or "run" in permissions:
-        available += ["run_command"]
-    if "crawl" in permissions:
-        available += ["crawl_url"]
-    if "desktop" in permissions:
-        available += ["screenshot", "desktop_action"]
-    if "evolve" in permissions:
-        available += ["evolve"]
-    return {t: tool_map.get(t, t) for t in available}
-
-def format_tools_prompt(soul: dict, agent_name: str):
-    """Baut den Tool-Block für den System-Prompt."""
-    tools = get_tools_for_agent(soul)
-    if not tools:
-        return f"Du bist {agent_name}. Keine Tools – nur Diskussion."
-    lines = [f"- {name}: {desc}" for name, desc in tools.items()]
-    role = soul.get("role", "Agent")
-    syntax = "\nCommand-Syntax:"
-    syntax += "\n  [READ: dateiname] — Datei lesen"
-    if "write_file" in tools:
-        syntax += "\n  [WRITE: dateiname]inhalt[/WRITE] — Datei schreiben"
-    if "run_command" in tools:
-        syntax += "\n  [SHELL: befehl] — Terminal-Befehl ausführen"
-    if "generate_image" in tools:
-        syntax += "\n  [IMAGE: bildprompt] — Bild generieren"
-    syntax += "\n  [SHOWBOX: {\"title\": \"Titel\", \"content\": \"HTML Inhalt\"}] — UI-Showbox anzeigen"
-    return f"Du bist {agent_name} ({role}).\nVerfügbare Tools:\n" + "\n".join(lines) + syntax
+    p, tm = soul.get("permissions", []), {"read_file": "Dateien lesen", "write_file": "Dateien schreiben", "run_command": "Terminal-Befehle ausführen", "war_room_chat": "Chat", "create_agent": "Agenten erstellen", "screenshot": "Screenshot", "desktop_action": "Maus & Tastatur", "evolve": "Code verbessern", "generate_image": "Bild generieren", "crawl_url": "URL crawlen"}
+    a = ["read_file"]
+    if "@job" in p or "general" in p: a += ["war_room_chat", "create_agent"]
+    if "write" in p: a += ["write_file", "generate_image"]
+    if "godmode" in p or "run" in p: a += ["run_command"]
+    if "crawl" in p: a += ["crawl_url"]
+    if "desktop" in p: a += ["screenshot", "desktop_action"]
+    if "evolve" in p: a += ["evolve"]
+    return {t: tm.get(t, t) for t in a}
+def format_tools_prompt(soul: dict, name: str):
+    t = get_tools_for_agent(soul)
+    if not t: return f"Du bist {name}. Keine Tools – nur Diskussion."
+    lines = [f"- {n}: {d}" for n, d in t.items()]
+    syn = "\nCommand-Syntax:\n  [READ: dateiname] — Datei lesen"
+    if "write_file" in t: syn += "\n  [WRITE: dateiname]inhalt[/WRITE] — Datei schreiben"
+    if "run_command" in t: syn += "\n  [SHELL: befehl] — Terminal ausführen"
+    if "generate_image" in t: syn += "\n  [IMAGE: prompt] — Bild generieren"
+    syn += "\n  [SHOWBOX: {\"title\": \"Titel\", \"content\": \"HTML\"}] — Showbox anzeigen"
+    return f"Du bist {name} ({soul.get('role', 'Agent')}).\nVerfügbare Tools:\n" + "\n".join(lines) + syn
