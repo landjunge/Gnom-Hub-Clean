@@ -20,7 +20,7 @@ AGENT_MODELS = {
     "writerag":         ["minimax/minimax-m2.5:free"],
     "editorag":         ["minimax/minimax-m2.5:free"],
     # ── Zusammenfassung (schnell, kein Overhead) ──
-    "summarizerag":     ["qwen/qwen3-next-80b-a3b-instruct:free"],
+    "summarizerag":     ["qwen/qwen3-next-80b:free"],
     # ── Crawler (leicht, schnell) ──
     "web_crawlerag":    ["nvidia/nemotron-nano-9b-v2:free"],
     "data_crawlerag":   ["nvidia/nemotron-nano-9b-v2:free"],
