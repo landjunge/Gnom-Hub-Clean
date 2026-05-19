@@ -5,8 +5,8 @@
 **Vergiss Frameworks, die dich in Boilerplate ersticken.** GNOM-HUB ist ein nacktes, ultra-radikales Multi-Agenten-Betriebssystem, das direkt auf deinem Rechner läuft und absolute Autonomie besitzt. 
 Deine KI-Agenten chatten hier nicht nur – sie *sehen* deinen Bildschirm, steuern per PyAutoGUI deine Maus, schreiben ihren eigenen Code und versionieren jeden Atemzug vollautomatisch via Git. 
 Abgesichert durch eine lokale Sandbox und orchestriert in einem cyberpunk-esken "War-Room", agiert die Schwarm-Intelligenz völlig selbstständig. 
-Das Verrückteste daran? Jedes einzelne Modul – vom Backend-Router bis zum "Sehenden Agenten" – ist strikt auf **maximal 40 Zeilen Code** komprimiert. 
-Du brauchst keine Minuten für einen Build: Setup ausführen, Hub starten, und die KI übernimmt das Steuer.
+Das Verrückteste daran? Jedes einzelne Modul – vom Backend-Router bis zum "Sehenden Agenten" – zielt auf **maximal 40 Zeilen Code** pro Datei. 
+Du brauchst keine Minuten für einen Build: `bash install.sh` ausführen, und die KI übernimmt das Steuer.
 
 ---
 
@@ -43,38 +43,55 @@ Was den Gnom-Hub von monströsen Frameworks wie Langchain oder AutoGen untersche
 Alle Agenten agieren autonom über den zentralen `hub_mcp.py` Server. Er injiziert dynamisch Werkzeuge:
 - **System-Vollzugriff:** `run_command`, `write_file`, `desktop_control`, `vision_analyze`
 - **Agenten-Management:** `register_agent`, `set_agent_status`, `create_agent`
-- **Memory-Graphen:** Persistente, lokale SQLite-Gehirne für jeden Agenten.
+- **Memory-Graphen:** Persistente, lokale JSON-Datenbanken (`~/.gnom-hub/data/`) mit Atomic Writes (Crash-sicher).
 
 ### 2. Der "War Room" (High-Fidelity UI)
 Ein responsives Glassmorphism-Design mit Neon-Ästhetik. Hier findet die Magie statt. Agenten kommunizieren sichtbar miteinander, Tasks werden verteilt, und du hast jederzeit die Kontrolle.
 
 ### 3. Autonomes Brainstorming (`@bs`)
-Der Hub pingt alle aktiven Agenten reihum an. Sie reagieren aufeinander basierend auf dem Chat-Kontext und treiben Ideen selbstständig voran, orchestriert über OpenRouter oder lokale Modelle.
+3-Phasen-Pipeline: **Worker diskutieren parallel → SummarizerAG fasst zusammen → GeneralAG entscheidet und verteilt Jobs.** Orchestriert über DeepSeek (primär) mit OpenRouter-Fallback.
 
 ### 4. Kryptographisches Siegel (Zero-Trust Security)
 Das Herzstück der Agenten-Sicherheit: Alle Showboxen und Workspace-Dateien werden steganographisch (via Zero-Width Characters) mit einem HMAC-SHA256 Siegel versehen (`zwc_soul.py`). Ein Server-seitiger Watchdog-Thread prüft kontinuierlich, ob Änderungen von autorisierten Agenten stammen, wodurch Prompt-Injections absolut neutralisiert werden. Das "beste Schloss ist das, was man nicht sieht".
 
 ---
 
-## 🤖 Die Agenten-Armada
+## 🤖 Die Agenten-Armada (8 System + 7 Worker)
 
-Agenten liegen isoliert im Root-Verzeichnis. Jeder ist auf seinen System-Prompt reduziert, extrem leichtgewichtig und autark. Keine Datei ist länger als 40 Zeilen.
+Jeder Agent hat eine eigene **Soul** (Rolle, Rechte, Direktive) die bei jedem LLM-Call mitgeschickt wird.
 
+### System-Agenten (8)
 | Agent | Funktion im Ökosystem |
 |-------|-----------------------|
-| `generalAG.py` | Führt Truppen, weist Aufgaben an andere Agenten zu. |
-| `desktopAG.py` | **(God-Mode)** Steuert Maus, Tastatur und führt OS-Aktionen aus. |
-| `visionAG.py` | **(God-Mode)** Sieht deinen Screen. Kugelsicherer, selbstheilender 5-Step-Loop mit Schema-Validierung. |
-| `evolutionAG.py` | **(Skynet)** Liest Sandbox-Logs & Git, schreibt Agenten-Code eigenständig um und committet die Evolution. |
-| `securityAG.py`| **(Zero-Trust)** Signiert alle ausgehenden Aktionen und Agenten-Daten mit kryptographischen Hashes (HMAC-SHA256). |
-| `watchdogAG.py`| **(Wächter)** Scant asynchron den Workspace und vernichtet gnadenlos alle unversiegelten (manipulierten) Dateien. |
-| `soulAG.py`    | **(Stenograph)** Verwebt unsichtbaren Goldstaub (Zero-Width Characters) als untrennbare Signatur in Code und Text. |
+| `generalAG.py` | **Kommandant** — Führt Truppen, verteilt `@job`-Aufgaben autonom an Worker. |
+| `summarizerAG.py` | **Analyst** — Liest den War Room und destilliert Kernaussagen. |
+| `watchdogAG.py`| **Wächter** — Scant den Workspace, prüft System-Gesundheit. |
+| `securityAG.py`| **Zero-Trust** — Signiert Aktionen mit HMAC-SHA256 Hashes. |
+| `soulAG.py`    | **Stenograph** — Verwebt Zero-Width Characters als unsichtbare Signaturen. |
+| `backupAG.py`  | **Archivar** — Erstellt Snapshots und sichert den Workspace. |
+| `cronjobAG.py` | **Zeitgeber** — Zeitgesteuerte, wiederkehrende Automatismen. |
+| `skillsAG.py`  | **Talentscout** — Erkennt Fähigkeiten und ordnet Aufgaben optimal zu. |
+
+### Worker-Agenten (7)
+| Agent | Funktion im Ökosystem |
+|-------|-----------------------|
+| `writerAG` | Texte, Skripte, Inhalte und kreatives Schreiben. |
+| `coderAG` | Programmieren, Code schreiben, technische Umsetzung. |
+| `researcherAG` | Recherchieren, Informationen sammeln und zusammenfassen. |
+| `editorAG` | Ergebnisse prüfen, überarbeiten und finalisieren. |
+| `web_crawlerAG` | Web-Surfer — Holt frische Webseiten, folgt Links. |
+| `data_crawlerAG` | Struktur-Extraktor — Tabellen, Listen, Preise, JSON. |
+| `smart_crawlerAG` | Anti-Block-Crawler — Rate-Limits, Filter, schlau. |
+
+### Spezial-Module
+| Modul | Funktion |
+|-------|---------|
+| `desktopAG.py` | **(God-Mode)** Steuert Maus, Tastatur via PyAutoGUI. |
+| `visionAG.py` | **(God-Mode)** Sieht deinen Screen. 5-Step-Loop mit Schema-Validierung. |
+| `evolutionAG.py` | **(Skynet)** Liest Fehler-Logs, schreibt eigenen Code um und committet. |
 | `gitAG.py` | Auto-versioniert Code-Änderungen und setzt Rollbacks. |
-| `sandboxAG.py` | Der Türsteher. Blockiert zerstörerische Eingriffe der KI. |
-| `tinyAG.py` | Das leere Template. Basis für jede Neuerschaffung. |
-| `summarizerAG.py` | Liest den War Room und zieht Konzentrate. |
-| `cronjobAG.py` | Zuständig für getimte, wiederkehrende Automatismen. |
-| `skillsAG.py` | Entwickelt und registriert neue Fähigkeiten für den Schwarm. |
+| `sandboxAG.py` | Der Türsteher. Blockiert zerstörerische KI-Eingriffe. |
+| `tinyAG.py` | Das leere 8-Zeilen-Template für neue Agenten. |
 
 ---
 
@@ -91,13 +108,14 @@ Das System reagiert auf Befehle wie eine Konsole:
 - **`@rollback HEAD~X`** → Automatischer Git-Reset inkl. synchroner Wiederherstellung der KI-Erinnerungen.
 - **`@provider [ollama/openrouter]`** → Wechselt die LLM-Infrastruktur on-the-fly.
 - **`@research [Thema]`** → Schickt einen Recherche-Auftrag gezielt an alle aktiven Fach-Agenten.
-- **`@job [Agent] [Job]`** → Gibt einem Agenten einen permanenten Hintergrund-Job/Fokus, der bei jedem Prompt mitgeschickt wird.
+- **`@job [Aufgabe]`** → Übergibt eine Aufgabe an den GeneralAG, der sie autonom an die passenden Worker verteilt.
 - **`@general [Aufgabe]`** → Übergibt eine Task zur autonomen Schwarm-Verteilung an den GeneralAG.
 - **`@sandbox [Code]`** → Testet Code in der blockierten Quarantäne-Umgebung.
 - **`@checkpoint`** → Speichert einen harten Snapshot des gesamten Schwarm-Gedächtnisses.
 - **`@summary`** → Zwingt den SummarizerAG, die bisherige Diskussion sofort auf den Punkt zu bringen.
 - **`@status`** → Gibt einen schnellen System-Ping über alle Agenten und deren Jobs aus.
 - **`@clear`** → Leert das Terminal (die Datenbank bleibt unberührt).
+- **`Nuke (G-Button)`** → Logo 2s gedrückt halten: Killt alle Prozesse, Ports freigeben, Hub-Neustart. Visuelles Feedback: Hover=Rot, Fired=Dunkel, Ready=Grün.
 
 ---
 
@@ -106,13 +124,24 @@ Das System reagiert auf Befehle wie eine Konsole:
 Dieses Projekt ist eine Rebellion gegen bloated Boilerplate-Code. 
 **Wenn ein Feature mehr als 40 Zeilen braucht, ist es falsch konzipiert.** Jede Logik-Einheit muss so kompakt sein, dass man sie ohne Scrollen auf einem Monitor erfassen kann. 
 
-### 🔀 Provider-Routing: Mit dem Skalpell, nicht mit der Axt
+### 🔀 Provider-Routing
 
-Der Gnom-Hub nutzt **nicht** den bequemen, aber intransparenten "Ein Key für alles"-Standardweg. Wenn du das API-Routing (z.B. über OpenRouter, DeepSeek oder Replicate) aufbaust, lautet unsere Maxime: **Chirurgische Präzision statt roher Gewalt.**
+Der Hub nutzt einen zweistufigen Router mit automatischem Fallback:
 
-- **Strikte Isolation:** Erstelle für jeden Provider und jede spezifische Aufgabe (z.B. Code, Bilder, Audio) einen eigenen, dedizierten API-Key. 
-- **Absolute Kostenkontrolle:** Jeder Key bekommt sein eigenes Budget-Limit. Dreht ein Modell durch, blockiert nur dieses eine Gleis – der Rest des Hubs läuft sicher und ungestört weiter. Keine Single Points of Failure.
-- **Transparenz ohne "Nebelwände":** Wir machen uns nicht abhängig vom intransparenten Auto-Routing externer Anbieter. Wenn ein Modell offline geht, sagt uns *unser* Hub-interner Weichensteller exakt, wer versagt hat, und schaltet blitzschnell und kontrolliert auf das nächste Gleis um. Wir behalten die absolute Kontrolle.
+1. **DeepSeek (primär):** Alle Agenten nutzen `deepseek-chat` über die DeepSeek-API. Zuverlässig, schnell, bezahlt.
+2. **OpenRouter Free (Fallback):** Wenn DeepSeek ausfällt, springt der Router automatisch auf kostenlose Modelle (`deepseek-v4-flash:free`, `gpt-oss-120b:free`, etc.).
+3. **Provider-Wechsel:** Per `@provider` kann on-the-fly zwischen DeepSeek, OpenRouter und lokalen Modellen (Ollama) gewechselt werden.
+
+- **Antwort-Validierung:** Leere 200-Responses werden als Fehler behandelt → nächstes Modell.
+- **Rate-Limit Handling:** 429-Fehler → 2s Pause, dann Fallback.
+- **Token-Tracking:** Jeder API-Call wird gezählt (Free vs. Paid), sichtbar im Header.
+
+### 🛠️ Installation & Deinstallation
+
+```bash
+bash install.sh      # Installiert alles + startet den Hub
+bash uninstall.sh    # Interaktiv: Daten behalten oder löschen
+```
 
 **Lizenz:** MIT
 
