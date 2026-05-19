@@ -10,19 +10,16 @@ Du brauchst keine Minuten für einen Build: Setup ausführen, Hub starten, und d
 
 ---
 
-## 🚀 Schnellstart (In 10 Sekunden online)
+## 🚀 Schnellstart
 
 ```bash
-# Repo klonen & Abhängigkeiten installieren
+# Repo klonen & installieren + starten
 git clone https://github.com/landjunge/gnom-hub.git
 cd gnom-hub
-pip install -e .
-
-# Hub starten & KI von der Leine lassen
-gnom-hub
+bash install.sh
 ```
 
-Danach öffne **http://127.0.0.1:3002** in deinem Browser. Willkommen im War-Room.
+Öffne **http://127.0.0.1:3002** — Willkommen im War-Room.
 
 ---
 
