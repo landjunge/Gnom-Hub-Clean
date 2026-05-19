@@ -9,7 +9,9 @@ def _call(pvd, mdl, key, msgs, n):
     url = "http://127.0.0.1:11434/api/chat" if pvd == "lokal" else ("https://api.deepseek.com/chat/completions" if pvd == "deepseek" else "https://openrouter.ai/api/v1/chat/completions")
     h = {"Content-Type": "application/json"}
     if pvd != "lokal": h["Authorization"] = f"Bearer {key}"
-    r = requests.post(url, headers=h, json={"model": mdl, "messages": msgs}, timeout=120)
+    pyld = {"model": mdl, "messages": msgs}; 
+    if pvd == "lokal": pyld["stream"] = False
+    r = requests.post(url, headers=h, json=pyld, timeout=120)
     if r.status_code == 200: return _ext(r.json(), n, mdl) if pvd != "lokal" else r.json().get("message", {}).get("content")
     if r.status_code == 429: time.sleep(2)
     return None
