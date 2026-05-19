@@ -15,7 +15,7 @@ def health(): return {"status": "ok", "agents": len(get_db("agents")), "memory":
 def nuke_restart():
     from .proc_mgr import kill_process, restart_hub
     killed = []
-    for target in ["gnom_hub", "generalAG", "summarizerAG", "cronjobAG", "backupAG", "soulAG", "watchdogAG", "skillsAG", "securityAG"]:
+    for target in ["generalAG", "summarizerAG", "cronjobAG", "backupAG", "soulAG", "watchdogAG", "skillsAG", "securityAG"]:
         r = kill_process(target); killed.append(r)
     import threading; threading.Timer(1.5, restart_hub).start()
     return {"status": "nuked", "killed": killed, "restart": "in 1.5s"}

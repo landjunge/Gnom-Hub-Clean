@@ -21,12 +21,22 @@ def _free(start):
             if s.connect_ex(('127.0.0.1', p)) != 0: return p
     return start
 def main():
-    api_p, mcp_p = _free(3002), _free(3100)
-    os.environ["GNOM_HUB_PORT"], os.environ["GNOM_MCP_PORT"] = str(api_p), str(mcp_p)
-    print(BANNER); print(INFO.format(api=api_p, mcp=mcp_p))
-    api = subprocess.Popen([sys.executable, "-c", "from gnom_hub.hub_app import main; main()"])
-    time.sleep(1)
-    from gnom_hub.hub_pulse import start_pulse; start_pulse()
-    try: api.wait()
-    except KeyboardInterrupt: print("\nBeende..."); api.terminate()
+    while True:
+        api_p, mcp_p = _free(3002), _free(3100)
+        os.environ["GNOM_HUB_PORT"], os.environ["GNOM_MCP_PORT"] = str(api_p), str(mcp_p)
+        print(BANNER); print(INFO.format(api=api_p, mcp=mcp_p))
+        api = subprocess.Popen([sys.executable, "-c", "from gnom_hub.hub_app import main; main()"])
+        time.sleep(1)
+        from gnom_hub.hub_pulse import start_pulse; start_pulse()
+        try:
+            ret = api.wait()
+            if ret == 42:
+                print("\n\033[33m[Gnom-Hub] Restarting...\033[0m")
+                continue
+            break
+        except KeyboardInterrupt:
+            print("\nBeende...")
+            api.terminate()
+            break
+
 if __name__ == "__main__": main()
