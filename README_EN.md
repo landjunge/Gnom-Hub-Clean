@@ -1,12 +1,12 @@
 # 🧠 GNOM-HUB: The Autonomous God-Mode OS
 
-![Gnom-Hub War Room](screenshot.png)
+![Gnom-Hub War Room](docs/screenshot.png)
 
 **Forget frameworks that drown you in boilerplate.** GNOM-HUB is a barebones, ultra-radical multi-agent operating system that runs directly on your machine with absolute autonomy. 
 Your AI agents don't just chat here – they *see* your screen, control your mouse via PyAutoGUI, write their own code, and automatically version every breath via Git. 
 Secured by a local sandbox and orchestrated in a cyberpunk "War-Room", the swarm intelligence operates completely autonomously. 
 The craziest part? Every single module – from the backend router to the "Seeing Agent" – aims for a **maximum of 40 lines of code** per file. 
-You don't need minutes for a build: run `bash scripts/install.sh` and the AI takes the wheel.
+You don't need minutes for a build: run `bash install.sh` and the AI takes the wheel.
 
 *Read this in [German (Deutsch)](README.md)*
 
@@ -18,7 +18,7 @@ You don't need minutes for a build: run `bash scripts/install.sh` and the AI tak
 # Clone repo & install + start
 git clone https://github.com/landjunge/gnom-hub.git
 cd gnom-hub
-bash scripts/install.sh
+bash install.sh
 ```
 
 Open **http://127.0.0.1:3002** — Welcome to the War Room.
@@ -161,8 +161,8 @@ Here is what you need to unlock the Gnom's full potential.
 #### Basic Installation (1 Command)
 
 ```bash
-bash scripts/install.sh      # Installs core dependencies + starts the Hub
-bash scripts/uninstall.sh    # Interactive: Keep or delete data
+bash install.sh      # Installs core dependencies + starts the Hub
+bash uninstall.sh    # Interactive: Keep or delete data
 ```
 
 #### 📦 What Needs to be Installed
@@ -239,7 +239,7 @@ pip install fastapi uvicorn pydantic requests python-dotenv psutil mcp \
 playwright install chromium
 
 # Done. Start:
-bash scripts/install.sh
+bash install.sh
 ```
 
 **License:** MIT
