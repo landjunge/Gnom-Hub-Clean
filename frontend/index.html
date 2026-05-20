@@ -210,7 +210,7 @@
     .header-stats {
       display: flex;
       gap: 20px;
-      font-size: 0.95rem;
+      font-size: 0.8rem;
       color: #fff;
       letter-spacing: 0.5px;
       align-items: center;
@@ -219,7 +219,7 @@
     .header-stats span {
       color: #fff;
       font-weight: 600;
-      font-size: 1.05rem;
+      font-size: 0.9rem;
       text-shadow: none;
     }
 
@@ -232,7 +232,7 @@
       color: var(--text);
       padding: 7px 16px;
       border-radius: var(--radius-sm);
-      font-size: 0.8rem;
+      font-size: 0.72rem;
       font-weight: 500;
       transition: var(--transition);
     }
@@ -249,7 +249,7 @@
       font-weight: 600;
       box-shadow: 0 2px 12px var(--primary-glow);
       padding: 8px 20px;
-      font-size: 0.85rem;
+      font-size: 0.77rem;
       z-index: 10;
       position: relative;
     }
@@ -2904,6 +2904,13 @@
                 <button class="btn-primary" onclick="saveAndTestKeys()" style="width:100%; font-size:0.85rem; padding:6px;">Speichern & Testen</button>
                 <div id="llm-keys-status" style="margin-top:10px; font-size:0.85rem; max-height:100px; overflow-y:auto;"></div>
               </div>
+              <div>
+                <h3 style="margin-bottom:5px;">Sprache / Language</h3>
+                <div style="display:flex; gap:10px; margin-bottom:10px;">
+                  <button class="btn-primary" id="lang-btn-de" onclick="setSystemLanguage('de')" style="flex:1; padding:5px; font-size:0.75rem;">Deutsch</button>
+                  <button class="btn-primary" id="lang-btn-en" onclick="setSystemLanguage('en')" style="flex:1; padding:5px; font-size:0.75rem;">English</button>
+                </div>
+              </div>
               <div id="system-info-panel" style="font-size:0.85rem; padding:12px; border-radius:6px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05);">
                 Lade System-Info...
               </div>
@@ -2923,7 +2930,30 @@
     }
 
     let globalKeys = [];
+    async function setSystemLanguage(lang) {
+      try {
+        await api('POST', '/admin/language', { language: lang });
+        document.getElementById('lang-btn-de').style.borderColor = lang === 'de' ? 'var(--primary)' : 'rgba(255,255,255,0.2)';
+        document.getElementById('lang-btn-de').style.background = lang === 'de' ? 'rgba(0,150,255,0.2)' : 'transparent';
+        document.getElementById('lang-btn-en').style.borderColor = lang === 'en' ? 'var(--primary)' : 'rgba(255,255,255,0.2)';
+        document.getElementById('lang-btn-en').style.background = lang === 'en' ? 'rgba(0,150,255,0.2)' : 'transparent';
+      } catch (e) {
+        console.error("Failed to set language", e);
+      }
+    }
+
     async function loadLLMConfig() {
+      try {
+        const langRes = await api('GET', '/admin/language');
+        const lang = langRes?.language || 'de';
+        document.getElementById('lang-btn-de').style.borderColor = lang === 'de' ? 'var(--primary)' : 'rgba(255,255,255,0.2)';
+        document.getElementById('lang-btn-de').style.background = lang === 'de' ? 'rgba(0,150,255,0.2)' : 'transparent';
+        document.getElementById('lang-btn-en').style.borderColor = lang === 'en' ? 'var(--primary)' : 'rgba(255,255,255,0.2)';
+        document.getElementById('lang-btn-en').style.background = lang === 'en' ? 'rgba(0,150,255,0.2)' : 'transparent';
+      } catch (e) {
+        console.error("Language loading error", e);
+      }
+
       try {
         const sysInfo = await api('GET', '/system/info');
         if (sysInfo) {

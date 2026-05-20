@@ -36,3 +36,16 @@ def set_role(agent_id: str, role: str):
     if role in ROLES:
         from .role_prompt import implant; file_path = implant(agent["name"], ROLES[role])
     return {"agent": agent["name"], "role": role, "prompt_set": role in ROLES, "file": file_path}
+
+@router.get("/language")
+def get_sys_language():
+    from .db import get_language
+    return {"language": get_language()}
+
+@router.post("/language")
+async def set_sys_language(request: Request):
+    from .db import set_language
+    j = await request.json()
+    lang = j.get("language", "de")
+    set_language(lang)
+    return {"status": "ok", "language": lang}
