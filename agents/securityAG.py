@@ -1,4 +1,4 @@
-import hmac, hashlib, os; from .config import DATA_DIR; from .zwc_soul import encode_soul, decode_soul, strip_zwc
+import hmac, hashlib, os; from gnom_hub.config import DATA_DIR; from gnom_hub.zwc_soul import encode_soul, decode_soul, strip_zwc
 SECRET_FILE = DATA_DIR / ".hub_secret"
 def _get_or_create_secret() -> bytes:
     if not SECRET_FILE.exists(): SECRET_FILE.write_bytes(os.urandom(32))

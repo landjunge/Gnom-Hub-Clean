@@ -1,7 +1,7 @@
 """web_crawlerAG: Allgemeiner Web-Surfer — holt Rohdaten."""
 import requests, re, random
-from .smart_crawl import rotate_user_agent, _load, _save, _dom
-from .router import ask_router
+from gnom_hub.smart_crawl import rotate_user_agent, _load, _save, _dom
+from gnom_hub.router import ask_router
 from .gitAG import auto_commit
 
 def web_crawl(command: str) -> str:

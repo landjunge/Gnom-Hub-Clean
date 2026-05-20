@@ -37,7 +37,7 @@ def delete_agent(a_id: str): save_db("agents", [a for a in get_db("agents") if a
 from .soul_initializer import SOULS; SYS = {k for k, v in SOULS.items() if v.get("role") not in ("writer","coder","researcher","editor","web_crawler","data_crawler","smart_crawler")}
 @router.get("/api/stats")
 def get_system_stats(): 
-    tf = os.path.join(os.path.dirname(__file__), "../../.gnom-hub-tokens.json"); d = json.load(open(tf)) if os.path.exists(tf) else {}
+    tf = os.path.join(os.path.dirname(__file__), "../../config/.gnom-hub-tokens.json"); d = json.load(open(tf)) if os.path.exists(tf) else {}
     ags = get_db("agents"); sa = sum(1 for a in ags if a.get("name","").lower() in SYS)
     return {"agents": len(ags), "sys_agents": sa, "work_agents": len(ags) - sa, "memory": len(get_db("memory")), "chat": len(get_db("chat")), "tokens": d.get("total", get_db("tokens")[0].get("total", 0) if get_db("tokens") else 0), "tokens_free": d.get("total_free", 0), "tokens_pay": d.get("total_pay", 0)}
 @router.get("/api/health")

@@ -1,5 +1,5 @@
-from .smart_crawl import smart_request
-from .router import ask_router
+from gnom_hub.smart_crawl import smart_request
+from gnom_hub.router import ask_router
 
 def smart_crawl(command: str) -> str:
     """Haupteinstiegspunkt für generalAG."""

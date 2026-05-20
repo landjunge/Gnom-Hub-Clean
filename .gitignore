@@ -14,8 +14,12 @@ node_modules/
 .DS_Store
 
 # Local environments and secrets
+.env
+.env.*
 *.env
-.env.netzwerkpunkt
+config/.env
+config/.env.*
+config/.gnom-hub-tokens.json
 .gnom-hub-tokens.json
 
 # Local workspace and caches
@@ -23,9 +27,11 @@ node_modules/
 gnom_workspace/
 .gnom-hub/
 .backups/
+.visions/
 
 # Logs and tests
 *.log
+logs/
 logs_*.txt
 startup_log.txt
 test*.js

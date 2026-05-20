@@ -3,7 +3,7 @@ import json
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(dotenv_path="config/.env")
 keys = {}
 idx = 1
 for key, value in os.environ.items():

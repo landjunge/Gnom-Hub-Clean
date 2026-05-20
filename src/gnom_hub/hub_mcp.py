@@ -19,11 +19,11 @@ def war_room_read(limit=20): return api("GET", f"/chat?limit={limit}")
 @tool
 def get_system_stats(): return api("GET", "/stats")
 @tool
-def smart_crawl(cmd): from .smart_crawlerAG import smart_crawl as sc; return sc(cmd)
+def smart_crawl(cmd): from agents.smart_crawlerAG import smart_crawl as sc; return sc(cmd)
 @tool
-def data_crawl(cmd): from .data_crawlerAG import data_crawl as dc; return dc(cmd)
+def data_crawl(cmd): from agents.data_crawlerAG import data_crawl as dc; return dc(cmd)
 @tool
-def web_crawl(cmd): from .web_crawlerAG import web_crawl as wc; return wc(cmd)
+def web_crawl(cmd): from agents.web_crawlerAG import web_crawl as wc; return wc(cmd)
 @tool
 def get_agent_soul(name): from .soul_initializer import get_soul; return _json.dumps(get_soul(name))
 @tool

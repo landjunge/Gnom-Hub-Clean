@@ -4,7 +4,7 @@
 # ═══════════════════════════════════════════
 set -e
 
-REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 DATA_DIR="$HOME/.gnom-hub/data"
 LOG_DIR="$HOME/.gnom-hub/logs"
 VENV_DIR="$REPO_DIR/.venv"
@@ -149,9 +149,9 @@ mkdir -p "$DATA_DIR" "$LOG_DIR" "$HOME/.gnom-hub/run"
 echo -e "  $DATA_DIR ${G}✓${N}"
 
 # ── 5. .env prüfen ──
-if [ ! -f "$REPO_DIR/.env" ]; then
-    echo -e "${B}▸ .env erstellen...${N}"
-    cat > "$REPO_DIR/.env" <<'EOF'
+if [ ! -f "$REPO_DIR/config/.env" ]; then
+    echo -e "${B}▸ config/.env erstellen...${N}"
+    cat > "$REPO_DIR/config/.env" <<'EOF'
 # Gnom-Hub Konfiguration
 # Mindestens einen Key setzen:
 
@@ -164,9 +164,9 @@ if [ ! -f "$REPO_DIR/.env" ]; then
 # Hub-Port (Standard: 3002)
 # GNOM_HUB_PORT=3002
 EOF
-    echo -e "  .env Template erstellt — ${Y}Keys eintragen!${N} ${G}✓${N}"
+    echo -e "  config/.env Template erstellt — ${Y}Keys eintragen!${N} ${G}✓${N}"
 else
-    echo -e "  .env existiert ${G}✓${N}"
+    echo -e "  config/.env existiert ${G}✓${N}"
 fi
 
 # ── 6. Datenbanken ──
@@ -211,10 +211,10 @@ echo -e "    ${G}✓${N} Core (FastAPI, Uvicorn, Pydantic)"
 [[ "$SELENIUM" =~ ^[jJyY]$ ]] && echo -e "    ${G}✓${N} Selenium"
 echo ""
 echo -e "  ${Y}Nicht vergessen:${N}"
-echo -e "    → LLM-Keys in ${B}.env${N} eintragen"
+echo -e "    → LLM-Keys in ${B}config/.env${N} eintragen"
 echo ""
 echo -e "  ${B}Frontend:${N}   http://127.0.0.1:3002"
-echo -e "  ${B}Agenten:${N}    bash start_agents.sh"
+echo -e "  ${B}Agenten:${N}    bash scripts/start_agents.sh"
 echo ""
 
 # ── 8. Hub starten ──

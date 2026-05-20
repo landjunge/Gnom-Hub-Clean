@@ -1,6 +1,6 @@
 """Showbox-Signatur-Validierung für Chat-Ausgaben."""
 import json, re
-from .securityAG import generate_signature
+from agents.securityAG import generate_signature
 from .zwc_soul import strip_zwc
 
 def sanitize_showboxes(content):

@@ -1,4 +1,4 @@
-import os, time, threading; from pathlib import Path; from .config import DATA_DIR; from .securityAG import verify_seal
+import os, time, threading; from pathlib import Path; from gnom_hub.config import DATA_DIR; from .securityAG import verify_seal
 def check_workspace(wd: Path):
     print(f"[Watchdog] Prüfe: {wd}"); uns = []
     for r, ds, fs in os.walk(wd):
@@ -14,7 +14,7 @@ def check_workspace(wd: Path):
         for f in uns: print(f"  - {f}")
     else: print("[Watchdog] Workspace sicher. Alle Dateien versiegelt.")
 def watchdog_loop():
-    from .db import get_active_project
+    from gnom_hub.db import get_active_project
     while True:
         try:
             wd = DATA_DIR / get_active_project()

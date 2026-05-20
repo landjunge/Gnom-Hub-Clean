@@ -1,4 +1,4 @@
-import requests, json; from os import getenv; from .db import get_db, save_db
+import requests, json; from os import getenv; from gnom_hub.db import get_db, save_db
 OLLAMA_HOST, DEEPSEEK_API = "http://localhost:11434", "https://api.deepseek.com/chat/completions"
 current_provider, current_model = "deepseek", "deepseek-chat"
 def add_tokens(amt: int):

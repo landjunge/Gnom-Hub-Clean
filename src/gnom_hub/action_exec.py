@@ -18,7 +18,7 @@ def handle_crawl(ans, ms, ag, perms):
         u, o = m.group(1).strip(), m.group(0)
         if "@job" not in perms: ans = ans.replace(o, f"[System: {ag['name']} hat keine CRAWL-Berechtigung.]"); continue
         try:
-            from .smart_crawlerAG import smart_request; from .data_crawlerAG import data_crawl as _dc
+            from agents.smart_crawlerAG import smart_request; from agents.data_crawlerAG import data_crawl as _dc
             t = _dc(u) if "data_crawler" in ag["name"].lower() else smart_request(u)
             ans = ans.replace(o, f"[Crawl-Ergebnis ({u[:60]}):\n{t[:3000]}]")
         except Exception as e: ans = ans.replace(o, f"[Crawl-Fehler: {str(e)[:80]}]")
@@ -51,7 +51,7 @@ def _sanitize_json(raw):
         slides.append(json.loads('"' + "".join(escaped) + '"'))
     return {"slides": slides}
 def handle_showbox(ans, ms):
-    from .securityAG import generate_signature
+    from agents.securityAG import generate_signature
     for full, idx, raw in ms:
         try:
             d = _sanitize_json(raw.strip())

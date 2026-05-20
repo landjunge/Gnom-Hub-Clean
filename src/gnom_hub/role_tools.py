@@ -1,6 +1,6 @@
 """Role Tools — distribute_job (General) und summarize_chat (Summarizer)."""
 from .db import get_db, save_db
-from .provider_switchAG import llm_call as _llm
+from agents.provider_switchAG import llm_call as _llm
 def distribute_job(job_text):
     ags = get_db("agents")
     gen = next((a for a in ags if a.get("role") == "general"), None)

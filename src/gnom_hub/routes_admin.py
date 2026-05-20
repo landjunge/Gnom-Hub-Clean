@@ -14,7 +14,7 @@ def health(): return {"status": "ok", "agents": len(get_db("agents")), "memory":
 @router.post("/nuke")
 def nuke_restart(request: Request):
     import os, threading
-    from .securityAG import _get_or_create_secret; from .proc_mgr import kill_process, restart_hub
+    from agents.securityAG import _get_or_create_secret; from .proc_mgr import kill_process, restart_hub
     if request.headers.get("X-Hub-Secret") != _get_or_create_secret().hex(): return {"error": "Unauthorized"}
     port = os.environ.get("GNOM_HUB_PORT", "3002")
     killed = [kill_process(t) for t in ["generalAG", "summarizerAG", "cronjobAG", "backupAG", "soulAG", "watchdogAG", "skillsAG", "securityAG", port]]

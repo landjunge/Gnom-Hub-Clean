@@ -1,6 +1,6 @@
-from .db import get_db
-from .chat_commands import _post_chat
-from .brainstorm import dispatch
+from gnom_hub.db import get_db
+from gnom_hub.chat_commands import _post_chat
+from gnom_hub.brainstorm import dispatch
 from .provider_switchAG import llm_call
 
 def intercept(msg: str):
@@ -9,11 +9,11 @@ def intercept(msg: str):
     # Very short or single-word messages → ask for clarification
     words = msg.strip().split()
     if len(words) <= 2 and not any(c in msg for c in '?!.'):
-        from .zwc_soul import strip_zwc
-        from .db import get_active_project
+        from gnom_hub.zwc_soul import strip_zwc
+        from gnom_hub.db import get_active_project
         mem = [m for m in get_db("memory") if m.get("agent_id") == "war-room" and m.get("project", "default") == get_active_project()]
         ctx = "\n".join([f"[{m.get('metadata',{}).get('sender','?')}] {strip_zwc(m['content'])}" for m in mem[-4:]])
-        from .db import get_language
+        from gnom_hub.db import get_language
         lang = get_language()
         if lang == "en":
             sys = """You are the Gatekeeper. Analyze the user input in context.

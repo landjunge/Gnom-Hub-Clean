@@ -27,6 +27,6 @@ def root():
     if idx.exists(): return FileResponse(str(idx))
     return {"message": "GNOM-HUB", "version": "0.3.0"}
 def main(): 
-    from .watchdogAG import start_watchdog
+    from agents.watchdogAG import start_watchdog
     start_watchdog()
     uvicorn.run("gnom_hub.hub_app:app", host="127.0.0.1", port=int(os.environ.get("GNOM_HUB_PORT", 3002)))

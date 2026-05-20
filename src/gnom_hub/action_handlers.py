@@ -6,7 +6,7 @@ from .action_exec import handle_shell, handle_crawl, handle_showbox
 def _browser(answer, matches, agent, perms):
     """Verarbeitet [BROWSER: {...}] Tags."""
     if "godmode" not in perms and "desktop" not in perms: return answer
-    from .browserAG import browser_action
+    from agents.browserAG import browser_action
     import json
     for m in matches:
         try:

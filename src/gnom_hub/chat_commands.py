@@ -39,11 +39,11 @@ def handle_checkpoint(q):
     elif "restore" in q and c: save_db("agents", c["souls"]); save_db("memory", c["war_room_state"]); _post_chat("System", "Restored")
     return {"status": "ok"}
 def handle_git(q, rb=False):
-    from .gitAG import git_cmd; p = q.split(" ", 1); cmd = f"reset --hard {p[1]}" if rb else (p[1] if len(p)>1 else "")
+    from agents.gitAG import git_cmd; p = q.split(" ", 1); cmd = f"reset --hard {p[1]}" if rb else (p[1] if len(p)>1 else "")
     if p: _post_chat("System", f"Git:\n```\n{git_cmd(p[0], cmd)[:500]}\n```"); handle_checkpoint("restore") if rb else None
     return {"status": "ok"}
 def handle_publish(q=""):
-    import subprocess as sp; r = sp.run(["bash", "publish_gnom_hub.sh"], capture_output=True, text=True, timeout=60, cwd="/Users/landjunge/Documents/AG-Flega"); _post_chat("System", f"🚀 Deploy:\n{r.stdout.strip()[:500]}"); return {"status": "published"}
+    import subprocess as sp; r = sp.run(["bash", "scripts/publish_gnom_hub.sh"], capture_output=True, text=True, timeout=60, cwd="/Users/landjunge/Documents/AG-Flega"); _post_chat("System", f"🚀 Deploy:\n{r.stdout.strip()[:500]}"); return {"status": "published"}
 @router.get("/api/ideas")
 def get_ideas(): return get_db("ideas")
 @router.get("/api/jobs")

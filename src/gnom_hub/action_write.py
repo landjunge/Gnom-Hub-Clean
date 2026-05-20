@@ -6,7 +6,7 @@ def _safe(wd, f, perms):
     p = os.path.realpath(os.path.join(wd, f))
     return p if p.startswith(os.path.realpath(wd)) else None
 def handle_write(answer, matches, agent, perms, bs_mode, wd):
-    from .securityAG import seal_content
+    from agents.securityAG import seal_content
     for m in matches:
         fname, content = m.group(1).strip(), m.group(2).strip()
         if bs_mode:

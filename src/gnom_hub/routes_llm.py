@@ -85,6 +85,6 @@ def get_system_info():
 
 @router.post("/api/restart")
 def restart_server(request: Request):
-    from .securityAG import _get_or_create_secret
+    from agents.securityAG import _get_or_create_secret
     if request.headers.get("X-Hub-Secret") != _get_or_create_secret().hex(): return {"error": "Unauthorized"}
     import sys, subprocess; subprocess.Popen([sys.executable] + sys.argv); os._exit(0)
