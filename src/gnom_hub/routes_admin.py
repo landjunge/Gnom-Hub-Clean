@@ -51,6 +51,6 @@ def get_sys_language():
 async def set_sys_language(request: Request):
     from .db import set_language
     j = await request.json()
-    lang = j.get("language", "de")
+    lang = j.get("language", "en")
     set_language(lang)
     return {"status": "ok", "language": lang}

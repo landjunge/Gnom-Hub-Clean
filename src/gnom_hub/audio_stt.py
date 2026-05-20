@@ -5,10 +5,11 @@ def stt_local(audio_bytes: bytes) -> Optional[str]:
     """Lokales faster-whisper STT."""
     try:
         from faster_whisper import WhisperModel
+        from .db import get_language
         model = WhisperModel("tiny", compute_type="int8")
         tmp = tempfile.NamedTemporaryFile(suffix=".wav", delete=False)
         tmp.write(audio_bytes); tmp.close()
-        segs, _ = model.transcribe(tmp.name, language="de")
+        segs, _ = model.transcribe(tmp.name, language=get_language())
         os.unlink(tmp.name)
         return " ".join(s.text for s in segs).strip()
     except: return None
@@ -18,10 +19,11 @@ def stt_cloud(audio_bytes: bytes) -> Optional[str]:
     if not key: return None
     try:
         import requests
+        from .db import get_language
         r = requests.post("https://api.openai.com/v1/audio/transcriptions",
             headers={"Authorization": f"Bearer {key}"},
             files={"file": ("audio.wav", io.BytesIO(audio_bytes), "audio/wav")},
-            data={"model": "whisper-1", "language": "de"}, timeout=30)
+            data={"model": "whisper-1", "language": get_language()}, timeout=30)
         return r.json().get("text") if r.status_code == 200 else None
     except: return None
 def transcribe(audio_bytes: bytes) -> str:
