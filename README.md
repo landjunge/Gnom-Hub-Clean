@@ -8,7 +8,7 @@
 Deine KI-Agenten chatten hier nicht nur – sie *sehen* deinen Bildschirm, steuern per PyAutoGUI deine Maus, schreiben ihren eigenen Code und versionieren jeden Atemzug vollautomatisch via Git. 
 Abgesichert durch eine lokale Sandbox und orchestriert in einem cyberpunk-esken "War-Room", agiert die Schwarm-Intelligenz völlig selbstständig. 
 Das Verrückteste daran? Jedes einzelne Modul – vom Backend-Router bis zum "Sehenden Agenten" – zielt auf **maximal 40 Zeilen Code** pro Datei. 
-Du brauchst keine Minuten für einen Build: `bash install.sh` ausführen, und die KI übernimmt das Steuer.
+Du brauchst keine Minuten für einen Build: `bash scripts/install.sh` ausführen, und die KI übernimmt das Steuer.
 
 ---
 
@@ -18,7 +18,7 @@ Du brauchst keine Minuten für einen Build: `bash install.sh` ausführen, und di
 # Repo klonen & installieren + starten
 git clone https://github.com/landjunge/gnom-hub.git
 cd gnom-hub
-bash install.sh
+bash scripts/install.sh
 ```
 
 Öffne **http://127.0.0.1:3002** — Willkommen im War-Room.
@@ -161,8 +161,8 @@ Hier steht, was du brauchst, damit der Gnom sein volles Potential entfalten kann
 #### Basis-Installation (1 Befehl)
 
 ```bash
-bash install.sh      # Installiert Core + startet den Hub
-bash uninstall.sh    # Interaktiv: Daten behalten oder löschen
+bash scripts/install.sh      # Installiert Core + startet den Hub
+bash scripts/uninstall.sh    # Interaktiv: Daten behalten oder löschen
 ```
 
 #### 📦 Was installiert werden muss
@@ -239,7 +239,7 @@ pip install fastapi uvicorn pydantic requests python-dotenv \
 playwright install chromium
 
 # Fertig. Starten:
-bash install.sh
+bash scripts/install.sh
 ```
 
 **Lizenz:** MIT
