@@ -4,7 +4,7 @@
 # ═══════════════════════════════════════════
 set -e
 
-REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 DATA_DIR="$HOME/.gnom-hub/data"
 LOG_DIR="$HOME/.gnom-hub/logs"
 VENV_DIR="$REPO_DIR/.venv"
