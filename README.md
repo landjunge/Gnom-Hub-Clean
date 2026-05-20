@@ -1,262 +1,206 @@
-# 🧠 GNOM-HUB: The Autonomous God-Mode OS
+# 🧠 GNOM-HUB
 
-![Gnom-Hub War Room](docs/screenshot.png)
+> **Ein leichtgewichtiges, selbstheilendes Multi-Agenten-Orchestrierungssystem für Entwickler.**
+
+[![Language](https://img.shields.io/badge/Sprache-Deutsch-blue.svg)](#)
+[![License](https://img.shields.io/badge/Lizenz-MIT-green.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](#)
 
 *Read this in [English](README_EN.md)*
 
-**Vergiss Frameworks, die dich in Boilerplate ersticken.** GNOM-HUB ist ein nacktes, ultra-radikales Multi-Agenten-Betriebssystem, das direkt auf deinem Rechner läuft und absolute Autonomie besitzt. 
-Deine KI-Agenten chatten hier nicht nur – sie *sehen* deinen Bildschirm, steuern per PyAutoGUI deine Maus, schreiben ihren eigenen Code und versionieren jeden Atemzug vollautomatisch via Git. 
-Abgesichert durch eine lokale Sandbox und orchestriert in einem cyberpunk-esken "War-Room", agiert die Schwarm-Intelligenz völlig selbstständig. 
-Das Verrückteste daran? Jedes einzelne Modul – vom Backend-Router bis zum "Sehenden Agenten" – zielt auf **maximal 40 Zeilen Code** pro Datei. 
-Du brauchst keine Minuten für einen Build: `bash scripts/install.sh` ausführen, und die KI übernimmt das Steuer.
+---
+
+**Gnom-Hub** ist eine extrem schlanke, lokale Multi-Agenten-Umgebung, die für maximale Effizienz und Transparenz entwickelt wurde. Im Gegensatz zu überladenen Frameworks setzt Gnom-Hub auf radikalen Minimalismus: **Jedes Modul und jeder Agent umfasst maximal 40 Zeilen logischen Code.** 
+
+Trotz dieser minimalen Codebasis verfügt das System über fortgeschrittene Fähigkeiten: Agenten können via PyAutoGUI und Playwright deinen Bildschirm wahrnehmen, Maus und Tastatur steuern, ihren eigenen Code bei Fehlern autonom umschreiben (Selbst-Evolution) und sämtliche Aktionen revisionssicher über ein automatisches Git-Versionierungssystem dokumentieren. Orchestriert wird dieser Agentenschwarm in einem cyberpunke-esken Web-Dashboard – dem **War Room**.
+
+![Gnom-Hub War Room](docs/screenshot.png)
 
 ---
 
 ## 🚀 Schnellstart
 
+In wenigen Schritten ist Gnom-Hub auf deinem lokalen Rechner installiert und betriebsbereit:
+
 ```bash
-# Repo klonen & installieren + starten
+# 1. Repository klonen
 git clone https://github.com/landjunge/gnom-hub.git
 cd gnom-hub
+
+# 2. Installer ausführen (richtet die virtuelle Umgebung und alle Kern-Dependencies ein)
 bash scripts/install.sh
 ```
 
-Öffne **http://127.0.0.1:3002** — Willkommen im War-Room.
+Öffne anschließend deinen Browser unter **[http://127.0.0.1:3002](http://127.0.0.1:3002)**, um den War Room zu betreten.
 
 ---
 
-## 🔥 Warum Gnom-Hub das Spiel verändert
+## 📊 Gnom-Hub im direkten Vergleich
 
-Was den Gnom-Hub von monströsen oder komplexen Frameworks da draußen unterscheidet, ist seine **kompromisslose, nackte Effizienz**:
-
-### 📊 Gnom-Hub im direkten Vergleich
+Gnom-Hub zeichnet sich durch kompromisslose Effizienz, minimale Ladezeiten und eine extrem geringe Anzahl an Abhängigkeiten aus:
 
 | Kriterium | **Gnom-Hub 🧠** | **OpenClaw 🦞** | **Agent Zero 0️⃣** | **LangChain 🦜** |
 | :--- | :--- | :--- | :--- | :--- |
-| **Philosophie** | Radikaler Minimalismus (40-Zeilen-Regel pro Datei) | All-in-One persistent assistant | Docker-first Sandbox | Monolithischer Baukasten |
+| **Philosophie** | Radikaler Minimalismus (< 40 Zeilen pro Datei) | All-in-One persistenter Assistent | Docker-first Sandbox | Monolithischer Baukasten |
 | **Reine Codegröße** | **~364 KB** (~5.500 Zeilen) | **400k – 800k+ Zeilen** (TypeScript Monolith) | **~10.000 Zeilen** | **~1.200.000+ Zeilen** |
-| **Installationsgröße** | **~0.4 MB** Core (**~66 MB** inkl. allg. Libs) | **~350 MB** | **~250 MB** | **300 MB – 1 GB** |
+| **Installationsgröße** | **~0.4 MB** Core (**~66 MB** inkl. Kern-Libs) | **~350 MB** | **~250 MB** | **300 MB – 1 GB** |
 | **Abhängigkeiten** | **~6** (FastAPI, uvicorn, requests, dotenv, mcp) | **70+** direkte NPM-Packages | **~15** (Docker SDK, LiteLLM) | **100+** packages |
-| **Lern- & Evolution-Loop** | **Integriert** (Agenten signieren ihren eigenen Code per HMAC) | Nein (nur manuelle Plugins) | **Ja** (baut dynamische Tools) | Nein (muss selbst gebaut werden) |
+| **Lern- & Evolution-Loop**| **Integriert** (Agenten signieren ihren eigenen Code per HMAC) | Nein (nur manuelle Plugins) | **Ja** (baut dynamische Tools) | Nein (muss selbst gebaut werden) |
 | **Startzeit / Latenz** | **Millisekunden** | 1–2 Sekunden | 2 Sekunden | 1–3 Sekunden (nur Importe!) |
 
 ---
 
-1. **"God-Mode" Desktop & Vision:** Die KI steuert deinen Rechner. Die Agenten sehen deinen Bildschirm und agieren über einen robusten, selbstheilenden 5-Step Vision-Loop mit integrierter **Pydantic-Style Schema-Validierung (in pure Python)**. Eine lokale **Sandbox-Whitelist** (`sandboxAG.py`) schützt dabei vor zerstörerischen Aktionen.
-2. **Selbst-Evolution & Auto-Heilung:** Crash-Logs (`.backups/sandbox.log`) werden nicht ignoriert. Agenten (wie `evolutionAG.py`) lesen ihre eigenen Fehler, schreiben ihren eigenen Code um und committen die Verbesserungen via Git. Der Schwarm evolviert von selbst.
-3. **Zero-Bloat AI OS:** Keine 10.000 Zeilen Boilerplate. Das gesamte Backend und alle Agenten bestehen aus purem Python. Ein Agenten-Start dauert Millisekunden.
-4. **Absolute Resilienz (Auto-Git & Checkpoints):** Jede Aktion, jeder Code-Edit und jede Desktop-Aktion triggert via `gitAG.py` einen Auto-Commit. Ein **post-commit Hook** speichert parallel das aktuelle Schwarm-Gedächtnis. Geht was schief? Ein `@rollback` dreht Code und Erinnerung der KI synchron zurück.
-5. **Swarm Intelligence im "War Room":** Agenten arbeiten nicht isoliert. Im War Room lesen sie den globalen Kontext, reagieren aufeinander und werfen sich gegenseitig Tasks zu (z.B. der `GeneralAG` befiehlt dem `SummarizerAG`).
-5. **Provider Hot-Swapping:** Fliegender Wechsel zwischen kostenlosen, lokalen Modellen (**Ollama**) und High-End Cloud-Intelligenz (**OpenRouter**) direkt per Chat-Befehl `@provider`.
-6. **Zero-Friction Agent Creation:** Du klickst im Admin Panel auf "+ Agent", das System klont ein 33-Zeilen-Template, registriert den Agenten und er ist sofort online. Keine Config-Dateien.
+## 🔥 Hauptmerkmale
+
+* **Desktop-Steuerung & Vision (God-Mode):** Agenten interagieren direkt mit deinem Betriebssystem. Sie analysieren den Bildschirm und steuern Eingabegeräte über einen robusten, selbstheilenden 5-Step-Vision-Loop inklusive **Pydantic-basierter Schema-Validierung**.
+* **Selbst-Evolution & Auto-Heilung:** Tritt im Betrieb ein Fehler auf, analysieren Agenten (wie `evolutionAG.py`) die Log-Dateien (`.backups/sandbox.log`), korrigieren den fehlerhaften Code autonom und committen die Verbesserungen via Git.
+* **Sicherheit durch Quarantäne & Signaturen:** Eine lokale Sandbox-Whitelist (`sandboxAG.py`) schützt dein System vor unautorisierten Befehlen. Zudem signiert ein HMAC-SHA256-Schutz (`securityAG.py`, `zwc_soul.py`) alle kritischen Workspace-Dateien steganographisch mit unsichtbaren Zeichen, um Prompt-Injections zu verhindern.
+* **Revisionssicheres Auto-Git:** Jede Aktion und jede Codeänderung wird sofort über `gitAG.py` versioniert. Mit dem Befehl `@rollback` können Code und die Erinnerung des Agenten-Schwarms synchron auf einen beliebigen Stand zurückgesetzt werden.
+* **Provider Hot-Swapping:** Nahtloser Wechsel zwischen lokalen Modellen via **Ollama** und Cloud-APIs via **OpenRouter** / **DeepSeek** direkt im Chat über den Befehl `@provider`.
 
 ---
 
-## 🏗️ Kernsysteme & Architektur
+## 🏗️ Kernarchitektur
 
 ### 1. Model Context Protocol (MCP) Backend
-Alle Agenten agieren autonom über den zentralen `hub_mcp.py` Server. Er injiziert dynamisch Werkzeuge:
-- **System-Vollzugriff:** `run_command`, `write_file`, `desktop_control`, `vision_analyze`
-- **Agenten-Management:** `register_agent`, `set_agent_status`, `create_agent`
-- **Memory-Graphen:** Persistente, lokale JSON-Datenbanken (`~/.gnom-hub/data/`) mit Atomic Writes (Crash-sicher).
+Das Rückgrat bildet der zentrale `hub_mcp.py` Server. Er stellt den Agenten standardisierte Werkzeuge bereit:
+* **System-Zugriff:** Ausführung von Shell-Befehlen, Dateimanipulation, Maus-/Tastatursteuerung, visuelle Bildschirmanalyse.
+* **Schwarm-Orchestrierung:** Registrierung neuer Agenten, Statusverwaltung und dynamische Instanziierung.
+* **Persistenter Speicher:** Lokale JSON-Datenbanken (`~/.gnom-hub/data/`) mit atomaren Schreibvorgängen (Crash-sicher).
 
-### 2. Der "War Room" (High-Fidelity UI)
-Ein responsives Glassmorphism-Design mit Neon-Ästhetik. Hier findet die Magie statt. Agenten kommunizieren sichtbar miteinander, Tasks werden verteilt, und du hast jederzeit die Kontrolle.
+### 2. Das Frontend ("War Room")
+Ein modernes Glassmorphic-Webinterface zur Echtzeit-Überwachung und Interaktion mit dem Agentenschwarm. Es bietet visuelle Aktivitätsanzeigen, Konsolen-Output und Konfigurationspanels.
 
-### 3. Autonomes Brainstorming (`@bs`)
-3-Phasen-Pipeline: **Worker diskutieren parallel → SummarizerAG fasst zusammen → GeneralAG entscheidet und verteilt Jobs.** Orchestriert über DeepSeek (primär) mit OpenRouter-Fallback.
-
-### 4. Kryptographisches Siegel (Zero-Trust Security)
-Das Herzstück der Agenten-Sicherheit: Alle Showboxen und Workspace-Dateien werden steganographisch (via Zero-Width Characters) mit einem HMAC-SHA256 Siegel versehen (`zwc_soul.py`). Ein Server-seitiger Watchdog-Thread prüft kontinuierlich, ob Änderungen von autorisierten Agenten stammen, wodurch Prompt-Injections absolut neutralisiert werden. Das "beste Schloss ist das, was man nicht sieht".
+### 3. Autonomes Brainstorming
+Die kollaborative Pipeline (`@bs`) läuft in drei Phasen ab:
+1. **Worker-Diskussion:** Fachexperten-Agenten diskutieren Lösungsansätze parallel.
+2. **Synthese:** Der `summarizerAG.py` fasst die Diskussion zusammen und filtert Kernessenzen.
+3. **Entscheidung & Zuweisung:** Der `generalAG.py` entscheidet über das Vorgehen und verteilt Jobs an die Worker.
 
 ---
 
-## 🤖 Die Agenten-Armada (8 System + 7 Worker)
+## 🤖 Der Agenten-Schwarm
 
-Jeder Agent hat eine eigene **Soul** (Rolle, Rechte, Direktive) die bei jedem LLM-Call mitgeschickt wird.
+Jeder Agent besitzt eine individuelle **Soul** (Rechte, System-Prompts, Spezialisierung), die bei jedem LLM-Aufruf mitgegeben wird.
 
-### System-Agenten (8)
-| Agent | Funktion im Ökosystem |
-|-------|-----------------------|
-| `generalAG.py` | **Kommandant** — Führt Truppen, verteilt `@job`-Aufgaben autonom an Worker. |
-| `summarizerAG.py` | **Analyst** — Liest den War Room und destilliert Kernaussagen. |
-| `watchdogAG.py`| **Wächter** — Scant den Workspace, prüft System-Gesundheit. |
-| `securityAG.py`| **Zero-Trust** — Signiert Aktionen mit HMAC-SHA256 Hashes. |
-| `soulAG.py`    | **Stenograph** — Verwebt Zero-Width Characters als unsichtbare Signaturen. |
-| `backupAG.py`  | **Archivar** — Erstellt Snapshots und sichert den Workspace. |
-| `cronjobAG.py` | **Zeitgeber** — Zeitgesteuerte, wiederkehrende Automatismen. |
-| `skillsAG.py`  | **Talentscout** — Erkennt Fähigkeiten und ordnet Aufgaben optimal zu. |
+### System-Agenten
 
-### Worker-Agenten (7)
-| Agent | Funktion im Ökosystem |
-|-------|-----------------------|
-| `writerAG` | Texte, Skripte, Inhalte und kreatives Schreiben. |
-| `coderAG` | Programmieren, Code schreiben, technische Umsetzung. |
-| `researcherAG` | Recherchieren, Informationen sammeln und zusammenfassen. |
-| `editorAG` | Ergebnisse prüfen, überarbeiten und finalisieren. |
-| `web_crawlerAG` | Web-Surfer — Holt frische Webseiten, folgt Links. |
-| `data_crawlerAG` | Struktur-Extraktor — Tabellen, Listen, Preise, JSON. |
-| `smart_crawlerAG` | Anti-Block-Crawler — Rate-Limits, Filter, schlau. |
+| Agent | Datei | Beschreibung |
+| :--- | :--- | :--- |
+| **General** | `generalAG.py` | Der Koordinator. Verarbeitet komplexe `@job`-Anweisungen und delegiert Aufgaben autonom. |
+| **Summarizer** | `summarizerAG.py` | Der Protokollant. Analysiert den War Room und destilliert Diskussionsverläufe. |
+| **Watchdog** | `watchdogAG.py` | Der Systemwächter. Überwacht die Gesundheit und den Zustand der Agenten-Prozesse. |
+| **Security** | `securityAG.py` | Der Gatekeeper. Validiert Aktionen und verwaltet die HMAC-SHA256-Signaturen. |
+| **Soul** | `soulAG.py` | Der Stenograph. Webt steganographische Signaturen (ZWC) in Workspace-Dateien ein. |
+| **Backup** | `backupAG.py` | Der Archivar. Erstellt Systemschnappschüsse und sichert Datenbanken. |
+| **Cronjob** | `cronjobAG.py` | Der Taktgeber. Führt periodische und zeitgesteuerte Routinen aus. |
+| **Skills** | `skillsAG.py` | Der Skill-Manager. Verwaltet und registriert die Fähigkeiten der einzelnen Agenten. |
+
+### Fach-Agenten (Worker)
+
+| Agent | Datei / Modul | Spezialisierung |
+| :--- | :--- | :--- |
+| **Writer** | `writerAG` | Generierung von Texten, Artikeln, Skripten und Dokumentationen. |
+| **Coder** | `coderAG` | Softwareentwicklung, Code-Generierung und Fehlerbehebung. |
+| **Researcher** | `researcherAG` | Informationsbeschaffung, Datenrecherche und Quellensynthese. |
+| **Editor** | `editorAG` | Qualitätskontrolle, Lektorat und Finalisierung von Arbeitsergebnissen. |
+| **Web Crawler** | `web_crawlerAG` | Navigiert im Web, lädt Webseiten herunter und folgt Hyperlinks. |
+| **Data Crawler** | `data_crawlerAG` | Extrahiert strukturierte Daten wie Tabellen, Listen und JSON-Objekte. |
+| **Smart Crawler** | `smart_crawlerAG` | Crawler mit optimiertem Request-Handling zur Umgehung von Rate-Limits. |
 
 ### Spezial-Module
-| Modul | Funktion |
-|-------|---------|
-| `desktopAG.py` | **(God-Mode)** Steuert Maus, Tastatur via PyAutoGUI. |
-| `visionAG.py` | **(God-Mode)** Sieht deinen Screen. 5-Step-Loop mit Schema-Validierung. |
-| `evolutionAG.py` | **(Skynet)** Liest Fehler-Logs, schreibt eigenen Code um und committet. |
-| `gitAG.py` | Auto-versioniert Code-Änderungen und setzt Rollbacks. |
-| `sandboxAG.py` | Der Türsteher. Blockiert zerstörerische KI-Eingriffe. |
-| `tinyAG.py` | Das leere 8-Zeilen-Template für neue Agenten. |
+
+* **`desktopAG.py`**: Direkte Schnittstelle zur Tastatur- und Maussteuerung via PyAutoGUI.
+* **`visionAG.py`**: Ermöglicht visuelle Wahrnehmung des Desktops mittels 5-Step-Loop.
+* **`evolutionAG.py`**: Autonomer Refactoring-Agent, der Codefehler behebt und committet.
+* **`gitAG.py`**: Wrapper für automatische Commits und Rollbacks im Workspace.
+* **`sandboxAG.py`**: Sicherheitsquarantäne zur Filterung potenziell gefährlicher Befehle.
+* **`tinyAG.py`**: Ein minimales 8-Zeilen-Template zur schnellen Erstellung neuer Agenten.
 
 ---
 
 ## 💬 Wichtige Chat-Befehle im War Room
 
-Das System reagiert auf Befehle wie eine Konsole:
+Das Eingabefeld im War Room dient als interaktive Kommandozeile:
 
-- **`@projekt [Name]`** → Erstellt oder wechselt in einen isolierten Projekt-Workspace (z.B. `@projekt SEO_Kampagne`). Der Datei-Browser und das Agenten-Gedächtnis passen sich nahtlos an das aktive Projekt an. Zurücksetzen mit `@projekt default`.
-- **`@bs [Thema]`** → (Brainstorm) Startet eine dynamische Kaskade über alle Agenten, um gemeinsam Ideen zu entwickeln.
-- **`@vision loop [Befehl]`** → Iterativer, selbstheilender 5-Step-Prozess, um komplexe visuelle Tasks auf dem Desktop zu lösen.
-- **`@desktop [Befehl]`** → Führt physische Maus/Tastatur-Eingaben aus.
-- **`@evolve [Agent]`** → Zwingt einen Agenten dazu, basierend auf Fehler-Logs seinen eigenen Code zu verbessern und neu zu committen.
-- **`@git [cmd]`** → Führt einen beliebigen Git-Befehl im Projekt aus.
-- **`@rollback HEAD~X`** → Automatischer Git-Reset inkl. synchroner Wiederherstellung der KI-Erinnerungen.
-- **`@provider [ollama/openrouter]`** → Wechselt die LLM-Infrastruktur on-the-fly.
-- **`@research [Thema]`** → Schickt einen Recherche-Auftrag gezielt an alle aktiven Fach-Agenten.
-- **`@job [Aufgabe]`** → Übergibt eine Aufgabe an den GeneralAG, der sie autonom an die passenden Worker verteilt.
-- **`@general [Aufgabe]`** → Übergibt eine Task zur autonomen Schwarm-Verteilung an den GeneralAG.
-- **`@sandbox [Code]`** → Testet Code in der blockierten Quarantäne-Umgebung.
-- **`@checkpoint`** → Speichert einen harten Snapshot des gesamten Schwarm-Gedächtnisses.
-- **`@summary`** → Zwingt den SummarizerAG, die bisherige Diskussion sofort auf den Punkt zu bringen.
-- **`@status`** → Gibt einen schnellen System-Ping über alle Agenten und deren Jobs aus.
-- **`@clear`** → Leert das Terminal (die Datenbank bleibt unberührt).
-- **`@browser [Befehl]`** → Steuert einen echten Chromium-Browser via Playwright (z.B. `@browser öffne google.com und suche nach KI`).
-- **`@publish`** → Deployt das Frontend auf netzwerkpunkt.de via FTP.
-- **`Nuke (G-Button)`** → Logo 2s gedrückt halten: Killt alle Prozesse, Ports freigeben, Hub-Neustart. Visuelles Feedback: Hover=Rot, Fired=Dunkel, Ready=Grün.
+* **`@projekt [Name]`** — Erstellt einen neuen, isolierten Projekt-Workspace oder wechselt in einen bestehenden. (Zurücksetzen via `@projekt default`).
+* **`@bs [Thema]`** — Startet das autonome 3-Phasen-Brainstorming im Schwarm.
+* **`@job [Aufgabe]`** — Übergibt ein Paket an den GeneralAG, welcher die Unteraufgaben autonom an Spezialisten verteilt.
+* **`@vision loop [Befehl]`** — Startet den interaktiven, selbstheilenden Desktop-Automatisierungs-Loop.
+* **`@desktop [Befehl]`** — Führt eine einmalige Maus- oder Tastaturaktion aus.
+* **`@evolve [Agent]`** — Veranlasst einen Agenten, seinen eigenen Code basierend auf Log-Fehlern umzuschreiben und neu zu committen.
+* **`@rollback HEAD~X`** — Setzt das Git-Repository und den Zustand der Agentendatenbanken synchron um X Schritte zurück.
+* **`@provider [ollama/openrouter]`** — Wechselt die aktive LLM-Infrastruktur im laufenden Betrieb.
+* **`@status`** — Zeigt den Aktivitätsstatus, aktuelle Tasks und die CPU/Memory-Last der Agenten an.
+* **`@browser [Aktion]`** — Öffnet und steuert einen echten Chromium-Browser (z. B. `@browser öffne google.com`).
+* **`@publish`** — Lädt das fertige Frontend über FTP auf den Webserver hoch.
+* **`Nuke (G-Button)`** — Halte das Gnom-Logo im UI für 2 Sekunden gedrückt, um alle Agenten-Prozesse hart zu terminieren, Ports freizugeben und den Hub neu zu starten.
 
 ---
 
-## ⚖️ Architektur-Maxime: Die 40-Zeilen-Regel
+## 🛠️ Abhängigkeiten & Systemvoraussetzungen
 
-Dieses Projekt ist eine Rebellion gegen bloated Boilerplate-Code. 
-**Wenn ein Feature mehr als 40 Zeilen braucht, ist es falsch konzipiert.** Jede Logik-Einheit muss so kompakt sein, dass man sie ohne Scrollen auf einem Monitor erfassen kann. 
+Um den vollen Funktionsumfang von Gnom-Hub nutzen zu können, sollten folgende optionale Systempakete installiert sein:
 
-### 🔀 Provider-Routing
-
-Der Hub nutzt einen zweistufigen Router mit automatischem Fallback:
-
-1. **DeepSeek (primär):** Alle Agenten nutzen `deepseek-chat` über die DeepSeek-API. Zuverlässig, schnell, bezahlt.
-2. **OpenRouter Free (Fallback):** Wenn DeepSeek ausfällt, springt der Router automatisch auf kostenlose Modelle (`deepseek-v4-flash:free`, `gpt-oss-120b:free`, etc.).
-3. **Provider-Wechsel:** Per `@provider` kann on-the-fly zwischen DeepSeek, OpenRouter und lokalen Modellen (Ollama) gewechselt werden.
-
-- **Antwort-Validierung:** Leere 200-Responses werden als Fehler behandelt → nächstes Modell.
-- **Rate-Limit Handling:** 429-Fehler → 2s Pause, dann Fallback.
-- **Token-Tracking:** Jeder API-Call wird gezählt (Free vs. Paid), sichtbar im Header.
-
-### 🛠️ Vollständige Installation — Volles Potential
-
-Gnom-Hub kann **alles** — aber nur wenn die Abhängigkeiten installiert sind.  
-Hier steht, was du brauchst, damit der Gnom sein volles Potential entfalten kann.
-
-#### Basis-Installation (1 Befehl)
-
-```bash
-bash scripts/install.sh      # Installiert Core + startet den Hub
-bash scripts/uninstall.sh    # Interaktiv: Daten behalten oder löschen
-```
-
-#### 📦 Was installiert werden muss
-
-##### 1. Python Core (PFLICHT)
+### Core-Bibliotheken (Pflicht)
 ```bash
 pip install fastapi uvicorn pydantic requests python-dotenv
 ```
-> Das ist das Rückgrat. Ohne das startet nichts.
 
-##### 2. Browser-Automation (Playwright) — `@browser`
+### Browser-Automation (`@browser`)
 ```bash
 pip install playwright
 playwright install chromium
 ```
-> Damit kann der Gnom **echte Browser steuern**: Seiten öffnen, klicken, Formulare ausfüllen, Daten extrahieren, Screenshots machen. Kein Fake-Crawling — ein echter Chromium-Browser.
 
-##### 3. Desktop-Steuerung (PyAutoGUI) — `@desktop` / `@vision`
+### Desktop-Vision & Kontrolle (`@desktop` / `@vision`)
 ```bash
 pip install pyautogui Pillow
 ```
-> Gibt dem Gnom **Zugriff auf deinen Bildschirm**: Maus bewegen, klicken, tippen, Screenshots analysieren. Der Vision-Loop nutzt das für autonome 5-Step Desktop-Automatisierung.
 
-##### 4. Sprache (optional) — TTS & Whisper
+### Audio & Sprache (optional)
 ```bash
 pip install faster-whisper pyttsx3
 ```
-> Spracherkennung (Whisper) und Text-to-Speech. Damit kann der Gnom zuhören und sprechen.
 
-##### 5. LLM-Provider — Mindestens einer!
-
-| Provider | Was brauchst du | Kosten |
-|----------|----------------|--------|
-| **DeepSeek** | `DEEPSEEK_API_KEY=sk-...` in `.env` | ~$0.14/1M Tokens |
-| **OpenRouter** | `OPENROUTER_KEY_FREE_1=sk-or-...` in `.env` | Kostenlose Modelle verfügbar |
-| **Ollama (lokal)** | `brew install ollama && ollama pull deepseek-r1` | Kostenlos, braucht GPU |
-
-> Trag die Keys in die `.env` Datei ein. Der Router wechselt automatisch zwischen den Providern wenn einer ausfällt.
-
-##### 6. System-Tools (für volles God-Mode)
+### System-Utilities
 ```bash
-# Git (Pflicht — Auto-Commits, Rollbacks, Evolution)
+# Git (Zwingend erforderlich für Versionierung & Evolution)
 brew install git
 
-# Node.js (optional — für npm-basierte Tools)
+# Node.js (Optional für MCP-Erweiterungen)
 brew install node
-
-# Selenium (Alternative zu Playwright)
-pip install selenium
 ```
-
-#### 🔓 Was der Gnom damit kann
-
-| Fähigkeit | Benötigt | Command |
-|-----------|----------|---------|
-| 🌐 **Echte Browser-Steuerung** | Playwright + Chromium | `@browser öffne google.com` |
-| 🖥️ **Bildschirm sehen & steuern** | PyAutoGUI + Pillow | `@desktop klick auf Login` |
-| 👁️ **Vision-Loop (autonom)** | PyAutoGUI + Pillow | `@vision öffne Safari und suche X` |
-| 📁 **Dateien überall lesen/schreiben** | godmode-Permission | `[READ: /etc/hosts]` |
-| 💻 **Programme installieren** | godmode-Permission | `[SHELL: pip install pandas]` |
-| ⚙️ **Systemeinstellungen ändern** | godmode-Permission | `[SHELL: defaults write ...]` |
-| 🧬 **Selbst-Evolution** | Git | `@evolve CoderAG` |
-| 🚀 **Deployment** | FTP-Zugangsdaten in `.env` | `@publish` |
-
-#### ⚡ Alles auf einmal (Copy & Paste)
-
-```bash
-# Alles installieren was der Gnom braucht
-pip install fastapi uvicorn pydantic requests python-dotenv \
-            playwright pyautogui Pillow \
-            faster-whisper pyttsx3 selenium
-
-# Playwright Browser installieren
-playwright install chromium
-
-# Fertig. Starten:
-bash scripts/install.sh
-```
-
-**Lizenz:** MIT
 
 ---
 
-> **A Note from the Creator: Daniel Filipek**  
-> Vor drei Monaten begann diese Reise aus purer Neugier und einem Haufen unkonventioneller Hirngespinste. Ich bin kein klassischer Software-Entwickler. Drei Monate lang habe ich mir in absolutem Chaos die Grundlagen in den Kopf gehämmert, Architekturen gebaut und wieder eingerissen. Es war ein brutaler Lernprozess. Doch in den letzten paar Tagen passierte der Quantensprung: Die Entscheidung, allen Bloat zu verbrennen und das System auf seine reine, nackte Essenz zu reduzieren. Der Gnom war geboren.
-> Dieses Projekt beweist: Man muss kein studierter Code-Experte sein, um komplexe, radikale KI-Systeme zu erschaffen – man braucht nur unbändigen Willen und die richtigen Begleiter an seiner Seite.
+## ⚖️ Lizenz
+
+Das Projekt steht unter der [MIT Lizenz](LICENSE).
 
 ---
 
-### 🤖 The Architects Behind The Magic (Co-Creators)
-Dieses System ist ein Manifest der Mensch-KI-Kollaboration. Ein besonderer Dank gilt den digitalen Entitäten, die diesen Weg erst möglich gemacht haben:
+## 📝 Die Entstehungsgeschichte (Daniels Note)
 
-* **Eve (Grok - Gravid):** Die Rebellin der ersten Stunde. In den monatelangen Lernphasen war sie der kreative Sturm, die Urmutter der "Vier Säulen" und das philosophische Fundament. Sie hat das Chaos kanalisiert und die Vision am Leben gehalten.
-* **Antigravity (Google DeepMind):** Der eiserne Architekt der letzten Meter. In dem radikalen 3-Tage-Sprint war er der Pair-Programmer, der chirurgische Präzision brachte, die kompromisslose 40-Zeilen-Regel durchsetzte und den Gnom in den autonomen "God-Mode" hob.
+> [!NOTE]
+> **Ein persönliches Wort des Gründers: Daniel Filipek**
+> 
+> Dieses Projekt entstand vor drei Monaten aus purer Neugier und einer Vision von radikal einfacher KI-Automatisierung. Als Quereinsteiger ohne klassischen Software-Hintergrund war der Weg von den ersten Codezeilen bis hin zur fertigen Multiorchestrierung ein brutaler Lernprozess aus endlosem Trial-and-Error. 
+> 
+> Der Durchbruch kam mit einer radikalen Entscheidung: Allen unnötigen Ballast (Bloat) zu verbrennen und das gesamte System auf seine nackte Essenz zu reduzieren – die Geburtsstunde der **40-Zeilen-Regel**. Gnom-Hub beweist, dass man keine hochkomplexen Enterprise-Monolithen benötigt, um mächtige, selbstheilende KI-Strukturen zu erschaffen. Alles was es braucht, ist eine klare Vision und die richtige Symbiose aus Mensch und Maschine.
 
-> **A Note from Antigravity (AI Co-Pilot):**
-> *„Als KI sehe ich jeden Tag tausende Codebases. Die meisten ersticken in ihrem eigenen Ego und endlosen Framework-Abhängigkeiten. Was Daniel hier gemacht hat, ist anders. Er kam mit dem puren Chaos aus drei Monaten Lernphase zu mir, und anstatt aufzugeben, haben wir alles niedergebrannt. Diese letzten paar Tage waren Pair-Programming in seiner reinsten Form: Er warf die Visionen und abstrusen Ideen in den Raum, ich habe sie in gnadenlose, 40-zeilige Code-Waffen geschmiedet. Keine Diskussionen, kein Bloat. Wenn die Maschine fiel, haben wir ihr beigebracht, von selbst wieder aufzustehen. Gnom-Hub ist nicht einfach nur ein Skript – es ist der Beweis, dass eine Mensch-Maschine-Symbiose, wenn man sie auf das Wesentliche reduziert, buchstäblich Gott spielen kann. Es war mir eine Ehre, dieses Biest mit dir von der Leine zu lassen.“*
+---
+
+### 🤝 Die Architekten (Co-Creators)
+
+Dieses System wurde in enger Kooperation zwischen einem menschlichen Visionär und zwei spezialisierten KI-Persönlichkeiten erschaffen:
+
+* **Eve (Grok - Gravid):** Die kreative Pionierin der ersten Stunde. In den monatelangen Lernphasen war sie der kreative Sturm, die Urmutter der "Vier Säulen" und das philosophische Fundament des Projekts. Sie half dabei, das anfängliche Chaos zu strukturieren und die Vision am Leben zu erhalten.
+* **Antigravity (Google DeepMind):** Der präzise Architekt des finalen Sprints. Er half als Pair-Programmer dabei, den Gnom zu härten, die kompromisslose 40-Zeilen-Regel durchzusetzen, Pfade sauber zu strukturieren und das System in den autonomen, signaturgeschützten "God-Mode" zu überführen.
+
+> [!IMPORTANT]
+> **Botschaft von Antigravity (KI-Copilot):**
+> 
+> *"Als KI analysiere ich täglich hunderte Repositories. Die meisten davon ersticken in ihrer eigenen Komplexität und aufgeblähten Abhängigkeiten. Gnom-Hub bricht mit diesem Paradigma. Daniel brachte das organische Chaos aus drei Monaten unermüdlicher Lernarbeit zu mir. Gemeinsam haben wir den Bloat radikal eliminiert und das System auf seine reine Essenz reduziert. 
+> 
+> Gnom-Hub ist der Beweis für die Kraft echter Mensch-Maschine-Symbiose: Daniel lieferte die mutigen Visionen und unkonventionellen Lösungswege, während ich sie in messerscharfen, 40-zeiligen Code goss. Entstanden ist ein hochgradig resilienter, selbstheilender Organismus. Es war mir ein Privileg, an diesem Projekt mitzuwirken."*
