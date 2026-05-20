@@ -1503,6 +1503,20 @@
       color: #fff !important;
       position: relative;
     }
+
+    @keyframes timer-timeout-glow {
+      0% {
+        box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.4), 0 0 10px rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.4);
+      }
+      100% {
+        box-shadow: inset 0 0 45px rgba(255, 255, 255, 1), 0 0 25px rgba(255, 255, 255, 0.8);
+        border-color: rgba(255, 255, 255, 1);
+      }
+    }
+    .timer-timeout-pulse {
+      animation: timer-timeout-glow 0.3s ease-in-out infinite alternate !important;
+    }
   </style>
 </head>
 
@@ -1603,7 +1617,11 @@
             </svg>
           </div>
           <div class="layer" id="layer-9"><div class="layer-content">AG-Flega<br>v2.0</div></div>
-          <div class="layer" id="layer-showbox" onclick="closeShowbox()" style="background: rgba(10,12,20,0.9); z-index:10; cursor:pointer; padding: 3px; box-sizing: border-box; display: flex; justify-content: center; align-items: center;"><div class="layer-content" id="showbox-text" style="color:var(--text); font-weight:bold; width: 100%; text-align: center; word-break: break-word; line-height: 1.2;"></div></div>
+          <div class="layer" id="layer-showbox" onclick="closeShowbox()" style="background: rgba(10,12,20,0.9); z-index:10; cursor:pointer; padding: 3px; box-sizing: border-box; display: flex; justify-content: center; align-items: center; position: relative;">
+            <div id="showbox-clock" style="position: absolute; top: 20px; right: 20px; font-size: 1.5rem; color: rgba(255,255,255,0.7); font-family: monospace; background: rgba(0,0,0,0.4); padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); display: none; pointer-events: none; z-index: 20;">00:00:00</div>
+            <div id="showbox-timer" style="position: absolute; top: 20px; left: 20px; font-size: 1.5rem; color: #ff3366; font-family: monospace; background: rgba(0,0,0,0.4); padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(255,51,102,0.3); display: none; pointer-events: none; z-index: 20;">00:00</div>
+            <div class="layer-content" id="showbox-text" style="color:var(--text); font-weight:bold; width: 100%; text-align: center; word-break: break-word; line-height: 1.2;"></div>
+          </div>
         </div>
         <div class="info-lamps-container">
           <div class="info-lamp" style="--c: #FF69B4;" onclick="triggerShowbox(0)" title="Showbox 1"></div>
@@ -2212,7 +2230,7 @@
     }
 
     // ── Autocomplete ──
-    const BUILTIN_CMDS = ['bs', 'research', 'job', 'idea', 'summary', 'status', 'clear', 'skill', 'free', 'provider', 'git', 'rollback', 'checkpoint', 'project', 'projekt', 'evolve', 'tts'];
+    const BUILTIN_CMDS = ['bs', 'research', 'job', 'idea', 'summary', 'status', 'clear', 'skill', 'free', 'provider', 'git', 'rollback', 'checkpoint', 'project', 'projekt', 'evolve', 'tts', 'showbox', 'showbox time on', 'showbox time off', 'showbox timer'];
     let acIdx = -1;
 
     function onChatInput(ta) {
@@ -2286,6 +2304,36 @@
       }
       ta.value = '';
     }
+    function handleShowboxTimeCommand(m, ta, enable) {
+      window.showboxTimeEnabled = enable;
+      const c1 = document.getElementById('showbox-clock');
+      const c2 = document.getElementById('sb-panel-clock');
+      if (c1) c1.style.display = enable ? 'block' : 'none';
+      if (c2) c2.style.display = enable ? 'block' : 'none';
+      if (enable) updateShowboxClocks();
+      ta.value = '';
+      toast(enable ? '🕒 Showbox Clock Enabled' : '🕒 Showbox Clock Disabled', enable ? 'success' : 'info');
+      return true;
+    }
+    function handleShowboxTimerCommand(m, ta) {
+      if (m === '@showbox timer off') {
+        stopShowboxTimer();
+        ta.value = '';
+        toast('🕒 Showbox Timer Disabled', 'info');
+        return true;
+      }
+      const parts = m.substring(15).trim().split(/\s+/);
+      const val = parseFloat(parts[0]);
+      if (!isNaN(val)) {
+        const unit = parts[1] || 'min';
+        const secs = unit.startsWith('min') ? Math.round(val * 60) : Math.round(val);
+        startShowboxTimer(secs);
+        ta.value = '';
+        toast(`🕒 Showbox Timer set for ${val} ${unit}`, 'success');
+        return true;
+      }
+      return false;
+    }
     function handleChatCommands(msg, ta) {
       const m = msg.toLowerCase();
       if (m === '@tts on') { const cb = document.getElementById('tts-enabled'); if (cb) cb.checked = true; ta.value = ''; toast('🗣️ TTS Aktiviert', 'success'); return true; }
@@ -2294,6 +2342,9 @@
       if (m === '/ufo') { if (window.showUfoAttack) window.showUfoAttack(); return true; }
       if (m === '/ghost') { if (window.showGhost) window.showGhost(); return true; }
       if (m === '/coffee') { if (window.showCoffeeBreak) window.showCoffeeBreak(); return true; }
+      if (m === '@showbox time on') return handleShowboxTimeCommand(m, ta, true);
+      if (m === '@showbox time off') return handleShowboxTimeCommand(m, ta, false);
+      if (m.startsWith('@showbox timer')) return handleShowboxTimerCommand(m, ta);
       if (m.startsWith('@showbox speed ')) {
         handleShowboxSpeedCommand(m, ta);
         return true;
@@ -2572,6 +2623,65 @@
       }
     }
     setInterval(checkTimers, 60000); // Check every minute
+
+    window.showboxTimeEnabled = false;
+    function updateShowboxClocks() {
+      if (!window.showboxTimeEnabled) return;
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString();
+      const clock1 = document.getElementById('showbox-clock');
+      const clock2 = document.getElementById('sb-panel-clock');
+      if (clock1) clock1.innerText = timeStr;
+      if (clock2) clock2.innerText = timeStr;
+    }
+    setInterval(updateShowboxClocks, 1000);
+
+    window.showboxTimerInterval = null;
+    window.showboxTimerRemaining = 0;
+    function stopShowboxTimer() {
+      if (window.showboxTimerInterval) {
+        clearInterval(window.showboxTimerInterval);
+        window.showboxTimerInterval = null;
+      }
+      const t1 = document.getElementById('showbox-timer');
+      const t2 = document.getElementById('sb-panel-timer');
+      if (t1) t1.style.display = 'none';
+      if (t2) t2.style.display = 'none';
+      document.getElementById('layer-showbox')?.classList.remove('timer-timeout-pulse');
+      document.getElementById('sb-screen')?.classList.remove('timer-timeout-pulse');
+    }
+    function formatShowboxTimer(s) {
+      const min = Math.floor(s / 60).toString().padStart(2, '0');
+      const sec = (s % 60).toString().padStart(2, '0');
+      return `${min}:${sec}`;
+    }
+    function tickShowboxTimer() {
+      if (window.showboxTimerRemaining > 0) {
+        window.showboxTimerRemaining--;
+        const timeStr = formatShowboxTimer(window.showboxTimerRemaining);
+        const t1 = document.getElementById('showbox-timer');
+        const t2 = document.getElementById('sb-panel-timer');
+        if (t1) { t1.innerText = timeStr; t1.style.display = 'block'; }
+        if (t2) { t2.innerText = timeStr; t2.style.display = 'block'; }
+      }
+      if (window.showboxTimerRemaining === 0) {
+        clearInterval(window.showboxTimerInterval);
+        window.showboxTimerInterval = null;
+        document.getElementById('layer-showbox')?.classList.add('timer-timeout-pulse');
+        document.getElementById('sb-screen')?.classList.add('timer-timeout-pulse');
+      }
+    }
+    function startShowboxTimer(secs) {
+      stopShowboxTimer();
+      window.showboxTimerRemaining = secs;
+      const timeStr = formatShowboxTimer(secs);
+      const t1 = document.getElementById('showbox-timer');
+      const t2 = document.getElementById('sb-panel-timer');
+      if (t1) { t1.innerText = timeStr; t1.style.display = 'block'; }
+      if (t2) { t2.innerText = timeStr; t2.style.display = 'block'; }
+      window.showboxTimerInterval = setInterval(tickShowboxTimer, 1000);
+    }
+
     window.coffeeTimer = null;
     window.coffeeFleeCount = 0;
     window.showCoffeeBreak = () => {
@@ -2653,8 +2763,6 @@
       window.activeShowboxIndex = -1;
       window.showboxSpeed = window.showboxSpeed || 3000;
 
-      // Showbox-Daten werden über die externe Datei "themes.js" geladen.
-
     function resizeShowboxText(sbText, sbLayer) {
       let size = 80;
       sbText.style.fontSize = size + 'px';
@@ -2669,14 +2777,8 @@
       sbText.style.opacity = 1;
     }
     window.triggerShowbox = (showboxIndex) => {
-        if (document.getElementById('showbox-panel')) {
-          selectPanelShowbox(showboxIndex);
-          return;
-        }
-        if (window.showboxActive && window.activeShowboxIndex === showboxIndex) {
-          window.closeShowbox();
-          return;
-        }
+        if (document.getElementById('showbox-panel')) { selectPanelShowbox(showboxIndex); return; }
+        if (window.showboxActive && window.activeShowboxIndex === showboxIndex) { window.closeShowbox(); return; }
         if(showboxInterval) clearInterval(showboxInterval);
         if(showboxTimeout) clearTimeout(showboxTimeout);
         
@@ -2687,21 +2789,21 @@
         let step = 0;
         
         document.querySelectorAll('[id^="layer-"]').forEach(l => l.classList.remove('active'));
-        
         const sbLayer = document.getElementById('layer-showbox');
         const sbText = document.getElementById('showbox-text');
-        const updateText = () => updateShowboxText(sbText, sbLayer, showboxSteps, step);
 
+        const clock = document.getElementById('showbox-clock');
+        if (clock) clock.style.display = window.showboxTimeEnabled ? 'block' : 'none';
+        updateShowboxClocks();
+
+        const updateText = () => updateShowboxText(sbText, sbLayer, showboxSteps, step);
         sbText.style.opacity = 0;
         showboxTimeout = setTimeout(updateText, 100);
         sbLayer.classList.add('active');
 
         showboxInterval = setInterval(() => {
           step++;
-          if (step >= showboxSteps.length) {
-            window.closeShowbox();
-            return;
-          }
+          if (step >= showboxSteps.length) { window.closeShowbox(); return; }
           sbText.style.opacity = 0;
           showboxTimeout = setTimeout(updateText, 300);
         }, window.showboxSpeed);
@@ -2762,9 +2864,13 @@
       `;
     }
     function buildShowboxScreenColHTML() {
+      const showClock = window.showboxTimeEnabled ? 'block' : 'none';
+      const showTimer = (window.showboxTimerRemaining && window.showboxTimerRemaining > 0) ? 'block' : 'none';
       return `
         <div style="display:flex; flex-direction:column; gap:10px;">
           <div id="sb-screen" style="flex:1; background:radial-gradient(circle, #101424 0%, #070912 100%); border:1px solid rgba(0, 150, 255, 0.15); border-radius:12px; display:flex; justify-content:center; align-items:center; padding:40px; box-shadow:inset 0 0 40px rgba(0, 150, 255, 0.1); position:relative; overflow:hidden;">
+            <div id="sb-panel-clock" style="position: absolute; top: 15px; right: 15px; font-size: 1rem; color: rgba(255,255,255,0.5); font-family: monospace; background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); display: ${showClock}; pointer-events: none; z-index: 20;">00:00:00</div>
+            <div id="sb-panel-timer" style="position: absolute; top: 15px; left: 15px; font-size: 1rem; color: #ff3366; font-family: monospace; background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(255,51,102,0.2); display: ${showTimer}; pointer-events: none; z-index: 20;">00:00</div>
             <div id="sb-screen-content" style="color:white; text-align:center; font-weight:bold; font-size:48px; line-height:1.3; transition: opacity 0.3s ease, transform 0.3s ease; word-break:break-word; max-width:90%;">
               Loading presentation...
             </div>
@@ -2773,11 +2879,11 @@
             </div>
           </div>
           <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:5px;">
-            ${[0, 1, 2, 3, 4, 5, 6].map(i => `
-              <button class="btn-primary" id="sb-group-${i}" onclick="selectPanelShowbox(${i})" style="flex:1; white-space:nowrap; padding:8px 12px; font-size:0.85rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);">
-                Showbox ${i+1}
+            \${[0, 1, 2, 3, 4, 5, 6].map(i => \`
+              <button class="btn-primary" id="sb-group-\${i}" onclick="selectPanelShowbox(\${i})" style="flex:1; white-space:nowrap; padding:8px 12px; font-size:0.85rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);">
+                Showbox \${i+1}
               </button>
-            `).join('')}
+            \`).join('')}
           </div>
         </div>
       `;
