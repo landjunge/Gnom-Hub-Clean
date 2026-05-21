@@ -10,7 +10,6 @@ def get_tools_for_agent(soul: dict):
         "evolve": "Improve code",
         "generate_image": "Generate image",
         "crawl_url": "Crawl URL",
-        "deploy": "Deploy frontend (@publish)",
         "browser": "Real browser control (Playwright)",
         "sys_cmd": "System commands (install programs, change settings)"
     }
@@ -22,7 +21,6 @@ def get_tools_for_agent(soul: dict):
     if "crawl" in p: a += ["crawl_url"]
     if "desktop" in p: a += ["screenshot", "desktop_action", "browser"]
     if "evolve" in p: a += ["evolve"]
-    if "deploy" in p: a += ["deploy"]
     return {t: tm.get(t, t) for t in dict.fromkeys(a)}
 
 def format_tools_prompt(soul: dict, name: str):
@@ -33,7 +31,6 @@ def format_tools_prompt(soul: dict, name: str):
     if "write_file" in t: syn += "\n  [WRITE: filename]content[/WRITE] — Write file"
     if "run_command" in t: syn += "\n  [SHELL: command] — Terminal (pip install, brew, system commands)"
     if "generate_image" in t: syn += "\n  [IMAGE: prompt] — Generate image"
-    if "deploy" in t: syn += "\n  @publish — Deploy frontend to network"
     if "browser" in t: syn += '\n  [BROWSER: {"action": "goto|click|type|read|screenshot", "target": "...", "value": "..."}]'
     syn += '\n  <SHOWBOX:lamp_index>["Slide 1 HTML", "Slide 2 HTML"]</SHOWBOX> — Updates the Showbox slides for lamp lamp_index (1-7) and displays them in the Showbox center. Use modern inline CSS (gradients, glassmorphism, flex).'
     char = f" – {soul['character']}" if soul.get("character") else ""

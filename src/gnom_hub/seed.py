@@ -1,25 +1,18 @@
-"""Seed-Daten für Neuinstallation — 8 System + 7 Worker Agenten."""
+"""Seed-Daten für Neuinstallation — 4 System + 4 Worker Agenten."""
 import uuid
 from datetime import datetime
 
 SEED_AGENTS = [
-    # System (8)
-    ("GeneralAG",     "Task distribution, coordination",                  "general"),
-    ("SummarizerAG",  "Summaries, information filtering",                 "summarizer"),
-    ("WatchdogAG",    "System monitoring, health checks",                 "normal"),
-    ("CronjobAG",     "Scheduled tasks",                                  "normal"),
-    ("BackupAG",      "Backups, snapshots, recovery",                     "normal"),
+    # System (4)
     ("SoulAG",        "Swarm consciousness, personality",                 "normal"),
+    ("GeneralAG",     "Task distribution, coordination",                  "general"),
     ("SecurityAG",    "Security, signature verification",                 "normal"),
-    ("SkillsAG",      "Skill recognition, capability analysis",           "normal"),
-    # Worker (7)
-    ("writerAG",      "Texts, scripts, content, and creative writing",    "normal"),
-    ("coderAG",       "Programming, writing code, technical execution",   "normal"),
+    ("WatchdogAG",    "System monitoring, health checks",                 "normal"),
+    # Worker (4)
     ("researcherAG",  "Researching, gathering and summarizing info",      "normal"),
+    ("writerAG",      "Texts, scripts, content, and creative writing",    "normal"),
     ("editorAG",      "Checking results, editing, quality assurance",     "normal"),
-    ("web_crawlerAG", "Web surfer — Fetches web pages, follows links",    "normal"),
-    ("data_crawlerAG","Structure extractor — Tables, lists, JSON",        "normal"),
-    ("smart_crawlerAG","Anti-blocking crawler — Smart rate-limits",        "normal"),
+    ("coderAG",       "Programming, writing code, technical execution",   "normal"),
 ]
 
 def create_seed():

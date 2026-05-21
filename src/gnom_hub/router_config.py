@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
-load_dotenv()
+_env = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "config", ".env")
+if os.path.exists(_env): load_dotenv(dotenv_path=_env)
 
 # === KEYS ===
 OR_KEY = os.getenv("OPENROUTER_KEY_FREE_1")
@@ -19,12 +20,6 @@ AGENT_MODELS = {
     # ── Text (braucht guten Schreibstil) ──
     "writerag":         ["minimax/minimax-m2.5:free"],
     "editorag":         ["minimax/minimax-m2.5:free"],
-    # ── Zusammenfassung (schnell, kein Overhead) ──
-    "summarizerag":     ["qwen/qwen3-next-80b:free"],
-    # ── Crawler (leicht, schnell) ──
-    "web_crawlerag":    ["nvidia/nemotron-nano-9b-v2:free"],
-    "data_crawlerag":   ["nvidia/nemotron-nano-9b-v2:free"],
-    "smart_crawlerag":  ["nvidia/nemotron-nano-9b-v2:free"],
 }
 DEFAULT_MODELS = ["deepseek/deepseek-v4-flash:free", "openai/gpt-oss-120b:free", "minimax/minimax-m2.5:free"]
 

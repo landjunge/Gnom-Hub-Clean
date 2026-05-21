@@ -26,6 +26,11 @@ def root():
     idx = FRONT / "index.html"
     if idx.exists(): return FileResponse(str(idx))
     return {"message": "GNOM-HUB", "version": "0.3.0"}
+@app.get("/help")
+def get_help():
+    hlp = FRONT / "help.html"
+    if hlp.exists(): return FileResponse(str(hlp))
+    return {"message": "GNOM-HUB Help page not found"}
 def main(): 
     from agents.watchdogAG import start_watchdog
     start_watchdog()

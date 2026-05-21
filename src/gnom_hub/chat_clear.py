@@ -5,7 +5,7 @@ from .chat_commands import _post_chat
 def handle_clear(q=""):
     q = q.strip().lower()
     if q == "all agents":
-        sys_ags = ['watchdogag','skillsag','backupag','cronjobag','soulag']
+        sys_ags = ['soulag', 'generalag', 'securityag', 'watchdogag']
         save_db("agents", [a for a in get_db("agents") if a["name"].lower() in sys_ags])
         _post_chat("System", "Alle externen Agenten gelöscht. System-Infrastruktur bleibt intakt.")
         return {"status": "agents_cleared"}

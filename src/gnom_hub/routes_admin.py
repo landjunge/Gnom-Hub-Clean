@@ -17,19 +17,17 @@ def nuke_restart(request: Request):
     from agents.securityAG import _get_or_create_secret; from .proc_mgr import kill_process, restart_hub
     if request.headers.get("X-Hub-Secret") != _get_or_create_secret().hex(): return {"error": "Unauthorized"}
     port = os.environ.get("GNOM_HUB_PORT", "3002")
-    killed = [kill_process(t) for t in ["generalAG", "summarizerAG", "cronjobAG", "backupAG", "soulAG", "watchdogAG", "skillsAG", "securityAG", port]]
+    killed = [kill_process(t) for t in ["generalAG", "soulAG", "watchdogAG", "securityAG", port]]
     threading.Timer(1.5, restart_hub).start()
     return {"status": "nuked", "killed": killed, "restart": "in 1.5s"}
-ROLES_DE = {"general": "SYSTEM-ROLLE: GENERAL. Task-Verteilung, Koordination. Analysiere @job und verteile Aufgaben via @Name -> Aufgabe. Keine Erklärungen.",
-            "summarizer": "SYSTEM-ROLLE: SUMMARIZER. Informationsfilter. Extrahiere Fakten/Entscheidungen. Stichpunkte, max 1 Satz pro Punkt."}
-ROLES_EN = {"general": "SYSTEM ROLE: GENERAL. Task distribution and coordination. Analyze @job and distribute tasks via @Name -> Task. No explanations.",
-            "summarizer": "SYSTEM ROLE: SUMMARIZER. Information filter. Extract facts/decisions. Bullet points, max 1 sentence per point."}
+ROLES_DE = {"general": "SYSTEM-ROLLE: GENERAL. Task-Verteilung, Koordination. Analysiere @job und verteile Aufgaben via @Name -> Aufgabe. Keine Erklärungen."}
+ROLES_EN = {"general": "SYSTEM ROLE: GENERAL. Task distribution and coordination. Analyze @job and distribute tasks via @Name -> Task. No explanations."}
 @router.put("/agents/{agent_id}/role")
 def set_role(agent_id: str, role: str):
     from .db import get_language
     lang = get_language()
     roles_dict = ROLES_EN if lang == "en" else ROLES_DE
-    if role not in ("general", "summarizer", "normal"): return {"error": f"Ungültige Rolle: {role}" if lang == "de" else f"Invalid role: {role}"}
+    if role not in ("general", "normal"): return {"error": f"Ungültige Rolle: {role}" if lang == "de" else f"Invalid role: {role}"}
     agents = get_db("agents"); agent = next((a for a in agents if a["id"] == agent_id or a.get("name","").lower() == agent_id.lower()), None)
     if not agent: return {"error": "Agent nicht gefunden" if lang == "de" else "Agent not found"}
     for x in agents:
