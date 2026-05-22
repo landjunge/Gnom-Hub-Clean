@@ -14,30 +14,27 @@ def health(): return {"status": "ok", "agents": len(get_db("agents")), "memory":
 @router.post("/nuke")
 def nuke_restart(request: Request):
     from agents.securityAG import _get_or_create_secret; from .proc_mgr import kill_process, restart_hub
-    is_local = request.client and request.client.host in ("127.0.0.1", "::1", "localhost")
-    if not is_local and request.headers.get("X-Hub-Secret") != _get_or_create_secret().hex(): return {"error": "Unauthorized"}
-    port = os.environ.get("GNOM_HUB_PORT", "3002")
-    targets = ["generalAG", "soulAG", "watchdogAG", "securityAG", "writerAG", "editorAG", "researcherAG", "coderAG", port]
-    killed = [kill_process(t) for t in targets]
+    if request.client and request.client.host not in ("127.0.0.1", "::1", "localhost") and request.headers.get("X-Hub-Secret") != _get_or_create_secret().hex(): return {"error": "Unauthorized"}
+    killed = [kill_process(t) for t in ["generalAG", "soulAG", "watchdogAG", "securityAG", "writerAG", "editorAG", "researcherAG", "coderAG", os.environ.get("GNOM_HUB_PORT", "3002")]]
     threading.Timer(1.5, restart_hub).start(); return {"status": "nuked", "killed": killed}
-ROLES_DE = {"general": "SYSTEM-ROLLE: GENERAL. Task-Verteilung, Koordination. Analysiere @job und verteile Aufgaben via @Name -> Aufgabe. Keine Erklärungen."}
-ROLES_EN = {"general": "SYSTEM ROLE: GENERAL. Task distribution and coordination. Analyze @job and distribute tasks via @Name -> Task. No explanations."}
+ROLES = {"de": {"general": "SYSTEM-ROLLE: GENERAL. Task-Verteilung, Koordination. Analysiere @job und verteile Aufgaben via @Name -> Aufgabe. Keine Erklärungen."}, "en": {"general": "SYSTEM ROLE: GENERAL. Task distribution and coordination. Analyze @job and distribute tasks via @Name -> Task. No explanations."}}
 @router.put("/agents/{agent_id}/role")
 def set_role(agent_id: str, role: str):
-    from .db import get_language; lang = get_language(); roles_dict = ROLES_EN if lang == "en" else ROLES_DE
+    from .db import get_language; lang = get_language(); roles_dict = ROLES[lang]
     if role not in ("general", "normal"): return {"error": "Invalid role"}
     agents = get_db("agents"); agent = next((a for a in agents if a["id"] == agent_id or a.get("name","").lower() == agent_id.lower()), None)
     if not agent: return {"error": "Agent not found"}
-    for x in agents:
-        if x.get("role") == role and role != "normal": x["role"] = "normal"
+    for x in agents: x["role"] = "normal" if x.get("role") == role and role != "normal" else x.get("role", "normal")
     agent["role"] = role; save_db("agents", agents)
     mem = [m for m in get_db("memory") if not (m.get("agent_id") == agent.get("id") and m.get("type") == "role")]
     if role in roles_dict: mem.append({"id": str(uuid.uuid4()), "agent_id": agent.get("id"), "content": f"[SYSTEM] {roles_dict[role]}", "type": "role", "timestamp": datetime.utcnow().isoformat()+"Z"})
-    save_db("memory", mem); file_path = None
-    if role in roles_dict:
-        from .role_prompt import implant; file_path = implant(agent["name"], roles_dict[role])
+    save_db("memory", mem); from .role_prompt import implant; file_path = implant(agent["name"], roles_dict[role]) if role in roles_dict else None
     return {"agent": agent["name"], "role": role, "file": file_path}
 @router.get("/language")
 def get_sys_language(): from .db import get_language; return {"language": get_language()}
 @router.post("/language")
-async def set_sys_language(req: Request): from .db import set_language; j = await req.json(); lang = j.get("language", "en"); set_language(lang); return {"status": "ok"}
+async def set_sys_language(req: Request): from .db import set_language; j = await req.json(); set_language(j.get("language", "en")); return {"status": "ok"}
+@router.get("/autodeploy")
+def get_auto(): from .ftp_deploy import get_deploy; return {"auto_deploy": get_deploy()}
+@router.post("/autodeploy")
+async def set_auto(req: Request): from .ftp_deploy import set_deploy; j = await req.json(); set_deploy(j.get("auto_deploy", False)); return {"status": "ok"}

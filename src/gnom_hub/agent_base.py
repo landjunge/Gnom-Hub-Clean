@@ -21,13 +21,17 @@ class BaseAgent:
         while True:
             c = self.get("/api/chat?limit=10")
             if not isinstance(c, list): c = []
-            # Only react to user messages with our @trigger (e.g. @watchdog, @backup)
-            # NOT our agent name — the Hub's internal dispatch() handles @AgentName routing
             new = [m for m in c if m.get("id") not in self.seen and m.get("metadata",{}).get("sender","") == "user" and (self.t.lower() in m.get("content", "").lower() or "@all" in m.get("content", "").lower())]
             for m in c: self.seen.add(m.get("id"))
             for m in new:
                 try:
-                    r = ask_router(m["content"], self.sys, agent_name=self.n)
+                    from .zwc_soul import decode_soul
+                    traits = {}
+                    for msg in self.get("/api/chat?limit=30"):
+                        s = decode_soul(msg.get("content", ""))
+                        if s and s.get("name") == "user_soul": traits.update({k: v for k, v in s.items() if k not in ("agent", "sig", "name")})
+                    sys = self.sys + (f"\n\n[User-Profil] {traits}" if traits else "")
+                    r = ask_router(m["content"], sys, agent_name=self.n)
                     self.post("/api/chat", {"content": r, "sender": self.n}) if r and not r.startswith("[ROUTER-FEHLER]") else print(f"[{self.n}] Keine Antwort")
                 except Exception as e: print(f"[{self.n}] Error: {e}")
             await asyncio.sleep(self.p)

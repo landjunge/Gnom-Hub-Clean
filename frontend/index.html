@@ -3743,6 +3743,13 @@
                   <button class="btn-primary" id="lang-btn-en" onclick="setSystemLanguage('en')" style="flex:1; padding:5px; font-size:0.75rem;">English</button>
                 </div>
               </div>
+              <div style="border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;">
+                <h3 style="margin-bottom:5px;">FTP Auto-Deploy</h3>
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.85rem; accent-color:var(--primary);">
+                  <input type="checkbox" id="auto-deploy-checkbox" onchange="toggleFtpAutoDeploy(this.checked)" style="width:16px; height:16px;">
+                  <span>Webseiten automatisch hochladen</span>
+                </label>
+              </div>
               <div id="system-info-panel" style="font-size:0.85rem; padding:12px; border-radius:6px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05);">
                 Loading System Info...
               </div>
@@ -3784,6 +3791,23 @@
         document.getElementById('lang-btn-en').style.background = lang === 'en' ? 'rgba(0,150,255,0.2)' : 'transparent';
       } catch (e) {
         console.error("Language loading error", e);
+      }
+    }
+    async function toggleFtpAutoDeploy(val) {
+      try {
+        await api('POST', '/admin/autodeploy', { auto_deploy: val });
+      } catch (e) {
+        console.error("Failed to toggle FTP auto-deploy", e);
+      }
+    }
+    async function loadFtpAutoDeployState() {
+      try {
+        const res = await api('GET', '/admin/autodeploy');
+        const active = res?.auto_deploy || false;
+        const cb = document.getElementById('auto-deploy-checkbox');
+        if (cb) cb.checked = active;
+      } catch (e) {
+        console.error("FTP auto-deploy load error", e);
       }
     }
     async function loadSystemInfoState() {
@@ -3838,6 +3862,7 @@
     async function loadLLMConfig() {
       await loadLanguageState();
       await loadSystemInfoState();
+      await loadFtpAutoDeployState();
 
       const keysRes = await api('GET', '/llm/keys');
       if (keysRes) {

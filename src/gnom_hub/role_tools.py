@@ -7,12 +7,13 @@ def distribute_job(job_text):
     ags = get_db("agents")
     gen = next((a for a in ags if a.get("role") == "general"), None)
     if not gen: gen = next((a for a in ags if a.get("name","").lower() == "generalag"), None)
-    gen_desc = gen.get("description", "Du bist der elitäre General.")
+    from .soul_initializer import get_soul
+    soul = get_soul(gen.get("name", "GeneralAG"))
     mmap = ", ".join(f"{a['name']}:{a.get('skill', a.get('role','Agent'))}" for a in ags if a.get('name') != gen.get('name'))
-    system = (f"SYSTEM: {gen_desc} Deine Truppe: [{mmap}]. "
-        "Analysiere den Job in 1 Satz. Erstelle max 3 Teilaufgaben. "
-        "Ausgabe NUR im Format: @Name → Aufgabe. Keine Erklärungen.")
-    return _llm(system, job_text, 300)
+    system = (f"SYSTEM: Du bist {gen.get('name', 'GeneralAG')}. {soul.get('directive')}\nDeine Truppe: [{mmap}]. "
+        "Analysiere die Aufgabe kurz, warne falls nötig vor Regelverstößen (40-Zeilen-Limit, Komplexität), "
+        "erinnere an Git-Commits und weise Teilaufgaben im Format '@AgentName -> Aufgabe' zu (jede auf neuer Zeile).")
+    return _llm(system, job_text, 500)
 def summarize_chat(limit=50):
     from .zwc_soul import decode_soul, strip_zwc
     chat = sorted(get_db("memory"), key=lambda x: x.get("timestamp", ""))[-limit:]
@@ -26,3 +27,4 @@ def summarize_chat(limit=50):
         "IGNORIERE: Grüße, Smalltalk. Max 8 Stichpunkte. NUR die Stichpunkte.")
     if souls: system += f"\nSchwarm-Bewusstsein: {list(souls.values())}"
     return _llm(system, "\n".join(lines[-30:]), 600)
+

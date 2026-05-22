@@ -7,7 +7,7 @@
 set -e
 
 WORKSPACE_DIR="/Users/landjunge/Documents/AG-Flega"
-ICON_PNG="/Users/landjunge/.gemini/antigravity/brain/6cdd39c7-b271-4c3b-bfdf-57808f675ba5/gnom_hub_tech_icon_1779414496028.png"
+ICON_PNG="/Users/landjunge/.gemini/antigravity/brain/6cdd39c7-b271-4c3b-bfdf-57808f675ba5/gnom_hub_ultra_simple_1779420109688.png"
 DESKTOP_DIR="/Users/landjunge/Desktop"
 APP_NAME="Gnom-Hub"
 APP_DIR="${DESKTOP_DIR}/${APP_NAME}.app"
