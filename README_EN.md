@@ -11,16 +11,7 @@
 
 ---
 
-<table>
-  <tr>
-    <td width="50%"><img src="docs/warroom_real_full.png" alt="War Room – Overview" width="100%"></td>
-    <td width="50%"><img src="docs/warroom_chat_real.png" alt="War Room – Agent Chat" width="100%"></td>
-  </tr>
-  <tr>
-    <td width="50%"><img src="docs/warroom_sidebar.png" alt="Agent Swarm & Provider" width="100%"></td>
-    <td width="50%"><img src="docs/warroom_commands.png" alt="Command Bar" width="100%"></td>
-  </tr>
-</table>
+<img src="docs/warroom_real_full.png" alt="War Room – Overview" width="100%">
 
 ---
 
