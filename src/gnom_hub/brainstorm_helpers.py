@@ -21,4 +21,4 @@ def ask_llm(ag, q, ctx, bs_mode=False):
         post(ag["name"], process_actions(ans, ag, soul.get("permissions", []), bs_mode, wd))
     except Exception as e: post(ag["name"], f"[Fehler: {str(e)[:80]}]")
     finally:
-        ags = get_db("agents"); [x.update({"status": "online"}) for x in ags if x["name"] == ag["name"]]; save_db("agents", ags)
+        ags = get_db("agents"); [x.update({"status": "online", "active_job": ""}) for x in ags if x["name"] == ag["name"]]; save_db("agents", ags)

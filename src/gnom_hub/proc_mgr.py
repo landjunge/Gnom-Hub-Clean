@@ -25,6 +25,6 @@ def restart_hub():
 def process_status():
     """Zeigt laufende Gnom-Hub Prozesse."""
     try:
-        out = subprocess.check_output("ps aux | grep -E 'gnom.hub|tiny_agent|watchdog|general|summarizer|soul|cronjob|apikeys|skills' | grep -v grep", shell=True).decode()
+        out = subprocess.check_output("ps aux | grep -E 'gnom.hub|watchdog|general|soul|researcher|writer|editor|coder' | grep -v grep", shell=True).decode()
         return out.strip() or "No gnom-hub processes found"
     except: return "No gnom-hub processes found"

@@ -7,21 +7,22 @@ def handle_status(): return {"agents": [{"name":a["name"],"role":a.get("role","�
 def handle_free(q): ags=get_db("agents"); t=q.replace("@","").strip().lower(); [a.update({"active_job":""}) for a in ags if not t or a["name"].lower()==t]; save_db("agents", ags); _post_chat("System", f"Jobs cleared: {t or 'ALL'}"); return {"status": "ok"}
 
 def handle_job(task):
-    from .role_tools import distribute_job; ags = get_db("agents"); gen = next((a for a in ags if a.get("role") == "general" or a.get("name","").lower() == "generalag"), None)
+    from .role_tools import distribute_job; from .brainstorm import dispatch; ags = get_db("agents"); gen = next((a for a in ags if a.get("role") == "general" or a.get("name","").lower() == "generalag"), None)
     if not gen: return {"error": "Kein General"}
     save_db("jobs", get_db("jobs") + [{"id": str(uuid.uuid4()), "task": task, "general": gen["name"], "status": "open", "ts": datetime.utcnow().isoformat()+"Z"}]); res = distribute_job(task); _post_chat(gen["name"], res)
-    [a.update({"active_job": next((m.group(2).strip() for m in re.finditer(r'@(\w+)[\s→>:\-]+(.+)', res) if m.group(1).lower()==a["name"].lower()), "")}) for a in ags]; save_db("agents", ags); return {"status": "job_created"}
+    for a in ags: a["active_job"] = next((m.group(2).strip() for m in re.finditer(r'@(\w+)[\s→>:\-]+(.+)', res) if m.group(1).lower()==a["name"].lower()), "")
+    save_db("agents", ags)
+    for a in ags:
+        if a["active_job"]: dispatch(a["active_job"], target=a["name"])
+    return {"status": "job_created"}
 
 def git_cmd(agent_path: str, command: str) -> str:
-    import subprocess
-    from pathlib import Path
-    if not (Path(agent_path) / ".git").exists():
-        subprocess.run(["git", "init"], cwd=agent_path, capture_output=True)
+    import subprocess; from pathlib import Path
+    if not (Path(agent_path) / ".git").exists(): subprocess.run(["git", "init"], cwd=agent_path, capture_output=True)
     try:
-        result = subprocess.run(["git"] + command.split(), cwd=Path(agent_path), capture_output=True, text=True, timeout=10)
-        return result.stdout.strip() + (result.stderr and f"\nERR: {result.stderr.strip()}" or "")
-    except Exception as e:
-        return f"❌ Git-Error: {str(e)}"
+        r = subprocess.run(["git"] + command.split(), cwd=Path(agent_path), capture_output=True, text=True, timeout=10)
+        return r.stdout.strip() + (r.stderr and f"\nERR: {r.stderr.strip()}" or "")
+    except Exception as e: return f"❌ Git-Error: {str(e)}"
 
 def handle_git(q, rb=False):
     p = q.split(" ", 1); cmd = f"reset --hard {p[1]}" if rb else (p[1] if len(p)>1 else "")

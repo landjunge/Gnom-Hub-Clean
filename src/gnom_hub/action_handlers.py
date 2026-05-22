@@ -6,15 +6,8 @@ from .action_exec import handle_shell, handle_crawl, handle_showbox
 def _browser(answer, matches, agent, perms):
     """Verarbeitet [BROWSER: {...}] Tags."""
     if "godmode" not in perms and "desktop" not in perms: return answer
-    from agents.browserAG import browser_action
-    import json
     for m in matches:
-        try:
-            cmd = json.loads(m.group(1).strip())
-            r = browser_action(cmd)
-            answer = answer.replace(m.group(0), f"[Browser: {r}]")
-        except Exception as e:
-            answer = answer.replace(m.group(0), f"[Browser-Fehler: {e}]")
+        answer = answer.replace(m.group(0), "[Browser: BROWSER-Aktionen sind in dieser 8-Agenten-Konfiguration deaktiviert]")
     return answer
 
 def process_actions(answer, agent, perms, bs_mode, wd):
