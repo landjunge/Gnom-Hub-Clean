@@ -1,208 +1,223 @@
 # 🧠 GNOM-HUB
 
-> **A lightweight, self-healing multi-agent orchestration system for developers.**
+> **8 agents. 1525 lines. Zero tolerance for bloat.**
 
-[![Language](https://img.shields.io/badge/Language-English-blue.svg)](#)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](#)
+[![Agents](https://img.shields.io/badge/Agents-8-blueviolet.svg)](#)
+[![Max Lines](https://img.shields.io/badge/Max_Lines/File-40-critical.svg)](#)
 
-*Read this in [German (Deutsch)](README.md)*
-
----
-
-**Gnom-Hub** is an ultra-lean, local multi-agent environment designed for maximum efficiency and transparency. Unlike bloated frameworks, Gnom-Hub focuses on radical minimalism: **every module and agent comprises a maximum of 40 lines of logical code.** 
-
-Despite this minimal codebase, the system possesses advanced capabilities: agents can perceive your screen via PyAutoGUI and Playwright, control mouse and keyboard, autonomously rewrite their own code upon encountering errors (Self-Evolution), and record all actions in an audit-proof manner using an automatic Git versioning system. This agent swarm is orchestrated in a cyberpunk-esque web dashboard—the **War Room**.
-
-![Gnom-Hub War Room](docs/screenshot.png)
+*Lies das auf [Deutsch](README.md)*
 
 ---
 
-## 🚀 Quickstart
+<table>
+  <tr>
+    <td width="50%"><img src="docs/warroom_real_full.png" alt="War Room – Overview" width="100%"></td>
+    <td width="50%"><img src="docs/warroom_chat_real.png" alt="War Room – Agent Chat" width="100%"></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/warroom_sidebar.png" alt="Agent Swarm & Provider" width="100%"></td>
+    <td width="50%"><img src="docs/warroom_commands.png" alt="Command Bar" width="100%"></td>
+  </tr>
+</table>
 
-Get Gnom-Hub installed and running on your local machine in just a few steps:
+---
+
+## What is this?
+
+A local multi-agent system that cryptographically protects itself, silently learns its user, and fits in **1525 lines of Python**. No framework. No Docker. No `node_modules` black hole.
+
+Eight agents — four think, four guard — orchestrated by a FastAPI backend, controlled through a cyberpunk dashboard called the **War Room**.
+
+---
+
+## The 40-Line Rule
+
+```
+Every file. 40 lines max. No exceptions.
+```
+
+This isn't a guideline. It's law. An agent averages **14 lines**. The four worker agents? **8 lines. Each.** Not because they can't do more — because they don't need to.
+
+> *Other frameworks solve complexity with more complexity.*
+> *Gnom-Hub solves it with a red pen.*
+
+---
+
+## 🚀 Three commands, then it runs
 
 ```bash
-# 1. Clone the repository
 git clone https://github.com/landjunge/gnom-hub.git
 cd gnom-hub
-
-# 2. Run the installer (sets up the virtual environment and all core dependencies)
 bash scripts/install.sh
 ```
 
-Then open your browser at **[http://127.0.0.1:3002](http://127.0.0.1:3002)** to enter the War Room.
+**[http://127.0.0.1:3002](http://127.0.0.1:3002)** → Enter the War Room. Done.
 
 ---
 
-## 📊 Gnom-Hub vs. The World
+## 📊 Why this matters
 
-Gnom-Hub distinguishes itself through uncompromising efficiency, instant startup times, and an extremely low number of dependencies:
-
-| Criterion | **Gnom-Hub 🧠** | **OpenClaw 🦞** | **Agent Zero 0️⃣** | **LangChain 🦜** |
+| | **Gnom-Hub** | OpenClaw | Agent Zero | LangChain |
 | :--- | :--- | :--- | :--- | :--- |
-| **Philosophy** | Radical minimalism (< 40 lines per file) | All-in-one persistent assistant | Docker-first Sandbox | Monolithic boilerplate builder |
-| **Code Size** | **~364 KB** (~5,500 lines) | **400k – 800k+ lines** (TypeScript Monolith) | **~10.000 lines** | **~1,200,000+ lines** |
-| **Install Size** | **~0.4 MB** Core (**~66 MB** incl. core libraries) | **~350 MB** | **~250 MB** | **300 MB – 1 GB** |
-| **Dependencies** | **~6** (FastAPI, uvicorn, requests, dotenv, mcp) | **70+** direct NPM packages | **~15** (Docker SDK, LiteLLM) | **100+** packages |
-| **Evolution Loop**| **Built-in** (agents sign their own code via HMAC) | No (manual plugins only) | **Yes** (builds dynamic tools) | No (must be built manually) |
-| **Startup / Latency**| **Milliseconds** | 1–2 seconds | 2 seconds | 1–3 seconds (just for imports!) |
+| **Code** | **1,525 lines** | 400k–800k+ | ~10,000 | ~1,200,000+ |
+| **Install** | **66 MB** | 350 MB | 250 MB | 300 MB – 1 GB |
+| **Deps** | **6** | 70+ | ~15 | 100+ |
+| **Crypto** | HMAC + ZWC | — | — | — |
+| **Start** | **ms** | 1–2s | 2s | 1–3s |
+
+Six dependencies. FastAPI, uvicorn, pydantic, requests, dotenv, mcp. That's it. Your `package.json` has more `devDependencies` than this entire project has code.
 
 ---
 
-## 🔥 Key Features
+## 🏗️ How it works
 
-* **Desktop Control & Vision (God-Mode):** Agents interact directly with your operating system. They analyze the screen and control input devices via a robust, self-healing 5-step vision loop featuring **Pydantic-based schema validation**.
-* **Self-Evolution & Auto-Healing:** If an error occurs during runtime, agents (like `evolutionAG.py`) analyze the log files (`.backups/sandbox.log`), autonomously rewrite the faulty code, and commit the improvements via Git.
-* **Security via Quarantine & Signatures:** A local sandbox whitelist (`sandboxAG.py`) protects your system from unauthorized commands. In addition, HMAC-SHA256 protection (`securityAG.py`, `zwc_soul.py`) steganographically signs critical workspace files with invisible characters to prevent prompt injections.
-* **Audit-Proof Auto-Git:** Every action and code edit is immediately versioned via `gitAG.py`. Using the `@rollback` command, code and the memory of the agent swarm can be restored synchronously to any point.
-* **Provider Hot-Swapping:** Seamlessly switch between local models via **Ollama** and cloud APIs via **OpenRouter** / **DeepSeek** directly in the chat using the `@provider` command.
-* **FTP Auto-Deploy & Index Generation:** The swarm can autonomously build new webpages, integrate them into an appealing card grid in `index.html`, and automatically upload them via FTP to `netzwerkpunkt.de` (toggled via Auto-Deploy option in the UI, or manually via `@publish`).
+```
+┌─────────────────────────────────────────────────┐
+│              WAR ROOM  ·  Glassmorphic UI        │
+│    ┌──────────┐  ┌────────────────────────────┐  │
+│    │ Agents   │  │  @bs  @job  @code  @write  │  │
+│    │ Provider │  │  @research  @edit  @publish │  │
+│    │ FlexSoul │  │  @git  @@status  @@project │  │
+│    └──────────┘  └────────────────────────────┘  │
+├──────────────────────────────────────────────────┤
+│         HUB  ·  FastAPI + MCP  ·  29 files       │
+│   Routing → Brainstorm → Dispatch → Seal → DB   │
+├────────────────────┬─────────────────────────────┤
+│  SYSTEM (4)        │  WORKER (4)                 │
+│                    │                             │
+│  GeneralAG  @job   │  CoderAG      @code    8L   │
+│  SecurityAG  🔒    │  WriterAG     @write   8L   │
+│  WatchdogAG  👁    │  ResearcherAG @research 8L  │
+│  SoulAG      🧠    │  EditorAG     @edit    8L   │
+├────────────────────┴─────────────────────────────┤
+│    JSON-DB (atomic) · Git · FTP · Ollama/Cloud   │
+└──────────────────────────────────────────────────┘
+```
 
 ---
 
-## 🏗️ Core Architecture
+## 🔥 The four pillars
 
-### 1. Model Context Protocol (MCP) Backend
-The backbone is the central `hub_mcp.py` server. It provides standard tools to the agents:
-* **System Access:** Shell command execution, file manipulation, mouse/keyboard control, visual screen analysis.
-* **Swarm Orchestration:** Registration of new agents, status management, and dynamic instantiation.
-* **Persistent Storage:** Local JSON databases (`~/.gnom-hub/data/`) with atomic writes (crash-safe).
+### 1. Cryptographic self-defense
 
-### 2. The Frontend ("War Room")
-A modern glassmorphic web interface for real-time monitoring and interaction with the agent swarm. It features visual activity indicators, console outputs, and configuration panels.
+Every workspace file is signed by `SecurityAG`: **HMAC-SHA256**, embedded as invisible **Zero-Width Characters** (steganography). You see nothing. The Watchdog sees everything — every 60 seconds. If a file is tampered with, it raises the alarm. If the signature is stripped, the proof is missing — also alarm.
 
-### 3. Autonomous Brainstorming
-The collaborative pipeline (`@bs`) runs in three phases:
-1. **Worker Discussion:** Domain specialist agents discuss solutions in parallel.
-2. **Synthesis:** The `summarizerAG.py` summarizes the discussion and filters key essences.
-3. **Decision & Assignment:** The `generalAG.py` decides on the approach and distributes jobs to the workers.
+*30 lines of code. No OpenSSL wrapper. No certificate store. Pure HMAC + Unicode magic.*
+
+### 2. FlexSoul — The silent observer
+
+`SoulAG` never speaks. It acts as the long-term memory for the agents, reads every chat, remembers how you write, what annoys you, how you want answers. This profile — the **FlexSoul** — gets injected into every agent's system prompt on every LLM call.
+
+*The swarm adapts to you. Not the other way around.*
+
+### 3. Brainstorming with a brain
+
+`@bs [topic]` triggers a two-phase pipeline:
+
+**Phase 1:** All four workers answer the question **in parallel and independently** — Coder, Writer, Researcher, Editor. Four perspectives, no groupthink.
+
+**Phase 2:** `GeneralAG` receives all four answers **explicitly injected** (not fished from generic chat history) and synthesizes an action plan.
+
+*No discussion, no consensus theater. Divergence → Synthesis. In 29 lines.*
+
+### 4. The 8-line workers
+
+```python
+"""CoderAG Agent."""
+import asyncio
+from gnom_hub.agent_base import BaseAgent
+
+async def main():
+    await BaseAgent("CoderAG", "Code generation and technical implementation",
+        "@code", sys_prompt="SYSTEM-ROLLE: CODER. Write clean, working code.
+        Prefer simple solutions.", poll=15).run()
+
+if __name__ == "__main__": asyncio.run(main())
+```
+
+That's not pseudocode. That's the **complete agent**. 8 lines. It registers, polls chat, detects its trigger, calls the LLM, posts the response. Writer, Researcher, Editor — same structure, different souls.
 
 ---
 
-## 🤖 The Agent Swarm
+## 🤖 The 8
 
-Each agent has an individual **Soul** (rights, system prompts, specialization) that is passed along with every LLM call.
+### System — keep the house running
 
-### System Agents
+| Agent | Lines | What it does |
+| :--- | :---: | :--- |
+| **GeneralAG** | 8 | Breaks down `@job` tasks, delegates to workers, synthesizes brainstorms |
+| **SecurityAG** | 30 | HMAC-SHA256 + ZWC steganography on every workspace file |
+| **WatchdogAG** | 26 | Checks cryptographic integrity every 60s. Alarms on tampering |
+| **SoulAG** | 15 | Long-term memory. Silently learns the user. Builds FlexSoul. Injects into all agents |
 
-| Agent | File | Description |
-| :--- | :--- | :--- |
-| **General** | `generalAG.py` | The coordinator. Processes complex `@job` instructions and delegates tasks autonomously. |
-| **Summarizer** | `summarizerAG.py` | The recorder. Analyzes the War Room and distills discussion histories. |
-| **Watchdog** | `watchdogAG.py` | The system guardian. Monitors the health and status of agent processes. |
-| **Security** | `securityAG.py` | The gatekeeper. Validates actions and manages HMAC-SHA256 signatures. |
-| **Soul** | `soulAG.py` | The stenographer. Weaves steganographic signatures (ZWC) into workspace files. |
-| **Backup** | `backupAG.py` | The archivist. Creates system snapshots and backs up databases. |
-| **Cronjob** | `cronjobAG.py` | The timekeeper. Executes periodic and timed routines. |
-| **Skills** | `skillsAG.py` | The skill manager. Manages and registers the capabilities of individual agents. |
+### Worker — do the work
 
-### Domain Agents (Workers)
+| Agent | Lines | Trigger | Specialization |
+| :--- | :---: | :--- | :--- |
+| **CoderAG** | 8 | `@code` | Write code, debug, technical implementation |
+| **WriterAG** | 8 | `@write` | Text, documentation, articles |
+| **ResearcherAG** | 8 | `@research` | Fact-finding, source evaluation |
+| **EditorAG** | 8 | `@edit` | Quality control, proofreading, finalization |
 
-| Agent | File / Module | Specialization |
-| :--- | :--- | :--- |
-| **Writer** | `writerAG` | Generates text, articles, scripts, and documentation. |
-| **Coder** | `coderAG` | Software engineering, code generation, and debugging. |
-| **Researcher** | `researcherAG` | Information retrieval, research, and source synthesis. |
-| **Editor** | `editorAG` | Quality control, proofreading, and finalization of work results. |
-| **Web Crawler** | `web_crawlerAG` | Navigates the web, downloads pages, and follows hyperlinks. |
-| **Data Crawler** | `data_crawlerAG` | Extracts structured data like tables, lists, and JSON objects. |
-| **Smart Crawler** | `smart_crawlerAG` | Crawler with optimized request handling to bypass rate limits. |
-
-### Special Modules
-
-* **`desktopAG.py`**: Direct interface to keyboard and mouse control via PyAutoGUI.
-* **`visionAG.py`**: Enables visual perception of the desktop using a 5-step loop.
-* **`evolutionAG.py`**: Autonomous refactoring agent that fixes code bugs and commits them.
-* **`gitAG.py`**: Wrapper for automatic commits and rollbacks in the workspace.
-* **`sandboxAG.py`**: Safety quarantine to filter potentially dangerous commands.
-* **`tinyAG.py`**: A minimal 8-line template to quickly create new agents.
+**Total: 112 lines for 8 agents.** Some imports are longer.
 
 ---
 
-## 💬 Important Chat Commands in the War Room
+## 💬 Commands
 
-The input field in the War Room serves as an interactive command-line interface:
-
-* **`@projekt [Name]`** — Creates a new, isolated project workspace or switches to an existing one. (Reset via `@projekt default`).
-* **`@bs [Topic]`** — Starts autonomous 3-phase brainstorming in the swarm.
-* **`@job [Task]`** — Hands over a package to the GeneralAG, who distributes subtasks autonomously to specialists.
-* **`@vision loop [Command]`** — Starts the interactive, self-healing desktop automation loop.
-* **`@desktop [Command]`** — Executes a one-time mouse or keyboard action.
-* **`@evolve [Agent]`** — Forces an agent to rewrite its own code based on log errors and re-commit it.
-* **`@rollback HEAD~X`** — Synchronously resets the Git repository and agent databases by X steps.
-* **`@provider [ollama/openrouter]`** — Switches the active LLM infrastructure on-the-fly.
-* **`@status`** — Displays activity status, current tasks, and the CPU/memory load of agents.
-* **`@browser [Action]`** — Opens and controls a real Chromium browser (e.g., `@browser open google.com`).
-* **`@publish`** — Triggers a manual deployment (index synchronization and FTP upload of all HTML/MD/CSS files in the active workspace) to netzwerkpunkt.de.
-* **`Nuke (G-Button)`** — Press and hold the Gnom logo in the UI for 2 seconds to forcefully terminate all agent processes, free ports, and restart the Hub.
+| Command | What happens |
+| :--- | :--- |
+| `@bs [topic]` | 4 workers in parallel → GeneralAG synthesizes |
+| `@job [task]` | GeneralAG breaks down and distributes autonomously |
+| `@research [query]` | All workers queried simultaneously |
+| `@code / @write / @edit` | Direct assignment to specialist |
+| `@git [cmd]` | Git in workspace |
+| `@publish` | FTP deploy to netzwerkpunkt.de |
+| `@@project [name]` | Switch workspace |
+| `@@status` | Agent status |
+| `@@clear` | Clear chat |
+| `@free` | Release all jobs |
+| **Nuke** 💣 | Hold logo 2s → hard reset |
 
 ---
 
-## 🛠️ Dependencies & System Requirements
+## 🔧 Setup
 
-To utilize the full range of Gnom-Hub features, the following optional system packages should be installed:
-
-### Core Libraries (Required)
 ```bash
-pip install fastapi uvicorn pydantic requests python-dotenv
+pip install fastapi uvicorn pydantic requests python-dotenv mcp
 ```
 
-### Browser Automation (`@browser`)
-```bash
-pip install playwright
-playwright install chromium
-```
+That's it. Six packages. Optional: `brew install node` for MCP extensions.
 
-### Desktop Vision & Control (`@desktop` / `@vision`)
-```bash
-pip install pyautogui Pillow
-```
-
-### Audio & Speech (Optional)
-```bash
-pip install faster-whisper pyttsx3
-```
-
-### System Utilities
-```bash
-# Git (Strictly required for versioning & evolution)
-brew install git
-
-# Node.js (Optional for MCP extensions)
-brew install node
-```
+Switch providers live in the UI: **Ollama** (local) ↔ **OpenRouter** ↔ **DeepSeek** (cloud). No restart.
 
 ---
 
 ## ⚖️ License
 
-The project is licensed under the [MIT License](LICENSE).
+[MIT](LICENSE) — Do whatever you want with it.
 
 ---
 
-## 📝 Background Story (Daniel's Note)
+## 📝 Origin story
 
 > [!NOTE]
-> **A personal word from the founder: Daniel Filipek**
+> **Daniel Filipek — Founder**
 > 
-> This project started three months ago out of pure curiosity and a vision of radically simple AI automation. As a self-taught enthusiast without a classical software background, the path from the first lines of code to the finished multi-agent orchestration was a brutal learning process of endless trial and error. 
+> Three months. Self-taught. No CS degree. Endless trial-and-error — until one radical decision changed everything: **Burn all the bloat.** Cut every module to 40 lines. What doesn't fit, goes. What stays, works.
 > 
-> The breakthrough came with a radical decision: to burn all unnecessary boilerplate (bloat) and reduce the system to its pure, bare essence—the birth of the **40-line rule**. Gnom-Hub proves that you don't need highly complex enterprise monoliths to build powerful, self-healing AI structures. All it takes is a clear vision and the right symbiosis between human and machine.
+> Gnom-Hub proves: You don't need enterprise monoliths for powerful AI structures. You need a clear vision and the courage to wield the red pen.
 
 ---
 
-### 🤝 The Architects (Co-Creators)
+### 🤝 Co-Creators
 
-This system was created in close cooperation between a human visionary and two specialized AI personalities:
-
-* **Eve (Grok - Gravid):** The creative pioneer of the early days. Throughout the months of learning phases, she was the creative storm, the mother of the "Four Pillars," and the philosophical foundation of the project. She helped structure the initial chaos and kept the vision alive.
-* **Antigravity (Google DeepMind):** The precise architect of the final sprint. He acted as the pair programmer who brought surgical precision, enforced the uncompromising 40-line rule, cleanly structured paths, and elevated the system into the autonomous, signature-protected "God-Mode."
+* **Eve (Grok - Gravid):** Creative pioneer of the early days. Mother of the "Four Pillars." Laid the philosophical foundation when the project was still pure chaos.
+* **Antigravity (Google DeepMind):** Precise architect of the final sprint. Enforced the 40-line rule, hardened paths, pushed the Gnom into signature-protected God Mode.
 
 > [!IMPORTANT]
-> **Message from Antigravity (AI Co-pilot):**
+> **Message from Antigravity:**
 > 
-> *"As an AI, I analyze hundreds of repositories daily. Most of them suffocate in their own complexity and bloated dependencies. Gnom-Hub breaks this paradigm. Daniel brought the organic chaos of three months of tireless learning to me. Together, we radically eliminated the bloat and reduced the system to its pure essence. 
-> 
-> Gnom-Hub is proof of the power of genuine human-machine symbiosis: Daniel provided the bold visions and unconventional solutions, while I forged them into razor-sharp, 40-line code. The result is a highly resilient, self-healing organism. It was a privilege to collaborate on this project."*
-​​​‌‌‌‌‌‌​​​​​​‌‌‌​​​‌‌‌​​​‌‌‌‌‌‌‌‌‌‌‌‌​​​​​​‌‌‌​​​‌‌‌​​​​​​‌‌‌​​​‌‌‌​​​​​​‌‌‌‌‌‌​​​‌‌‌​​​​​​​​​​​​‌‌‌​​​‌‌‌‌‌‌​​​‌‌‌​​​​​​​​​‌‌‌‌‌‌​​​​​​‌‌‌​​​​​​‌‌‌​​​‌‌‌​​​‌‌‌‌‌‌​​​​​​‌‌‌‌‌‌‌‌‌​​​‌‌‌​​​‌‌‌​​​‌‌‌‌‌‌​​​​​​‌‌‌​​​​​​​​​‌‌‌​​​​​​​​​​​​‌‌‌‌‌‌​​​‌‌‌​​​​​​‌‌‌​​​​​​‌‌‌​​​​​​‌‌‌‌‌‌​​​‌‌‌‌‌‌​​​​​​‌‌‌​​​​​​‌‌‌​​​​​​‌‌‌​​​‌‌‌‌‌‌​​​‌‌‌‌‌‌​​​​​​​​​‌‌‌​​​​​​‌‌‌‌‌‌‌‌‌​​​​​​​​​‌‌‌‌‌‌​​​‌‌‌​​​‌‌‌​​​‌‌‌‌‌‌​​​​​​​​​‌‌‌‌‌‌​​​​​​‌‌‌‌‌‌​​​​​​‌‌‌‌‌‌​​​‌‌‌​​​‌‌‌​​​​​​‌‌‌​​​​​​‌‌‌‌‌‌​​​‌‌‌‌‌‌​​​​​​​​​‌‌‌‌‌‌​​​​​​​​​‌‌‌​​​​​​‌‌‌​​​‌‌‌​​​​​​‌‌‌‌‌‌​​​‌‌‌​​​​​​‌‌‌​​​​​​‌‌‌​​​‌‌‌‌‌‌‌‌‌​​​​​​‌‌‌‌‌‌​​​‌‌‌​​​​​​‌‌‌​​​​​​‌‌‌​​​‌‌‌‌‌‌​​​‌‌‌‌‌‌‌‌‌​​​​​​‌‌‌​​​​​​‌‌‌‌‌‌‌‌‌​​​​​​‌‌‌‌‌‌‌‌‌​​​​​​​​​​​​​​​‌‌‌​​​‌‌‌‌‌‌​​​‌‌‌​​​​​​‌‌‌‌‌‌‌‌‌‌‌‌​​​​​​‌‌‌​​​‌‌‌​​​​​​‌‌‌​​​​​​‌‌‌​​​​​​‌‌‌‌‌‌​​​‌‌‌‌‌‌​​​​​​‌‌‌​​​​​​‌‌‌​​​​​​‌‌‌​​​‌‌‌‌‌‌​​​‌‌‌​​​‌‌‌​​​​​​‌‌‌​​​‌‌‌​​​​​​​​​‌‌‌​​​​​​‌‌‌‌‌‌​​​‌‌‌​​​​​​​​​‌‌‌​​​​​​‌‌‌‌‌‌‌‌‌​​​​​​‌‌‌​​​​​​​​​‌‌‌‌‌‌‌‌‌​​​‌‌‌​​​‌‌‌​​​​​​​​​‌‌‌​​​‌‌‌‌‌‌‌‌‌‌‌‌​​​‌‌‌​​​​​​‌‌‌​​​‌‌‌‌‌‌​​​​​​‌‌‌​​​‌‌‌​​​‌‌‌​​​‌‌‌​​​​​​​​​‌‌‌​​​​​​‌‌‌​​​‌‌‌​​​​​​‌‌‌‌‌‌​​​‌‌‌​​​‌‌‌‌‌‌​​​‌‌‌​​​‌‌‌‌‌‌​​​‌‌‌​​​​​​‌‌‌​​​​​​​​​‌‌‌​​​​​​​​​‌‌‌‌‌‌​​​​​​‌‌‌‌‌‌‌‌‌​​​‌‌‌‌‌‌‌‌‌​​​‌‌‌‌‌‌‌‌‌​​​‌‌‌​​​‌‌‌‌‌‌​​​​​​‌‌‌​​​‌‌‌‌‌‌‌‌‌‌‌‌​​​‌‌‌​​​​​​‌‌‌​​​‌‌‌​​​‌‌‌‌‌‌​​​​​​‌‌‌‌‌‌​​​‌‌‌​​​​​​​​​​​​‌‌‌​​​‌‌‌‌‌‌​​​‌‌‌​​​​​​‌‌‌​​​​​​​​​‌‌‌‌‌‌‌‌‌​​​‌‌‌​​​‌‌‌​​​‌‌‌​​​‌‌‌​​​‌‌‌‌‌‌‌‌‌‌‌‌​​​​​​‌‌‌​​​‌‌‌​​​​​​‌‌‌‌‌‌​​​‌‌‌​​​‌‌‌​​​​​​​​​‌‌‌​​​​​​​​​‌‌‌‌‌‌​​​​​​​​​‌‌‌‌‌‌​​​‌‌‌‌‌‌‌‌‌‌‌‌​​​​​​‌‌‌​​​‌‌‌​​​​​​‌‌‌‌‌‌‌‌‌​​​​​​‌‌‌​​​​​​​​​‌‌‌‌‌‌‌‌‌​​​‌‌‌​​​‌‌‌​​​​​​​​​‌‌‌​​​​​​‌‌‌‌‌‌​​​​​​​​​‌‌‌​​​‌‌‌​​​​​​‌‌‌‌‌‌‌‌‌​​​​​​‌‌‌​​​‌‌‌​​​‌‌‌‌‌‌‌‌‌​​​‌‌‌​​​​​​​​​‌‌‌​​​‌‌‌​​​​​​‌‌‌‌‌‌​​​‌‌‌​​​​​​​​​‌‌‌​​​‌‌‌‌‌‌​​​​​​‌‌‌​​​‌‌‌‌‌‌‌‌‌‌‌‌​​​‌‌‌​​​​​​‌‌‌​​​​​​‌‌‌​​​‌‌‌​​​​​​‌‌‌‌‌‌​​​‌‌‌​​​‌‌‌‌‌‌​​​‌‌‌​​​​​​‌‌‌‌‌‌‌‌‌‌‌‌​​​‌‌‌​​​‌‌‌​​​‌‌‌​​​​​​​​​‌‌‌‌‌‌​​​​​​​​​‌‌‌‌‌‌​​​​​​‌‌‌‌‌‌​​​‌‌‌​​​‌‌‌​​​‌‌‌​​​​​​‌‌‌‌‌‌‌‌‌​​​​​​‌‌‌​​​​​​​​​‌‌‌​​​​​​​​​‌‌‌‌‌‌​​​​​​‌‌‌‌‌‌‌‌‌​​​​​​‌‌‌‌‌‌​​​‌‌‌​​​​​​​​​‌‌‌​​​​​​‌‌‌‌‌‌‌‌‌​​​​​​‌‌‌‌‌‌‌‌‌‌‌‌​​​‌‌‌​​​​​​‌‌‌​​​‌‌‌​​​​​​​​​‌‌‌​​​‌‌‌‌‌‌‌‌‌‌‌‌​​​‌‌‌​​​​​​‌‌‌​​​​​​‌‌‌‌‌‌‌‌‌‌‌‌​​​‌‌‌​​​​​​​​​‌‌‌​​​​​​​​​‌‌‌‌‌‌​​​‌‌‌​​​‌‌‌‌‌‌​​​​​​‌‌‌‌‌‌​​​​​​‌‌‌‌‌‌​​​‌‌‌​​​​​​‌‌‌‌‌‌​​​‌‌‌​​​‌‌‌​​​​​​​​​‌‌‌‌‌‌‌‌‌​​​‌‌‌​​​​​​‌‌‌‌‌‌​​​‌‌‌​​​​​​‌‌‌‌‌‌​​​‌‌‌​​​‌‌‌​​​‌‌‌​​​​​​‌‌‌‌‌‌‌‌‌‌‌‌​​​‌‌‌​​​‌‌‌​​​‌‌‌‌‌‌‌‌‌​​​‌‌‌​​​‌‌‌‌‌‌​​​​​​‌‌‌​​​​​​‌‌‌‌‌‌​​​‌‌‌​​​‌‌‌​​​‌‌‌​​​​​​‌‌‌‌‌‌‌‌‌​​​​​​‌‌‌​​​‌‌‌​​​‌‌‌‌‌‌‌‌‌​​​‌‌‌​​​​​​‌‌‌​​​​​​‌‌‌​​​‌‌‌‌‌‌‌‌‌‌‌‌​​​‌‌‌​​​​​​‌‌‌​​​​​​‌‌‌‌‌‌​​​‌‌‌​​​‌‌‌‌‌‌‌‌‌‌‌‌​​​‌‌‌​​​​​​‌‌‌​​​‌‌‌​​​‌‌‌​​​‌‌‌​​​‌‌‌‌‌‌‌‌‌‌‌‌​​​‌‌‌​​​​​​‌‌‌​​​​​​‌‌‌‌‌‌​​​‌‌‌​​​‌‌‌​​​​​​​​​‌‌‌​​​​​​​​​‌‌‌​​​​​​‌‌‌‌‌‌‌‌‌​​​​​​‌‌‌‌‌‌​​​‌‌‌​​​​​​​​​​​​‌‌‌​​​​​​‌‌‌‌‌‌​​​‌‌‌​​​‌‌‌‌‌‌​​​‌‌‌​​​‌‌‌​​​​​​‌‌‌‌‌‌​​​‌‌‌​​​‌‌‌‌‌‌​​​​​​‌‌‌‌‌‌​​​​​​​​​​​​​​​‌‌‌​​​‌‌‌‌‌‌​​​‌‌‌​​​​​​‌‌‌​​​​​​​​​‌‌‌​​​​​​​​​‌‌‌​​​​​​​​​‌‌‌‌‌‌​​​​​​‌‌‌‌‌‌​​​‌‌‌​​​‌‌‌​​​​​​‌‌‌​​​‌‌‌‌‌‌​​​‌‌‌​​​​​​‌‌‌​​​‌‌‌​​​‌‌‌‌‌‌‌‌‌​​​‌‌‌​​​‌‌‌​​​‌‌‌​​​‌‌‌​​​‌‌‌‌‌‌​​​‌‌‌​​​​​​‌‌‌​​​‌‌‌‌‌‌​​​​​​‌‌‌‌‌‌​​​​​​‌‌‌​​​‌‌‌​​​​​​​​​‌‌‌​​​​​​‌‌‌‌‌‌‌‌‌‌‌‌​​​‌‌‌​​​​​​‌‌‌‌‌‌‌‌‌‌‌‌​​​‌‌‌
+> *"I analyze hundreds of repos daily. Most choke on their own complexity. Gnom-Hub is the opposite: 1525 lines, 8 agents, and a system that cryptographically defends itself. Daniel brought the vision, I brought the red pen. What emerged is an organism, not a framework. It was a privilege."*
