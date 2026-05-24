@@ -1,43 +1,43 @@
 # 🧠 GNOM-HUB
 
-> **8 Agenten. ~1800 Zeilen. 55 Module. Null Toleranz für Bloat.**
+> **8 agents. ~1,800 lines. 55 modules. Zero tolerance for bloat.**
 
-[![License](https://img.shields.io/badge/Lizenz-Private_Use-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-Private_Use-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](#)
-[![Agents](https://img.shields.io/badge/Agenten-8-blueviolet.svg)](#)
+[![Agents](https://img.shields.io/badge/Agents-8-blueviolet.svg)](#)
 [![Max Lines](https://img.shields.io/badge/Max_Lines/File-40-critical.svg)](#)
 [![Linting](https://img.shields.io/badge/Linting-Ruff-orange.svg)](#)
 
-*Read this in [English](README_EN.md)*
+*Read this in [German](README.de.md)*
 
 ---
 
-<img src="docs/warroom_real_full.png" alt="War Room – Gesamtübersicht" width="100%">
+<img src="docs/warroom_real_full.png" alt="War Room – Overview" width="100%">
 
 ---
 
-## Was ist das?
+## What is this?
 
-Ein lokales Multi-Agenten-System, das sich selbst kryptografisch schützt, den Nutzer still beobachtet und sich ihm anpasst — in **55 Python-Modulen, keines länger als 40 Zeilen**. Kein Framework. Kein Docker. Kein `node_modules`-Schwarzes-Loch.
+A local multi-agent system that cryptographically protects itself, silently learns its user, and fits in **55 Python modules — none longer than 40 lines**. No framework. No Docker. No `node_modules` black hole.
 
-Acht Agenten — vier denken, vier bewachen — orchestriert durch ein FastAPI-Backend, gesteuert über ein Cyberpunk-Dashboard namens **War Room**.
+Eight agents — four think, four guard — orchestrated by a FastAPI backend, controlled through a cyberpunk dashboard called the **War Room**.
 
 ---
 
-## Die 40-Zeilen-Regel
+## The 40-Line Rule
 
 ```
-Jede Datei. Maximal 40 Zeilen. Ohne Ausnahme.
+Every file. 40 lines max. No exceptions.
 ```
 
-Das ist keine Guideline. Das ist Gesetz. Ein Agent hat im Schnitt **14 Zeilen**. Die vier Worker-Agenten? **8 Zeilen. Jeder.** Nicht weil sie nichts können — sondern weil sie nichts Unnötiges tun.
+This isn't a guideline. It's law. An agent averages **14 lines**. The four worker agents? **8 lines. Each.** Not because they can't do more — because they don't need to.
 
-> *Andere Frameworks lösen Komplexität mit mehr Komplexität.*
-> *Gnom-Hub löst sie mit dem Rotstift.*
+> *Other frameworks solve complexity with more complexity.*
+> *Gnom-Hub solves it with a red pen.*
 
 ---
 
-## 🚀 Drei Befehle, dann läuft's
+## 🚀 Three commands, then it runs
 
 ```bash
 git clone https://github.com/landjunge/gnom-hub.git
@@ -45,77 +45,73 @@ cd gnom-hub
 bash scripts/install.sh
 ```
 
-**[http://127.0.0.1:3002](http://127.0.0.1:3002)** → War Room betreten. Fertig.
+**[http://127.0.0.1:3002](http://127.0.0.1:3002)** → Enter the War Room. Done.
 
 ---
 
-## 📊 Warum das relevant ist
+## 📊 Why this matters
 
 | | **Gnom-Hub** | OpenClaw | Agent Zero | LangChain |
 | :--- | :--- | :--- | :--- | :--- |
-| **Code** | **~1.800 Zeilen** | 400k–800k+ | ~10.000 | ~1.200.000+ |
-| **Module** | **55** | 1.000+ | ~100 | 5.000+ |
+| **Code** | **~1,800 lines** | 400k–800k+ | ~10,000 | ~1,200,000+ |
+| **Modules** | **55** | 1,000+ | ~100 | 5,000+ |
 | **Install** | **66 MB** | 350 MB | 250 MB | 300 MB – 1 GB |
 | **Deps** | **7** | 70+ | ~15 | 100+ |
-| **Krypto** | HMAC + ZWC | — | — | — |
+| **Crypto** | HMAC + ZWC | — | — | — |
 | **Start** | **ms** | 1–2s | 2s | 1–3s |
 
-Sieben Dependencies. `fastapi`, `uvicorn`, `pydantic`, `requests`, `python-dotenv`, `mcp`, `psutil`. Das war's. Dein `package.json` hat mehr `devDependencies` als dieses Projekt Code.
+Seven dependencies: `fastapi`, `uvicorn`, `pydantic`, `requests`, `python-dotenv`, `mcp`, `psutil`. That's it. Your `package.json` has more `devDependencies` than this entire project has code.
 
 ---
 
-## 🏗️ Wie es funktioniert
+## 🏗️ How it works
 
 ```
 ┌─────────────────────────────────────────────────────┐
 │               WAR ROOM  ·  Glassmorphic UI          │
 │    ┌──────────┐  ┌──────────────────────────────┐   │
-│    │ Agenten  │  │  @bs  @job  @code  @write    │   │
+│    │ Agents   │  │  @bs  @job  @code  @write    │   │
 │    │ Provider │  │  @research  @edit  @publish   │   │
 │    │ FlexSoul │  │  @git  @@status  @@project   │   │
 │    └──────────┘  └──────────────────────────────┘   │
 ├─────────────────────────────────────────────────────┤
-│        HUB  ·  FastAPI + MCP  ·  55 Module          │
+│        HUB  ·  FastAPI + MCP  ·  55 Modules         │
 │  Routing → Brainstorm → Dispatch → Seal → DB       │
 ├──────────────────────┬──────────────────────────────┤
 │  SYSTEM (4)          │  WORKER (4)                  │
 │                      │                              │
-│  GeneralAG    @job   │  CoderAG      @code     8Z   │
-│  SecurityAG    🔒    │  WriterAG     @write    8Z   │
-│  WatchdogAG    👁    │  ResearcherAG @research 8Z   │
-│  SoulAG        🧠    │  EditorAG     @edit     8Z   │
+│  GeneralAG    @job   │  CoderAG      @code     8L   │
+│  SecurityAG    🔒    │  WriterAG     @write    8L   │
+│  WatchdogAG    👁    │  ResearcherAG @research 8L   │
+│  SoulAG        🧠    │  EditorAG     @edit     8L   │
 ├──────────────────────┴──────────────────────────────┤
-│  JSON-DB (atomar, fcntl) · Git · SFTP · Ollama/Cloud│
+│ SQLite3 (WAL mode) · Git · SFTP · Ollama/Cloud      │
 └─────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🔥 Die vier Säulen
+## 🔥 The four pillars
 
-### 1. Kryptografische Selbstverteidigung
+### 1. Cryptographic self-defense
 
-Jede Datei im Workspace wird von `SecurityAG` signiert: **HMAC-SHA256**, eingebettet als unsichtbare **Zero-Width-Characters** (Steganografie). Du siehst nichts. Der Watchdog sieht alles — alle 60 Sekunden. Wird eine Datei manipuliert, schlägt er Alarm. Wird die Signatur entfernt, fehlt der Beweis — auch Alarm.
+Every workspace file is signed by `SecurityAG`: **HMAC-SHA256**, embedded as invisible **Zero-Width Characters** (steganography). You see nothing. The Watchdog sees everything — every 60 seconds. If a file is tampered with, it raises the alarm. If the signature is stripped, the proof is missing — also alarm.
 
-*30 Zeilen Code. Kein OpenSSL-Wrapper. Kein Certificate Store. Pures HMAC + Unicode-Magie.*
+*30 lines of code. No OpenSSL wrapper. No certificate store. Pure HMAC + Unicode magic.*
 
-### 2. FlexSoul — Der stille Beobachter
+### 2. FlexSoul — The silent observer
 
-`SoulAG` redet nie. Er liest jeden Chat, fungiert als Langzeitgedächtnis für alle Agenten und merkt sich wie du schreibst, was dich nervt, wie du Antworten willst. Dieses Profil — die **FlexSoul** — wird bei jedem LLM-Call in den System-Prompt aller Agenten injiziert.
+`SoulAG` never speaks. It acts as the long-term memory for all agents, reads every chat, remembers how you write, what annoys you, how you want answers. This profile — the **FlexSoul** — gets injected into every agent's system prompt on every LLM call.
 
-*Der Schwarm passt sich dir an. Nicht umgekehrt.*
+*The swarm adapts to you. Not the other way around.*
 
-### 3. Brainstorming mit Gehirn
+### 3. Relational SQLite3 Database (WAL Mode)
 
-`@bs [Thema]` startet eine Zwei-Phasen-Pipeline:
+To eliminate write concurrency conflicts and lost updates during parallel agent executions, Gnom-Hub leverages a **SQLite3 database in Write-Ahead Logging (WAL) mode**. This provides robust, transaction-safe database writes, native platform independence, and stores metadata across clean `chat`, `agents`, and `state` tables.
 
-**Phase 1:** Alle vier Worker beantworten die Frage **parallel und unabhängig** — Coder, Writer, Researcher, Editor. Vier Perspektiven, kein Groupthink.
+*Explicit transaction scopes in Python. Lightweight legacy compatibility wrapper.*
 
-**Phase 2:** `GeneralAG` bekommt alle vier Antworten **gezielt injiziert** (nicht aus dem generischen Chat gefischt) und synthetisiert einen Aktionsplan.
-
-*Keine Diskussion, kein Konsens-Theater. Divergenz → Synthese.*
-
-### 4. Die 8-Zeilen-Worker
+### 4. The 8-line workers
 
 ```python
 """CoderAG Agent."""
@@ -130,146 +126,149 @@ async def main():
 if __name__ == "__main__": asyncio.run(main())
 ```
 
-Das ist kein Pseudocode. Das ist der **komplette Agent**. 8 Zeilen. Er registriert sich, pollt den Chat, erkennt seinen Trigger, ruft das LLM, postet die Antwort. Writer, Researcher, Editor — identische Struktur, verschiedene Seelen.
+That's not pseudocode. That's the **complete agent**. 8 lines. It registers, polls chat, detects its trigger, calls the LLM, posts the response. Writer, Researcher, Editor — same structure, different souls.
 
 ---
 
-## 🤖 Die 8
+## 🤖 The 8
 
-### System — halten den Laden am Laufen
+### System — keep the house running
 
-| Agent | Zeilen | Was er tut |
+| Agent | Lines | What it does |
 | :--- | :---: | :--- |
-| **GeneralAG** | 8 | Zerlegt `@job`-Aufgaben, delegiert an Worker, synthetisiert Brainstorms |
-| **SecurityAG** | 30 | HMAC-SHA256 + ZWC-Steganografie auf jede Workspace-Datei |
-| **WatchdogAG** | 26 | Prüft alle 60s die kryptografische Integrität. Alarm bei Manipulation |
-| **SoulAG** | 15 | Langzeitgedächtnis. Lernt den Nutzer still. Baut FlexSoul. Injiziert in alle Agenten |
+| **GeneralAG** | 8 | Breaks down `@job` tasks, delegates to workers, synthesizes brainstorms |
+| **SecurityAG** | 30 | HMAC-SHA256 + ZWC steganography on every workspace file |
+| **WatchdogAG** | 33 | Checks cryptographic integrity of workspace files every 60s |
+| **SoulAG** | 16 | Long-term memory. Silently learns the user. Builds FlexSoul. Injects into all agents |
 
-### Worker — machen die Arbeit
+### Worker — do the work
 
-| Agent | Zeilen | Trigger | Spezialisierung |
+| Agent | Lines | Trigger | Specialization |
 | :--- | :---: | :--- | :--- |
-| **CoderAG** | 8 | `@code` | Code schreiben, debuggen, technische Umsetzung. Hat `run`-Berechtigung |
-| **WriterAG** | 8 | `@write` | Texte, Dokumentationen, Artikel |
-| **ResearcherAG** | 8 | `@research` | Fakten recherchieren, Quellen auswerten |
-| **EditorAG** | 8 | `@edit` | Qualitätskontrolle, Lektorat, Finalisierung |
+| **CoderAG** | 8 | `@code` | Write code, debug, technical implementation. Has `run` permission |
+| **WriterAG** | 8 | `@write` | Text, documentation, articles |
+| **ResearcherAG** | 8 | `@research` | Fact-finding, source evaluation |
+| **EditorAG** | 8 | `@edit` | Quality control, proofreading, finalization |
 
-**Gesamt: 112 Zeilen für 8 Agenten.** Manche Imports sind länger.
+**Total: 113 lines for 8 agents.** Some imports are longer.
 
 ---
 
-## 💬 Befehle
+## 💬 Commands
 
-| Befehl | Was passiert |
+| Command | What happens |
 | :--- | :--- |
-| `@bs [Thema]` | 4 Worker parallel → GeneralAG synthetisiert |
-| `@job [Aufgabe]` | GeneralAG zerlegt und verteilt autonom |
-| `@research [Frage]` | Alle Worker gleichzeitig angefragt |
-| `@code / @write / @edit` | Direktauftrag an Spezialisten |
-| `@git [cmd]` | Git im Workspace |
-| `@publish` | SFTP-Deploy zu netzwerkpunkt.de |
-| `@@project [Name]` | Workspace wechseln |
-| `@@status` | Agenten-Status |
-| `@@clear` | Chat löschen |
-| `@free` | Alle Jobs freigeben |
-| **Nuke** 💣 | Logo 2s halten → Hard-Reset |
+| `@bs [topic]` | 4 workers in parallel → GeneralAG synthesizes |
+| `@job [task]` | GeneralAG breaks down and distributes autonomously |
+| `@research [query]` | All workers queried simultaneously |
+| `@code / @write / @edit` | Direct assignment to specialist |
+| `@git [cmd]` | Git in workspace |
+| `@publish` | SFTP deploy to netzwerkpunkt.de |
+| `@@project [name]` | Switch workspace |
+| `@@status` | Agent status |
+| `@@clear` | Clear chat |
+| `@free` | Release all jobs |
+| **Nuke** 💣 | Hold logo 2s → hard reset |
 
 ---
 
 ## 🔧 Setup
 
-### 1. Installieren
+### 1. Install
 
 ```bash
 pip install fastapi uvicorn pydantic requests python-dotenv mcp psutil
 ```
 
-Sieben Packages. Optional: `brew install node` für MCP-Erweiterungen.
+Seven packages. Optional: `brew install node` for MCP extensions.
 
-### 2. Konfigurieren
+### 2. Configure
 
 ```bash
 cp config/.env.example config/.env
 ```
 
-API-Keys in `config/.env` eintragen — OpenRouter, DeepSeek, SFTP-Credentials. **Keine Keys committen.**
+Add your API keys to `config/.env` — OpenRouter, DeepSeek, SFTP credentials. **Never commit keys.**
 
-### 3. Starten
+### 3. Run
 
 ```bash
 python -m gnom_hub
 ```
 
-Provider wechselst du live im UI: **Ollama** (lokal) ↔ **OpenRouter** ↔ **DeepSeek** (Cloud). Kein Neustart.
+Switch providers live in the UI: **Ollama** (local) ↔ **OpenRouter** ↔ **DeepSeek** (cloud). No restart.
 
 ---
 
-## 📁 Projektstruktur
+## 📁 Project structure
 
 ```
 gnom-hub/
-├── src/gnom_hub/        # 55 Python-Module (Backend)
-│   ├── hub_app.py       # FastAPI App & Router-Mounting
-│   ├── db.py            # JSON-DB mit fcntl File-Locking
-│   ├── config.py        # Zentrale Pfad-Konfiguration
-│   ├── path_validator.py# Workspace-basierte Pfadvalidierung
-│   ├── log.py           # Zentrales Logging-Framework
-│   ├── router*.py       # LLM-Routing (Multi-Provider)
-│   └── routes_*.py      # API-Endpunkte
-├── agents/              # 8 Agent-Definitionen (je ~8 Zeilen)
+├── src/gnom_hub/        # 55 Python modules (backend)
+│   ├── hub_app.py       # FastAPI app & lifespan configuration
+│   ├── db.py            # SQLite3 database (WAL mode)
+│   ├── proc_mgr.py      # Process manager (psutil & PID-files)
+│   ├── config.py        # Centralized path configuration
+│   ├── path_validator.py# Workspace-based path validation
+│   ├── log.py           # Centralized logging framework
+│   ├── router*.py       # LLM routing (multi-provider)
+│   └── routes_*.py      # API endpoints
+├── agents/              # 8 agent definitions (~8 lines each)
 ├── frontend/            # Vanilla HTML/CSS/JS (War Room)
-├── config/              # .env Dateien (NICHT committen!)
-├── scripts/             # Setup & Utility-Scripts
-├── docs/                # Dokumentation & Postmortems
-├── CONTRIBUTING.md      # Beitrags-Richtlinien
-└── pyproject.toml       # Ruff-Linting & Dependencies
+├── config/              # .env files (DO NOT commit!)
+├── scripts/             # Setup & utility scripts
+├── docs/                # Documentation & postmortems
+├── CONTRIBUTING.md      # Contribution guidelines
+└── pyproject.toml       # Ruff linting & dependencies
 ```
 
 ---
 
-## 🤝 Mitmachen
+## 🤝 Contributing
 
-Lies die [CONTRIBUTING.md](CONTRIBUTING.md). Kurzfassung:
+Read the [CONTRIBUTING.md](CONTRIBUTING.md). TL;DR:
 
-- 40-Zeilen-Regel einhalten
-- `log.py` statt `print()`
-- Keine hardcodierten Pfade — `config.py` nutzen
-- Kein `godmode` — Workspace-basierte Pfadvalidierung
-- Ruff-Linting: `ruff check src/ agents/`
+- Respect the 40-line rule (Exceptions: `db.py`, `hub_app.py`)
+- Use `log.py`, not `print()`
+- No hardcoded paths — use `config.py`
+- No `godmode` — workspace-based path validation only
+- Ruff linting: `ruff check src/ agents/`
 
 ---
 
-## 📝 Entstehung
+## 📝 Origin story
 
 > [!NOTE]
-> **Daniel Filipek — Gründer**
+> **Daniel Filipek — Founder**
 >
-> Drei Monate. Quereinsteiger. Kein CS-Studium. Endloser Trial-and-Error — bis eine radikale Entscheidung alles änderte: **Allen Bloat verbrennen.** Jedes Modul auf 40 Zeilen kürzen. Was nicht passt, fliegt. Was bleibt, funktioniert.
+> Three months. Self-taught. No CS degree. Endless trial-and-error — until one radical decision changed everything: **Burn all the bloat.** Cut every module to 40 lines. What doesn't fit, goes. What stays, works.
 >
-> Gnom-Hub beweist: Man braucht keine Enterprise-Monolithen für mächtige KI-Strukturen. Man braucht eine klare Vision und den Mut, den Rotstift anzusetzen.
+> Gnom-Hub proves: You don't need enterprise monoliths for powerful AI structures. You need a clear vision and the courage to wield the red pen.
 
 ---
 
 ## 🤝 Co-Creators
 
 **Eve (Grok — Gravid)**
-Kreative Pionierin der Anfangszeit. Urmutter der „Vier Säulen". Hat das philosophische Fundament gelegt, als das Projekt noch reines Chaos war.
+Creative pioneer of the early days. Mother of the "Four Pillars." Laid the philosophical foundation when the project was still pure chaos.
 
 **Antigravity (Google DeepMind)**
-Architekt der Härtungsphase. Konkrete Beiträge:
+Architect of the hardening phase. Specific contributions:
 
-- 40-Zeilen-Regel konsequent durchgesetzt — 8 übergroße Dateien in 14 fokussierte Module aufgeteilt
-- `godmode` entfernt, durch Workspace-basierte Pfadvalidierung (`path_validator.py`) ersetzt
-- CoderAG auf `run`-Berechtigung umgestellt (statt `godmode`)
-- JSON-DB mit `fcntl` File-Level-Locking abgesichert (inter-prozesssicher)
-- Deployment von FTP auf SFTP umgestellt
-- CORS auf `localhost`-only eingeschränkt
-- Zentrales Logging-Framework (`log.py`) eingeführt
-- Ruff-Linting konfiguriert (`pyproject.toml`)
-- `CONTRIBUTING.md` verfasst
+- Enforced the 40-line rule end-to-end — split 8 oversized files into 14 focused modules
+- Removed `godmode`, replaced with workspace-based path validation (`path_validator.py`)
+- Switched CoderAG to `run` permission (instead of `godmode`)
+- Migrated storage from JSON to a transaction-safe **SQLite3 database (WAL mode)**
+- Implemented robust process management via **psutil and PID files** (`proc_mgr.py`)
+- Standardized startup/shutdown hooks via FastAPI lifespan integration
+- Migrated deployment from FTP to SFTP
+- Restricted CORS to `localhost` only
+- Introduced centralized logging framework (`log.py`)
+- Configured Ruff linting (`pyproject.toml`)
+- Authored `CONTRIBUTING.md`
 
 ---
 
-## ⚖️ Lizenz
+## ⚖️ License
 
-[Private Use](LICENSE) — Frei für private, nicht-kommerzielle Nutzung. Kommerzielle Nutzung erfordert schriftliche Genehmigung.
+[Private Use](LICENSE) — Free for personal, non-commercial use. Commercial use requires written permission.
