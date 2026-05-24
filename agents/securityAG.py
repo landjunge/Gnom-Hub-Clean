@@ -20,7 +20,7 @@ def seal_content(agent: str, content: str, fname: str = "") -> str:
                 if isinstance(data, dict):
                     if "name" not in data: data["name"] = "user_soul"
                     payload.update(data)
-            except: pass
+            except (json.JSONDecodeError, TypeError, KeyError): pass
     base = content + pre
     payload["sig"] = generate_signature(agent, base + suf)
     return encode_soul(base, payload) + suf
