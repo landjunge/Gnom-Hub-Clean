@@ -13,6 +13,7 @@ class BaseAgent:
     async def run(self):
         while not self._req("post", "/api/agents/register", {"name": self.n, "port": 0, "description": self.d, "status": "online", "capabilities": [self.t]}):
             print(f"⚠️ {self.n}: Hub nicht erreichbar. Reconnect in 5s..."); await asyncio.sleep(5)
+        for m in (self._req("get", "/api/chat?limit=10") or []): self.seen.add(m.get("id"))
         print(f"🚀 {self.n} aktiv")
         while True:
             c = self._req("get", "/api/chat?limit=10")
