@@ -8,7 +8,6 @@ BANNER = """\033[32m
           ╚═════╝  ╚═╝  ╚═══╝ ╚═════╝ ╚═╝     ╚═╝\033[0m"""
 INFO = """\033[1m                    H U B\033[0m
 \033[33m   API:\033[0m       http://127.0.0.1:{api}
-\033[33m   MCP SSE:\033[0m   http://127.0.0.1:{mcp}/sse
 \033[33m   Frontend:\033[0m  frontend/index.html"""
 def _free(start):
     for p in range(start, start + 1000):
@@ -17,9 +16,9 @@ def _free(start):
     return start
 def main():
     while True:
-        api_p, mcp_p = _free(3002), _free(3100)
-        os.environ["GNOM_HUB_PORT"], os.environ["GNOM_MCP_PORT"] = str(api_p), str(mcp_p)
-        print(BANNER); print(INFO.format(api=api_p, mcp=mcp_p))
+        api_p = _free(3002)
+        os.environ["GNOM_HUB_PORT"] = str(api_p)
+        print(BANNER); print(INFO.format(api=api_p))
         api = subprocess.Popen([sys.executable, "-c", "from gnom_hub.hub_app import main; main()"])
         time.sleep(1)
         from gnom_hub.hub_pulse import start_pulse; start_pulse()
