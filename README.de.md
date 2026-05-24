@@ -20,6 +20,9 @@
 
 Gnom-Hub ist ein lokales Multi-Agenten-System mit einer radikalen Restriktion: **55 Python-Module — keines länger als 40 Zeilen**. Es bietet einen extrem leichtgewichtigen Orchestrator ohne aufgeblähte Frameworks, der vollständig lokal läuft, kein schwerfälliges Docker benötigt und die Agenten über ein Web-Dashboard namens **War Room** steuert.
 
+> [!IMPORTANT]
+> **Bewusster Minimalismus:** Gnom-Hub ist auf Einfachheit und maximale Performance ausgelegt. Das System ist bewusst **nicht** dafür konzipiert, Hunderte von Agenten zu steuern, sondern dient der effizienten Orchestrierung einer kleinen, hochspezialisierten und überschaubaren Gruppe von Agenten.
+
 ---
 
 ## 🏗️ Kern-Architektur
@@ -42,10 +45,10 @@ Die Datenbank-Initialisierung (`init_db()`), das Seeding der Standard-Agenten un
 ## 📐 Die 40-Zeilen-Regel
 
 ```
-Jede Datei. Maximal 40 Zeilen. Keine Ausnahmen.
+Jede interne Source-Code-Datei. Maximal 40 Zeilen. Keine Ausnahmen.
 ```
 
-Gnom-Hub löst strukturelle Komplexität, indem es jedes Modul extrem fokussiert hält. Die System-Module sind modular aufgebaut, und die Worker-Agenten sind bemerkenswert kompakt:
+Gnom-Hub löst strukturelle Komplexität, indem es seine Codebasis extrem fokussiert hält. **Hinweis:** Diese Regel gilt strikt für die Python-Quellcode-Module in `src/gnom_hub/` (mit expliziten Ausnahmen nur für `db.py` und `hub_app.py` aufgrund von Datenbank-Komplexität und Routing). Sie gilt **nicht** für Datenbanken, Log-Dateien, Konfigurationsprofile oder Frontend-Assets, die naturgemäß wachsen.
 * Worker wie **CoderAG** benötigen lediglich **8 Zeilen Python-Code**, um sich zu registrieren, den Chat zu pollen, das LLM anzufragen und die Antwort zu posten.
 * Durch die Unterstützung verschiedener Provider (**Ollama** lokal, **OpenRouter** kostenlos oder **DeepSeek** Cloud) können die Modelle live im UI gewechselt werden – ohne Neustart.
 
