@@ -18,8 +18,9 @@ def handle_write(answer, matches, agent, perms, bs_mode, wd):
                     if os.path.exists(fpath):
                         import shutil; shutil.copy2(fpath, fpath + ".bak")
                     with open(fpath, "w", encoding="utf-8") as f:
-                        f.write(seal_content(agent["name"], content, fname))
-                    r = f"[System: Datei '{fname}' gespeichert.]"
+                        f.write(content)
+                    from .zwc_soul import add_agent_metadata
+                    r = f"[System: Datei '{fname}' gespeichert.]" + add_agent_metadata(agent["name"], "")
 
                 except Exception as e: r = f"[System-Fehler: {fname}: {e}]"
         answer = answer.replace(m.group(0), r)
