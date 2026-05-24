@@ -13,9 +13,9 @@ def cleanup_offline(): save_db("agents", [a for a in get_db("agents") if a.get("
 def health(): return {"status": "ok", "agents": len(get_db("agents")), "memory": len(get_db("memory")), "tools": len(get_db("tools"))}
 @router.post("/nuke")
 def nuke_restart(request: Request):
-    from agents.securityAG import _get_or_create_secret; from .proc_mgr import kill_process, restart_hub
+    from agents.securityAG import _get_or_create_secret; from .proc_mgr import _kill_process, restart_hub
     if request.client and request.client.host not in ("127.0.0.1", "::1", "localhost") and request.headers.get("X-Hub-Secret") != _get_or_create_secret().hex(): return {"error": "Unauthorized"}
-    killed = [kill_process(t) for t in ["generalAG", "soulAG", "watchdogAG", "securityAG", "writerAG", "editorAG", "researcherAG", "coderAG", os.environ.get("GNOM_HUB_PORT", "3002")]]
+    killed = [_kill_process(t) for t in ["generalAG", "soulAG", "watchdogAG", "securityAG", "writerAG", "editorAG", "researcherAG", "coderAG", os.environ.get("GNOM_HUB_PORT", "3002")]]
     threading.Timer(1.5, restart_hub).start(); return {"status": "nuked", "killed": killed}
 ROLES = {"de": {"general": "SYSTEM-ROLLE: GENERAL. Task-Verteilung, Koordination. Analysiere @job und verteile Aufgaben via @Name -> Aufgabe. Keine Erklärungen."}, "en": {"general": "SYSTEM ROLE: GENERAL. Task distribution and coordination. Analyze @job and distribute tasks via @Name -> Task. No explanations."}}
 @router.put("/agents/{agent_id}/role")

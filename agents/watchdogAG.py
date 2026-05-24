@@ -26,3 +26,7 @@ def start_watchdog():
     threading.Thread(target=watchdog_loop, daemon=True).start()
     print("[Watchdog] Thread gestartet.")
 
+if __name__ == "__main__":
+    print("🚀 WatchdogAG aktiv")
+    watchdog_loop()
+
