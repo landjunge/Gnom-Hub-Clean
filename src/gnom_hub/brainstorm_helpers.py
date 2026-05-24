@@ -7,13 +7,11 @@ def get_ctx():
     from .zwc_soul import strip_zwc; c = list(reversed(get_chat_history(get_active_project(), limit=8)))
     return "\n".join(f"[{m.get('sender','?')}] {strip_zwc(m['content'])[:1000]}" for m in c)
 def ask_llm(ag, q, ctx, bs_mode=False):
-    from .tool_registry import format_tools_prompt; from .soul_initializer import get_soul; from .action_handlers import process_actions; from .zwc_soul import decode_soul; from .db import set_agent_status, update_agent_active_job
+    from .tool_registry import format_tools_prompt; from .soul_initializer import get_soul; from .action_handlers import process_actions; from .db import set_agent_status, update_agent_active_job
     soul = get_soul(ag["name"]) or {"role": ag.get('description', ''), "permissions": ["read"]}
-    sys = format_tools_prompt(soul, ag["name"]); traits = {}
-    for m in get_chat_history(get_active_project(), limit=30):
-        s = decode_soul(m.get("content", ""))
-        if s and s.get("name") == "user_soul": traits.update({k: v for k, v in s.items() if k not in ("agent", "sig", "name")})
-    if traits: sys += f"\n\n[User-Profil] {traits}"
+    sys = format_tools_prompt(soul, ag["name"])
+    from .soul import soul_instance
+    sys = soul_instance.inject_context(sys, q)
     wd = get_workspace_dir(); fs = ", ".join(os.listdir(wd)) if os.path.exists(wd) else ""
     sys += f"\n\n[WORKSPACE: {wd} | Dateien: {fs}]"
     if bs_mode: sys += "\n[MODUS: BRAINSTORM — Nur diskutieren! KEIN [WRITE:] erlaubt.]"

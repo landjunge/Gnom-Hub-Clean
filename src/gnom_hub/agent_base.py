@@ -22,11 +22,8 @@ class BaseAgent:
             for m in c: self.seen.add(m.get("id"))
             for m in new:
                 try:
-                    from .zwc_soul import decode_soul; traits = {}
-                    for msg in (self._req("get", "/api/chat?limit=30") or []):
-                        s = decode_soul(msg.get("content", ""))
-                        if s and s.get("name") == "user_soul": traits.update({k: v for k, v in s.items() if k not in ("agent", "sig", "name")})
-                    sys = self.sys + (f"\n\n[User-Profil] {traits}" if traits else "")
+                    from .soul import soul_instance
+                    sys = soul_instance.inject_context(self.sys, m["content"])
                     r = ask_router(m["content"], sys, agent_name=self.n)
                     if r and not r.startswith("[ROUTER-FEHLER]"): self._req("post", "/api/chat", {"content": r, "sender": self.n})
                 except Exception as e: print(f"[{self.n}] Error: {e}")

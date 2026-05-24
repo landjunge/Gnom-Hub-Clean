@@ -14,6 +14,8 @@ def handle_bs(q): return {"status": "dispatched", "asked": dispatch(q, target=No
 CMDS = {"clear": handle_clear, "status": lambda q: handle_status(), "job": handle_job, "free": handle_free, "git": handle_git, "project": lambda q: _handle_sys(q,"proj"), "bs": handle_bs}
 @router.post("/api/chat")
 def post_chat(msg: ChatMsg):
+    from .soul import soul_instance
+    soul_instance.on_message(msg.content, msg.sender)
     q, tgt, cmd = _parse(msg.content); s_name = msg.sender if msg.sender != "user" else tgt; from .zwc_soul import add_agent_metadata; ags = get_all_agents()
     a = next((x for x in ags if x.get("name","").lower() == (s_name or "").lower()), None)
     if a: msg.content = add_agent_metadata(a["name"], msg.content)

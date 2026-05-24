@@ -89,6 +89,11 @@ def init_db():
                         timestamp TEXT NOT NULL,
                         metadata TEXT DEFAULT '{}'
                     );
+                    CREATE TABLE IF NOT EXISTS soul_memory (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        fact TEXT NOT NULL,
+                        timestamp TEXT NOT NULL
+                    );
                 """)
                 conn.execute("INSERT OR IGNORE INTO state (key, value) VALUES ('active_project', '\"default\"')")
                 conn.execute("INSERT OR IGNORE INTO state (key, value) VALUES ('language', '\"en\"')")
@@ -503,5 +508,26 @@ def update_agent_role_memory(agent_id: str, role_content: str = None):
     except sqlite3.Error as e:
         logger.error(f"[DB] Failed to update agent role memory: {e}")
 
+# =====================================================================
+# SOUL AG
+# =====================================================================
 
+def save_soul_fact(fact: str):
+    try:
+        with get_db_conn() as conn:
+            with conn:
+                conn.execute("INSERT INTO soul_memory (fact, timestamp) VALUES (?, ?)", 
+                             (fact, datetime.now(timezone.utc).isoformat() + "Z"))
+    except sqlite3.Error as e:
+        logger.error(f"[DB] Failed to save soul fact: {e}")
 
+def get_relevant_facts(user_message: str) -> list:
+    try:
+        with get_db_conn() as conn:
+            # Für diesen simplen Ansatz laden wir einfach alle und lassen die Logik im Python
+            # oder returnieren einfach alles (sehr pragmatisch)
+            rows = conn.execute("SELECT fact FROM soul_memory ORDER BY timestamp DESC LIMIT 20").fetchall()
+            return [r["fact"] for r in rows]
+    except sqlite3.Error as e:
+        logger.error(f"[DB] Failed to get relevant facts: {e}")
+        return []
