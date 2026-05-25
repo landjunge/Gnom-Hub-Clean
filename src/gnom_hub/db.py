@@ -112,6 +112,15 @@ def init_db():
                         is_active INTEGER DEFAULT 0,
                         parent_id TEXT DEFAULT NULL
                     );
+                    CREATE TABLE IF NOT EXISTS capabilities (
+                        id TEXT PRIMARY KEY,
+                        agent_name TEXT NOT NULL,
+                        capability_type TEXT NOT NULL,
+                        resource TEXT NOT NULL,
+                        granted_by TEXT NOT NULL,
+                        expires_at TEXT NOT NULL,
+                        is_active INTEGER DEFAULT 1
+                    );
                     CREATE INDEX IF NOT EXISTS idx_agent_event ON audit_log(agent, event_type);
                     CREATE INDEX IF NOT EXISTS idx_timestamp ON audit_log(timestamp DESC);
                 """)
@@ -559,8 +568,13 @@ def save_soul_fact(key: str, value: str, agent: str = "System"):
     try:
         with get_db_conn() as conn:
             with conn:
-                conn.execute("INSERT OR REPLACE INTO soul_memory (key, value, timestamp) VALUES (?, ?, ?)", 
+                cursor = conn.execute("INSERT OR REPLACE INTO soul_memory (key, value, timestamp) VALUES (?, ?, ?)", 
                              (key, value, datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")))
+                row_id = cursor.lastrowid
+        try:
+            from .embeddings import SoulEmbedder
+            SoulEmbedder().add_fact(str(row_id), key, value)
+        except Exception: pass
     except sqlite3.Error as e:
         logger.error(f"[DB] Failed to save soul fact: {e}")
 

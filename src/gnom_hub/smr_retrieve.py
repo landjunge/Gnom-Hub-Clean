@@ -2,7 +2,7 @@
 from gnom_hub.db import get_db_conn
 from gnom_hub.smr_math import cosine_similarity
 
-async def retrieve_similar(query: str, top_k: int = 8) -> list:
+def retrieve_similar_sync(query: str, top_k: int = 8) -> list:
     try:
         with get_db_conn() as conn:
             rows = conn.execute("SELECT key, value FROM soul_memory").fetchall()
@@ -14,6 +14,9 @@ async def retrieve_similar(query: str, top_k: int = 8) -> list:
         scored.sort(key=lambda x: x[0], reverse=True)
         return [fact for sc, fact in scored[:top_k] if sc > 0.0]
     except Exception: return []
+
+async def retrieve_similar(query: str, top_k: int = 8) -> list:
+    return retrieve_similar_sync(query, top_k)
 
 async def retrieve_with_fallback(query: str, top_k: int = 8) -> list:
     similar = await retrieve_similar(query, top_k)
