@@ -1,4 +1,4 @@
-from .router_config import AGENT_MODELS, DEFAULT_MODELS; from .db import get_state_value
+from .router_config import AGENT_MODELS, DEFAULT_MODELS; from .db import get_state_value, set_state_value
 from gnom_hub.infrastructure.router.router_call import _call, _try_keys
 LOCAL_MODELS = ["llama3", "llama3:latest", "qwen2:7b", "phi3", "phi3:latest", "llama3.2", "gemma2", "gemma2:2b", "mistral"]
 def _try(pvd, mdl, key, msgs, n):
@@ -15,11 +15,20 @@ def ask_router(p, sys="Du bist ein Assistent.", agent_name=None):
         ans = _try("lokal", mdl, "", msgs, agent_name) if pvd == "lokal" else _try_keys(pvd, mdl, kdb, msgs, agent_name)
         if ans: return ans
     ans = _try_keys("deepseek", "deepseek-chat", kdb, msgs, agent_name)
-    if ans: return ans
+    if ans:
+        adb[n] = {"provider": "deepseek", "model": "deepseek-chat"}
+        set_state_value("llm_agents", adb)
+        return ans
     for m in AGENT_MODELS.get(n, DEFAULT_MODELS):
         ans = _try_keys("openrouter", m, kdb, msgs, agent_name)
-        if ans: return ans
+        if ans:
+            adb[n] = {"provider": "openrouter", "model": m}
+            set_state_value("llm_agents", adb)
+            return ans
     for lm in LOCAL_MODELS:
         ans = _try("lokal", lm, "", msgs, agent_name)
-        if ans: return ans
+        if ans:
+            adb[n] = {"provider": "lokal", "model": lm}
+            set_state_value("llm_agents", adb)
+            return ans
     return "[ROUTER-FEHLER] Alle Gleise offline."

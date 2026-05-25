@@ -17,11 +17,20 @@ def ask_router(p, sys="Du bist ein Assistent.", agent_name=None):
         ans = _try("lokal", mdl, "", msgs, agent_name) if pvd == "lokal" else _try_keys(pvd, mdl, kdb, msgs, agent_name)
         if ans: return ans
     ans = _try_keys("deepseek", "deepseek-chat", kdb, msgs, agent_name)
-    if ans: return ans
+    if ans:
+        adb[n] = {"provider": "deepseek", "model": "deepseek-chat"}
+        repo.set_value("llm_agents", adb)
+        return ans
     for m in AGENT_MODELS.get(n, DEFAULT_MODELS):
         ans = _try_keys("openrouter", m, kdb, msgs, agent_name)
-        if ans: return ans
+        if ans:
+            adb[n] = {"provider": "openrouter", "model": m}
+            repo.set_value("llm_agents", adb)
+            return ans
     for lm in LOCAL_MODELS:
         ans = _try("lokal", lm, "", msgs, agent_name)
-        if ans: return ans
+        if ans:
+            adb[n] = {"provider": "lokal", "model": lm}
+            repo.set_value("llm_agents", adb)
+            return ans
     return "[ROUTER-FEHLER] Alle Gleise offline."
