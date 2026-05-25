@@ -1,9 +1,10 @@
 from gnom_hub.infrastructure.database.state_repo import SQLiteStateRepository
-from .router_config import AGENT_MODELS, DEFAULT_MODELS
-from .router_call import _try, _try_keys
-from .router_stage import resolve_stage
+from .router_call import _try_keys, _call
+from .router_stage import get_stage_options
 
-LOCAL_MODELS = ["llama3", "llama3:latest", "qwen2:7b", "phi3", "phi3:latest", "llama3.2", "gemma2", "gemma2:2b", "mistral"]
+def _try(pvd, mdl, key, msgs, n):
+    try: return _call(pvd, mdl, key, msgs, n)
+    except Exception: return None
 
 def ask_router(p, sys="Du bist ein Assistent.", agent_name=None):
     n = (agent_name or "").lower()
