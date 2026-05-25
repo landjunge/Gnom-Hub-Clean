@@ -2,6 +2,14 @@
 
 Gnom-Hub ist eine modulare, asynchrone Multi-Agenten-Plattform, die auf robusten Clean-Architecture-Prinzipien basiert. Die Plattform zeichnet sich durch eine strikte Designregel aus: **Jedes interne Python-Backend-Modul ist auf maximal 40 Zeilen Code begrenzt** (die 40-Zeilen-Regel). Gnom-Hub orchestriert einen kooperativen Schwarm von Agenten und bietet ein visuell ansprechendes Web-Dashboard namens **War Room**.
 
+> [!IMPORTANT]
+> **Philosophie & Einsatzzweck:**
+> Gnom-Hub versteht sich **nicht** als Konkurrenz zu etablierten, hochkomplexen Multi-Agenten-Frameworks und ist nicht für die Koordination von dutzenden Agenten ausgelegt. Der Fokus liegt ganz bewusst auf genau **8 festen Agenten (4 System-Koordinatoren + 4 Worker-Spezialisten)** – nicht mehr, nicht weniger.
+> Gnom-Hub eignet sich hervorragend für:
+> * **Testen & Prototyping**: Schnelles, unkompliziertes Ausprobieren lokaler LLMs ohne Docker-Infrastruktur.
+> * **Bildung & Lehre**: Nachvollziehen und Verstehen von Multi-Agenten-Interaktionen in einer kompakten Architektur.
+> * **Forschung & Experimente**: Untersuchung von Prompt-Injektionen, Rollenverteilungen und Tool-Nutzung in einem kontrollierten Rahmen.
+
 ---
 
 ## 🚀 Key Features
