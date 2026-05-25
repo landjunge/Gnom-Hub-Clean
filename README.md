@@ -1,33 +1,68 @@
-# GnomHub - Clean Architecture Edition
+# 🧠 GNOM-HUB — Clean Architecture Edition
 
-Saubere, modulare Multi-Agenten-Plattform nach Clean Architecture Prinzipien.
+A clean, modular multi-agent platform designed on top of robust Clean Architecture principles, featuring a radical constraint: **every backend module is capped at a maximum of 40 lines** (the 40-Line Rule).
 
-## ✨ Features
-- Strenge Clean Architecture mit klarer Trennung der Schichten
-- Jede Datei maximal 40 Zeilen (40-Line Rule)
-- Vollständige Dependency Injection
-- Agenten-Management (Starten, Stoppen, Registrieren)
-- Chat-System mit Langzeitgedächtnis (FlexSoul)
-- Paralleles Brainstorming mit mehreren Agenten
-- Ollama-Support (lokal) + OpenRouter Fallback
-- SQLite Datenbank mit WAL-Modus
+> 🇩🇪 **Lies dies auf [Deutsch (README.de.md)](README.de.md)**
 
-## 🚀 Schnellstart
+---
 
+## 🚀 New Features
+
+### 1. Centralized Swarm Registry (`agent_definitions.py`)
+Gnom-Hub now manages a specialized swarm of **8 agents (4 system coordinators + 4 worker specialists)** defined entirely in a single source of truth: `src/gnom_hub/agent_definitions.py`. 
+- **System Agents**: `SoulAG` (memory), `GeneralAG` (coordinator), `WatchdogAG` (workspace integrity), and `SecurityAG` (file signing).
+- **Worker Agents**: `CoderAG` (programming), `ResearcherAG` (crawling/docs), `WriterAG` (drafting), and `EditorAG` (polishing).
+
+### 2. Workflow Preset System
+Directly below the Showbox in the left sidebar, the UI features a drop-down selector containing **6 workflow modes**:
+1. 💻 **Web Development**: Focuses on modern semantic HTML5, CSS, vanilla JS, responsiveness, and performance.
+2. 🎨 **Graphic Design**: Focuses on SVGs, styling contrast, typography, color palettes, and UI/UX layout.
+3. 🎵 **Audio Production**: Focuses on the Web Audio API, synthesis, sound design, and DSP coding.
+4. 🎬 **Video Production**: Focuses on canvas rendering, requestAnimationFrame loops, and video concepts.
+5. ✍️ **Marketing & Copy**: Focuses on copywriting frameworks (AIDA), SEO, and conversion-optimized hooks.
+6. 🔍 **Research & Analysis**: Focuses on facts verification, source citation, literature reviews, and python data processing.
+
+### 3. Swarm Memory & Focus Configuration
+- **Swarm Memory (SoulAG)**: Acts as the background consciousness, silently listening to user chat messages, extracting preferences, facts, and rules, and saving them to the swarm facts memory so they are dynamically appended to agents' prompts.
+- **Dynamic Configuration (SoulAG-Free Presets)**: Switching a preset dynamically instructs the router to load prompt modifiers (specific to that agent and preset) and adjust default LLM models. This keeps the presets simple, stable, and decoupled from the memory extractor.
+
+---
+
+## 📖 Preset Quick Guide
+
+### How to Switch Presets
+1. Open the Gnom-Hub dashboard.
+2. Go to the sidebar and locate the drop-down selector below the Showbox.
+3. Select your desired preset (e.g. *Web Development*).
+4. The system will alert you in the chat about the new swarm focus, and the Showbox will overlay with the focus description.
+5. Worker prompts are immediately updated with customized directives.
+
+### Assigning Custom LLM Settings to a Preset
+If you change models or providers in the LLM Settings menu (e.g., setting `CoderAG` to use a custom model or local instance) and click **"Save" / "Speichern"**, Gnom-Hub automatically:
+- Assigns those custom settings to the currently active preset.
+- Persists them to the state database.
+- Automatically restores your custom setup whenever you switch back to this preset!
+
+---
+
+## ✨ Core Features
+- **Strict Clean Architecture**: Decoupled layers (Domain, Infrastructure, Presentation, Application).
+- **40-Line Rule**: Backend Python files in `src/gnom_hub/` stay strictly $\le 40$ lines.
+- **Full Dependency Injection**: Clean inversion of control.
+- **SQLite with WAL-Mode**: Lock-free concurrent database transactions.
+- **Multi-Provider LLM Router**: Seamless fallback between local Ollama instances and OpenRouter/DeepSeek.
+
+---
+
+## 🚀 Quick Start
+
+Ensure you have your environment variables set up in `config/.env` (e.g., OpenRouter or DeepSeek keys), then run:
 ```bash
 chmod +x run.sh
 ./run.sh
 ```
-
-## 🗺️ Wichtige API-Endpunkte
-- **GET** `/agents/` — Alle Agenten anzeigen
-- **POST** `/agents/register?name=Demo&model=llama3` — Neuen Agenten registrieren
-- **POST** `/chat/send?agent_id=...&content=Deine Nachricht` — Mit einem Agenten chatten
-- **POST** `/admin/nuke` — Datenbank komplett zurücksetzen
-
-## 🛠️ Technologie-Stack
-- Python 3 · FastAPI · SQLite · Ollama · Clean Architecture
+Betreten Sie das Dashboard unter **[http://127.0.0.1:3002](http://127.0.0.1:3002)**.
 
 ---
-**Version:** Clean Architecture Refactoring (Mai 2026)  
-Dies ist die saubere, neu strukturierte Version des GnomHub.
+**Version:** Clean Architecture Refactoring (May 2026)  
+*Gnom-Hub: Zero tolerance for bloat, maximum specialized efficiency.*
