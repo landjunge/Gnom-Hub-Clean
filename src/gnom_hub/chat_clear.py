@@ -9,7 +9,7 @@ def handle_clear(q=""):
     from .db import get_active_project; p = get_active_project()
     if q == "@projekt":
         from .db import clear_project_chat; clear_project_chat(p)
-        import os, shutil; from .routes_workspace import get_workspace_dir; wd = get_workspace_dir()
+        import os, shutil; from .core.config import Config; wd = os.path.join(str(Config.WORKSPACE_DIR), p)
         for f in os.listdir(wd):
             fp = os.path.join(wd, f)
             if os.path.isfile(fp): os.unlink(fp)

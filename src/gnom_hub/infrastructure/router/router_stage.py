@@ -26,3 +26,11 @@ class SmartRouter:
                 return model
 
         return available_models[0] if available_models else "llama3.2"
+
+    @staticmethod
+    def resolve_stage(stage: str, kdb: dict, agent_name: str) -> tuple:
+        """Löst die Stufe in Provider + Modell auf."""
+        or_valid = any(k.get("provider") == "openrouter" and k.get("valid") for k in kdb.values())
+        if or_valid:
+            return "openrouter", Config.OPENROUTER_FREE_MODELS[0]
+        return "lokal", "llama3.2"
