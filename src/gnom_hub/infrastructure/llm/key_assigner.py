@@ -14,7 +14,8 @@ class KeyAssigner:
         if preferred not in available_providers:
             preferred = "ollama" if "ollama" in available_providers else (available_providers[0] if available_providers else "ollama")
 
-        model = SmartRouter.get_best_model(stage, ["llama3", "claude-3.5-sonnet", "gpt-4o-mini", "llama3.2"])
+        avail = Config.OPENROUTER_FREE_MODELS if preferred == "openrouter" else (["deepseek-chat", "deepseek-reasoner"] if preferred == "deepseek" else ["llama3.2", "gemma2"])
+        model = SmartRouter.get_best_model(stage, avail)
 
         return {
             "provider": preferred,

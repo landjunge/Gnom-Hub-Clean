@@ -12,9 +12,9 @@ class OpenRouterClient:
 
     async def ask(self, prompt: str, model: Optional[str] = None) -> str:
         """Testet Modelle nacheinander in der Reihenfolge aus Config."""
-        models_to_try = [model] if model else []
+        models_to_try = [model] if model and "/" in model else []
         for m in Config.OPENROUTER_FREE_MODELS:
-            if m not in models_to_try: models_to_try.append(m)
+            if "/" in m and m not in models_to_try: models_to_try.append(m)
 
         for i, current_model in enumerate(models_to_try, 1):
             print(f"🟡 OpenRouter Versuch {i}/{len(models_to_try)} → {current_model}")
