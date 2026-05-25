@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.0.0] - 2026-05-26
+### Added
+- **Phase 14 (Integration Features)**:
+  - **Prompt Version Manager**: Version control system for prompts, including rollback.
+  - **Semantic Memory Retriever**: TF-IDF cosine similarity fallback for memory retrieval.
+  - **Explainable Output**: Structure reasoning chains, confidence scores, and source citation.
+  - **Token Budget Manager**: Real-time daily budget checks and frontend warnings.
+  - **Graceful Fallback & Degradation**: Automatic task rerouting when agents fail or are blocked.
+- **Phase 15 (Zero-Trust & Local Embeddings)**:
+  - **Zero-Trust Capabilities**: Database-backed capability leases with 5-minute TTL and O(1) in-memory caching.
+  - **Quantised FAISS Semantic Search**: Switched FAISS to `IndexIVFPQ` for ~75% index size savings, default model updated to `nli-MiniLM-L6-v2` with flat index fallback for small databases.
+  - **Custom Presets**: Load and validate JSON presets from `/config/presets/`.
+  - **Performance Benchmarks**: Test scripts measuring cold vs warm latency speeds.
+
 ## [v0.9.0] - 2026-05-25
 ### Added
 - **Swarm Intelligence & A2A Mentions**:
