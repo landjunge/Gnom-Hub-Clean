@@ -410,6 +410,22 @@
           </tbody>
         </table>
       </div>
+      <!-- ── Info Block: Swarm Intelligence & Team Workflows ── -->
+      <div style="margin-top: 20px; padding: 15px; background: rgba(0, 229, 255, 0.03); border: 1px solid rgba(0, 229, 255, 0.15); border-radius: 8px;">
+        <h3 style="font-family: 'Outfit', sans-serif; font-size: 0.95rem; color: var(--green); margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+          <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--green); animation: pulse-glow 1.5s infinite;"></span>
+          Swarm Intelligence & Team-Workflows (Phase 9)
+        </h3>
+        <p style="font-size: 0.76rem; color: var(--text-dim); line-height: 1.5; margin-bottom: 8px;">
+          Gnom-Hub verfügt über ein hochentwickeltes asynchrones Kommunikationssystem, das es den Agenten ermöglicht, als intelligenter Schwarm (Swarm Intelligence) zusammenzuarbeiten.
+        </p>
+        <ul style="font-size: 0.72rem; color: var(--text-dim); line-height: 1.5; padding-left: 18px; display: flex; flex-direction: column; gap: 6px;">
+          <li><strong>Direkte @mentions (Agent-to-Agent)</strong>: Jeder Agent kann in seiner Antwort einen anderen Agenten mit <code>@AgentName</code> erwähnen (z. B. <i>@CoderAG bitte schau drüber</i>). Dies löst automatisch und asynchron eine neue Teilaufgabe für den genannten Worker aus.</li>
+          <li><strong>Staggered Dispatching</strong>: Parallele Worker-Aufrufe werden automatisch um 1,5 Sekunden verzögert, um LLM-Verbindungsfehler und API-Rate-Limits (429) zu vermeiden.</li>
+          <li><strong>Automatisches Zusammenführen (Synthese)</strong>: Wenn ein über <code>@job</code> gestarteter Team-Workflow aktiv ist, überwacht ein Hintergrund-Koordinator den Arbeitsstatus aller Worker. Sobald alle fertig sind, fasst <code>GeneralAG</code> die Ergebnisse automatisch zusammen und generiert das finale Code- oder Text-Artefakt.</li>
+          <li><strong>Dashboard-Überwachung</strong>: Im Dashboard signalisiert ein pulsierendes Banner in Echtzeit, welche Agenten gerade miteinander kommunizieren und welcher übergeordnete Workflow aktiv ist.</li>
+        </ul>
+      </div>
     </div>
 
     <!-- ── Tab: Agents (Soul Hierarchy) ── -->
