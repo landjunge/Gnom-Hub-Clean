@@ -87,6 +87,12 @@ Das System wurde in einem strukturierten Prozess um folgende Funktionen erweiter
 *   **Graceful Fallback & Degradation**: Robuste Ausfallsicherung durch automatisches Routing bei blockierten oder fehlerhaften Agenten (z. B. Fallback von `CoderAG` auf `GeneralAG`), dokumentiert in einem persistenten Ausfall-Log.
 *   **Strikte 40-Zeilen-Kompatibilität**: Alle 5 neuen Integrationsmanager wurden modularisiert und in Hilfsdateien aufgeteilt, um die radikale 40-Zeilen-Regel im Backend zu 100% einzuhalten.
 
+### 🛡️ Phase 15: Zero-Trust Capabilities, Local Embeddings & Custom Presets
+*   **Zero-Trust-Autorisierung**: Ein temporäres Freigabesystem (Leases) mit 5-Minuten-Gültigkeit (TTL), das DB-gestützt arbeitet und wiederholte Dateizugriffe, Befehle und Browser-Aktionen ohne erneute LLM-Prüfungen durch WatchdogAG/SecurityAG per In-Memory-TTL-Cache mit O(1)-Lookup umgeht.
+*   **Resilientes Offline-Retrieval**: Lokale semantische Ähnlichkeitssuche per `sentence-transformers` und `faiss` (falls installiert) mit persistentem Embedding-Cache (`data/emb_cache.pkl`) zur Latenzreduktion und nahtlosem Fallback auf TF-IDF-Kosinus-Ähnlichkeit bei fehlenden Bibliotheken.
+*   **Custom Preset System**: Dynamisches Einscannen und Einmischen von benutzerdefinierten Presets als JSON-Dateien aus `/config/presets/` in das bestehende Preset-System.
+*   **Strikte 40-Zeilen-Kompatibilität**: Konsequente Einhaltung der radikalen `40-Zeilen-Regel` im Backend für alle neuen Module (`capability_manager.py`, `embeddings.py`, `emb_faiss.py`, `emb_cache.py`, `preset_service.py`).
+
 ---
 
 
@@ -144,6 +150,7 @@ Das Preset-System erlaubt das Umschalten des gesamten Schwarms auf ein bestimmte
 * Der Preset-Wechsel speichert den aktuellen Modus in der Tabelle `state` in der SQLite-Datenbank.
 * Bei jeder LLM-Anfrage lädt der Router den passenden Prompt-Modifikator aus der Konfiguration und stellt ihn dem System-Prompt des Workers voran.
 * LLM-Einstellungen und Modell-Auswahlen werden pro Preset benutzerdefiniert gespeichert und beim Umschalten automatisch wiederhergestellt.
+* 📂 **Benutzerdefinierte Presets (JSON)**: Du kannst eigene Preset-Konfigurationen im Verzeichnis `config/presets/` ablegen. Gnom-Hub scannt diese automatisch ein und fügt sie dynamisch zu den verfügbaren Modi hinzu.
 
 ---
 
