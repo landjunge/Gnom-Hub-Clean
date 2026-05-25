@@ -27,8 +27,8 @@ class SmartRouter:
     @staticmethod
     def get_best_model(stage: str, available_models: list) -> str:
         preferred = {
-            "stage_4": ["claude-3.5-sonnet", "gpt-4o", "deepseek-reasoner"],
-            "stage_3": ["gpt-4o-mini", "mistral-large", "llama3.1"],
+            "stage_4": ["gpt-4o-mini", "gemini-1.5-flash", "deepseek-chat"],
+            "stage_3": ["gpt-4o-mini", "deepseek-chat", "llama3.2"],
             "stage_2": ["llama3.2", "gemma2"],
             "stage_1": ["llama3.2", "phi3"],
         }.get(stage, ["llama3.2"])

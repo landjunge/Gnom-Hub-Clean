@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request; import requests, os, platform, psutil
 router = APIRouter()
 @router.get("/api/llm/available_models")
 def get_available_models():
-    ds_models = ["deepseek-chat", "deepseek-reasoner"]
+    ds_models = ["deepseek-chat"]
     or_models = []
     try:
         r = requests.get("https://openrouter.ai/api/v1/models", timeout=5)
