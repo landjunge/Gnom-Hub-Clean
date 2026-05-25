@@ -4,13 +4,14 @@ from ...core.config import Config
 from ...common.exceptions import LLMProviderError
 
 class OpenRouterClient:
+    """OpenRouter Client – testet Modelle streng nach der zentralen Reihenfolge in Config."""
     def __init__(self):
         self.api_key = Config.OPENROUTER_API_KEY
         self.base_url = "https://openrouter.ai/api/v1"
-        if not self.api_key:
-            raise LLMProviderError("OPENROUTER_API_KEY ist nicht gesetzt")
+        if not self.api_key: raise LLMProviderError("OPENROUTER_API_KEY ist nicht gesetzt")
 
     async def ask(self, prompt: str, model: Optional[str] = None) -> str:
+        """Testet Modelle nacheinander in der Reihenfolge aus Config."""
         models_to_try = [model] if model else []
         for m in Config.OPENROUTER_FREE_MODELS:
             if m not in models_to_try: models_to_try.append(m)
@@ -26,5 +27,5 @@ class OpenRouterClient:
                     print(f"✅ Erfolg mit {current_model}")
                     return content
                 except Exception as e:
-                    print(f"❌ Fehlgeschlagen mit {current_model}: {e}")
+                    print(f"❌ Fehlgeschlagen mit {current_model}: {e}"); continue
         raise LLMProviderError("OpenRouter: Kein Modell hat funktioniert")
