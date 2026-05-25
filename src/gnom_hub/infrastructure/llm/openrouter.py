@@ -5,7 +5,7 @@ from ...common.exceptions import LLMProviderError
 
 class OpenRouterClient:
     FREE_MODELS = ["meta-llama/llama-3.1-8b-instruct", "google/gemma-2-9b-it", "mistralai/mistral-7b-instruct", "qwen/qwen2.5-7b-instruct", "deepseek/deepseek-chat"]
-    _working_models: List[str] = []
+    _successful_models: List[str] = []
 
     def __init__(self):
         self.api_key = Config.OPENROUTER_API_KEY
@@ -15,9 +15,9 @@ class OpenRouterClient:
 
     async def ask(self, prompt: str, model: Optional[str] = None) -> str:
         models_to_try = [model] if model else []
-        for m in self._working_models + self.FREE_MODELS:
+        for m in self._successful_models + self.FREE_MODELS:
             if m not in models_to_try: models_to_try.append(m)
-        for attempt, current_model in enumerate(models_to_try, 1):
+        for attempt, current_model in enumerate(models_to_try[:6], 1):
             print(f"🟡 OpenRouter Versuch {attempt} → {current_model}")
             headers = {"Authorization": f"Bearer {self.api_key}", "HTTP-Referer": "http://localhost:8000", "X-Title": "Gnom-Hub"}
             payload = {"model": current_model, "messages": [{"role": "user", "content": prompt}]}
@@ -26,11 +26,11 @@ class OpenRouterClient:
                     response = await client.post(f"{self.base_url}/chat/completions", json=payload, headers=headers)
                     response.raise_for_status()
                     content = response.json()["choices"][0]["message"]["content"].strip()
-                    if current_model in self._working_models:
-                        self._working_models.remove(current_model)
-                    self._working_models.insert(0, current_model)
-                    print(f"✅ OpenRouter Erfolg mit {current_model}")
+                    if current_model in self._successful_models:
+                        self._successful_models.remove(current_model)
+                    self._successful_models.insert(0, current_model)
+                    print(f"✅ Erfolg mit {current_model}")
                     return content
                 except Exception as e:
                     print(f"❌ Fehlgeschlagen mit {current_model}: {e}")
-        raise LLMProviderError("OpenRouter: Alle Modelle sind fehlgeschlagen")
+        raise LLMProviderError("OpenRouter: Alle Modelle fehlgeschlagen")
