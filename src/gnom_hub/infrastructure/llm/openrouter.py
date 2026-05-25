@@ -3,9 +3,8 @@ from typing import Optional
 from ...core.config import Config
 from ...common.exceptions import LLMProviderError
 
-
 class OpenRouterClient:
-    """Client für OpenRouter API."""
+    """Client für OpenRouter API – optimiert für Free-Tier-Modelle."""
 
     def __init__(self):
         self.api_key = Config.OPENROUTER_API_KEY
@@ -14,10 +13,11 @@ class OpenRouterClient:
             raise LLMProviderError("OPENROUTER_API_KEY ist nicht gesetzt")
 
     async def ask(self, prompt: str, model: Optional[str] = None) -> str:
-        """Sendet eine einfache Prompt-Anfrage an OpenRouter."""
+        """Sendet eine Prompt-Anfrage. Verwendet das vom SmartRouter übergebene Modell."""
+        # Fallback auf ein günstiges Modell, falls keines übergeben wurde
+        final_model = model or "meta-llama/llama-3.1-8b-instruct"
         headers = {"Authorization": f"Bearer {self.api_key}", "HTTP-Referer": "http://localhost:8000", "X-Title": "Gnom-Hub"}
-        payload = {"model": model or "anthropic/claude-3.5-sonnet", "messages": [{"role": "user", "content": prompt}]}
-
+        payload = {"model": final_model, "messages": [{"role": "user", "content": prompt}]}
         async with httpx.AsyncClient(timeout=60.0) as client:
             try:
                 response = await client.post(f"{self.base_url}/chat/completions", json=payload, headers=headers)
