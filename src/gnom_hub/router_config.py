@@ -9,19 +9,15 @@ DS_KEY = os.getenv("DEEPSEEK_API_KEY")
 
 # === FREIE MODELLE — Zuordnung nach Eve (Mai 2026) ===
 AGENT_MODELS = {
-    # ── Kommando & Analyse (brauchen starkes Reasoning) ──
-    "generalag":        ["deepseek/deepseek-v4-flash:free"],
-    "watchdogag":       ["openai/gpt-oss-120b:free"],
-    "securityag":       ["openai/gpt-oss-120b:free"],
-    # ── Code (braucht Code-Spezialist) ──
-    "coderag":          ["qwen/qwen3-coder:free"],
-    # ── Recherche (braucht Thinking) ──
-    "researcherag":     ["arcee-ai/trinity-large-thinking:free"],
-    # ── Text (braucht guten Schreibstil) ──
-    "writerag":         ["minimax/minimax-m2.5:free"],
-    "editorag":         ["minimax/minimax-m2.5:free"],
+    "generalag":   ["meta-llama/llama-3.3-70b-instruct:free", "nousresearch/hermes-3-llama-3.1-405b:free", "openai/gpt-oss-120b:free", "deepseek/deepseek-v4-flash:free"],
+    "watchdogag":  ["meta-llama/llama-3.3-70b-instruct:free", "nousresearch/hermes-3-llama-3.1-405b:free", "openai/gpt-oss-120b:free", "deepseek/deepseek-v4-flash:free"],
+    "securityag":  ["meta-llama/llama-3.3-70b-instruct:free", "nousresearch/hermes-3-llama-3.1-405b:free", "openai/gpt-oss-120b:free", "deepseek/deepseek-v4-flash:free"],
+    "coderag":     ["qwen/qwen3-coder:free", "meta-llama/llama-3.3-70b-instruct:free", "nousresearch/hermes-3-llama-3.1-405b:free", "deepseek/deepseek-v4-flash:free"],
+    "researcherag":["arcee-ai/trinity-large-thinking:free", "meta-llama/llama-3.3-70b-instruct:free", "nousresearch/hermes-3-llama-3.1-405b:free", "deepseek/deepseek-v4-flash:free"],
+    "writerag":    ["minimax/minimax-m2.5:free", "meta-llama/llama-3.3-70b-instruct:free", "nousresearch/hermes-3-llama-3.1-405b:free", "deepseek/deepseek-v4-flash:free"],
+    "editorag":    ["minimax/minimax-m2.5:free", "meta-llama/llama-3.3-70b-instruct:free", "nousresearch/hermes-3-llama-3.1-405b:free", "deepseek/deepseek-v4-flash:free"],
 }
-DEFAULT_MODELS = ["deepseek/deepseek-v4-flash:free", "openai/gpt-oss-120b:free", "minimax/minimax-m2.5:free"]
+DEFAULT_MODELS = ["meta-llama/llama-3.3-70b-instruct:free", "nousresearch/hermes-3-llama-3.1-405b:free", "openai/gpt-oss-120b:free", "deepseek/deepseek-v4-flash:free"]
 
 def get_key_for(agent_name):
     """Holt den OpenRouter-Key für den Agenten."""

@@ -20,17 +20,19 @@ async def sync_desktop_keys(db_keys: dict) -> dict:
             for v in db_keys.values():
                 if isinstance(v, dict) and v.get("key") == k: v["label"] = lbl
         db = {v.get("key"): v for v in db_keys.values() if isinstance(v, dict)}
+        parsed = sorted(parsed, key=lambda pk: 0 if db.get(pk[1], {}).get('valid') else 1)
         target = "".join(f"{'# UNGÜLTIG: ' if not db.get(k, {}).get('valid') else ''}{db.get(k, {}).get('label', 'API_KEY')}={k}\n" for _, k in parsed)
         with open(DESKTOP_TXT, "r") as f: current = f.read()
         if current != target:
             with open(DESKTOP_TXT, "w") as f: f.write(target)
+        db_keys = {kid: v for kid, v in sorted(db_keys.items(), key=lambda x: 0 if (isinstance(x[1], dict) and x[1].get("valid")) else 1)}
         sr.SQLiteStateRepository().set_value("llm_keys", db_keys)
     except Exception: pass
     return db_keys
-
 def write_keys_to_desktop(keys: dict):
     try:
         with open(DESKTOP_TXT, "w") as f:
-            for k in (v for v in keys.values() if isinstance(v, dict) and v.get("key")):
+            sorted_ks = sorted((v for v in keys.values() if isinstance(v, dict) and v.get("key")), key=lambda x: 0 if x.get("valid") else 1)
+            for k in sorted_ks:
                 f.write(f"{'# UNGÜLTIG: ' if not k.get('valid') else ''}{k.get('label', 'API_KEY')}={k['key']}\n")
     except Exception: pass
