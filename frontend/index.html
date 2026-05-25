@@ -3811,6 +3811,19 @@
         document.getElementById('system-info-panel').innerHTML = "System Info not available.";
       }
     }
+    function getProviderDisplayName(p) {
+      const labels = {
+        'auto': 'Auto-Routing',
+        'deepseek': 'DeepSeek',
+        'openrouter': 'OpenRouter',
+        'openai': 'OpenAI',
+        'anthropic': 'Anthropic',
+        'gemini': 'Gemini',
+        'mistral': 'Mistral',
+        'lokal': 'Local (Ollama)'
+      };
+      return labels[p] || p;
+    }
     function getModelDisplayName(p, m) {
       if (p === 'auto') {
         const labels = {
@@ -3896,7 +3909,7 @@
            html += `<div style="display:flex; align-items:center; gap:8px; margin-bottom:8px; padding:8px; background:rgba(255,255,255,0.05); border-radius:8px; font-size:0.9rem;">
              <div style="width:120px; font-weight:bold; overflow:hidden; text-overflow:ellipsis;">${a.name}</div>
              <select id="prov-${a.name}" onchange="updateModels('${a.name}')" style="background:var(--bg); color:white; border:1px solid rgba(255,255,255,0.2); padding:4px; border-radius:4px; width:120px;">
-               ${providers.map(p => `<option value="${p}" ${p === pSel ? 'selected':''}>${p}</option>`).join('')}
+               ${providers.map(p => `<option value="${p}" ${p === pSel ? 'selected':''}>${getProviderDisplayName(p)}</option>`).join('')}
              </select>
              <select id="mod-${a.name}" onchange="updateAgentCaps('${a.name}')" style="background:var(--bg); color:white; border:1px solid rgba(255,255,255,0.2); padding:4px; border-radius:4px; width:140px; flex-shrink:0;">
                ${(models[pSel]||[]).map(m => `<option value="${m}" ${m === mSel ? 'selected':''}>${getModelDisplayName(pSel, m)}</option>`).join('')}
@@ -4030,7 +4043,7 @@
         h += `
           <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px; font-size:0.8rem; background:rgba(255,255,255,0.02); padding:6px; border-radius:4px; border:1px solid rgba(255,255,255,0.05);">
             <div style="width:12px; height:12px; border-radius:50%; background:${mainColor}; box-shadow:0 0 6px ${mainColor}; flex-shrink:0;" title="${k.valid ? 'Gültig' : 'Ungültig'}"></div>
-            <div style="flex-grow:1; font-family:monospace; overflow:hidden; text-overflow:ellipsis;" title="${k.key}">${keyObscured} (${k.provider || 'Unbekannt'})</div>
+            <div style="flex-grow:1; font-family:monospace; overflow:hidden; text-overflow:ellipsis;" title="${k.key}">${keyObscured} (${getProviderDisplayName(k.provider) || 'Unbekannt'})</div>
             <div style="display:flex; gap:2px; align-items:center; flex-shrink:0;">${capsHtml}</div>
           </div>
         `;

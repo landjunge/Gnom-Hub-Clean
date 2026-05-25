@@ -35,4 +35,4 @@ def api_health():
 @app.get("/")
 def root():
     p = FRONT / "index.html"
-    return FileResponse(str(p)) if p.exists() else {"message": "GNOM-HUB", "version": "0.3.0"}
+    return FileResponse(str(p), headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"}) if p.exists() else {"message": "GNOM-HUB", "version": "0.3.0"}

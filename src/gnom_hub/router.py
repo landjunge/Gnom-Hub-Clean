@@ -9,6 +9,9 @@ def ask_router(p, sys="Du bist ein Assistent.", agent_name=None):
     kdb, adb = get_state_value("llm_keys") or {}, get_state_value("llm_agents") or {}; cfg = adb.get(n)
     if cfg and cfg.get("provider") and cfg.get("model"):
         pvd, mdl = cfg["provider"], cfg["model"]
+        if pvd == "auto":
+            from gnom_hub.infrastructure.router.router_stage import resolve_stage
+            pvd, mdl = resolve_stage(mdl, kdb, n)
         ans = _try("lokal", mdl, "", msgs, agent_name) if pvd == "lokal" else _try_keys(pvd, mdl, kdb, msgs, agent_name)
         if ans: return ans
     ans = _try_keys("deepseek", "deepseek-chat", kdb, msgs, agent_name)
