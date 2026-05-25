@@ -24,12 +24,14 @@ def ask_router(p, sys="Du bist ein Assistent.", agent_name=None):
     for cp, cm in cands:
         ans = _try("lokal", cm, "", msgs, agent_name) if cp == "lokal" else _try_keys(cp, cm, kdb, msgs, agent_name)
         if ans:
-            lat = (time.time() - t0) * 1000
-            record_agent_request(n or "unknown", lat, True)
+            lat = (time.time() - t0) * 1000; record_agent_request(n or "unknown", lat, True)
             logger.log_event("llm_call", provider=cp, model=cm, latency_ms=lat, status="success")
             if cfg.get("provider") != cp or cfg.get("model") != cm:
                 if cfg.get("provider") != "auto":
                     adb[n] = {"provider": cp, "model": cm}; set_state_value("llm_agents", adb)
+            if n:
+                from .swarm_comms import process_swarm_mentions
+                process_swarm_mentions(agent_name or n, ans)
             return ans
     lat = (time.time() - t0) * 1000; record_agent_request(n or "unknown", lat, False)
     logger.log_event("llm_call", latency_ms=lat, status="failed")

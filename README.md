@@ -48,6 +48,20 @@ Das System wurde in einem strukturierten Prozess um folgende Funktionen erweiter
 *   **Volle Pipeline-Integration**: Das Keyword-Matching-Retrieval (`soul_retrieval.py`) ist nun vollständig in die SoulAG-Pipeline (`soul.py`) integriert.
 *   **Erweiterter Kontext (top_k=8)**: Statt starr die letzten 20 Fakten zu injizieren, sucht das System gezielt nach den bis zu 8 relevantesten Fakten aus der gesamten Historie der Datenbank und bettet diese dynamisch vor jeder Worker-Anfrage in den System-Prompt ein.
 
+### 🔄 Phase 7: Multi-Agent Collaboration & @mentions
+*   **Vollständige `@mentions`-Unterstützung**: GeneralAG erkennt und delegiert Aufgaben automatisch an CoderAG, ResearcherAG, WriterAG und EditorAG.
+*   **Echtzeit-Kollaboration**: Koordiniertes und paralleles Arbeiten mehrerer Worker-Agenten an einem gemeinsamen Projekt.
+*   **Visuelle Aktivitäts-Indikatoren**: Live-Anzeige der gerade aktiven Agenten im Frontend.
+
+### 🛡️ Phase 8: Full System Integration & Tag Release
+*   **Härtungstest**: Erfolgreicher End-to-End Test aller Phasen 1-7 gleichzeitig (Preset-Wechsel, doppelte Gatekeeper-Validierung, automatisierte Browser-Sandbox, SoulAG Retrieval).
+*   **Release-Packaging**: Saubere Dokumentation und Git Version Tagging.
+
+### 🔗 Phase 9: Swarm Intelligence & A2A Kommunikation
+*   **Direkte Agent-to-Agent Kommunikation**: Agenten können sich gegenseitig über `@mentions` adressieren und asynchron dispatchen, wodurch komplexe, mehrstufige interne Diskussionen ermöglicht werden.
+*   **Swarm-Coordination**: GeneralAG koordiniert mehrere Agenten parallel und führt Ergebnisse nach Beendigung aller Teilaufgaben automatisch in ein finales Dokument/Code-Artefakt zusammen.
+*   **Visuelle Swarm-Aktivität**: Ein pulsierendes Swarm-Status-Banner im Dashboard zeigt in Echtzeit an, welche Agenten gerade miteinander kommunizieren und welcher Team-Workflow aktiv ist.
+
 ---
 
 
