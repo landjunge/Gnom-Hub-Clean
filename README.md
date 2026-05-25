@@ -1,36 +1,34 @@
 # 🧠 GNOM-HUB — Minimalistisches Multi-Agenten-System
 
-Gnom-Hub ist ein lokal-first ausgerichtetes Multi-Agenten-System, das auf radikale Weise Einfachheit und Zuverlässigkeit in den Vordergrund stellt. Statt der in modernen Frameworks üblichen dynamischen und schwer kontrollierbaren Agenten-Schwärme setzt Gnom-Hub auf eine **feste Topologie von genau 8 Agenten** (4 System-Koordinatoren und 4 Worker-Spezialisten). 
+Gnom-Hub ist ein **lokal-first** Multi-Agenten-System mit fester Topologie. Statt dynamischer, schwer kontrollierbarer Agenten-Schwärme besteht das System aus **genau 8 Agenten** (4 System-Agenten + 4 Worker-Agenten). 
 
-Ein zentrales Design-Prinzip ist die **40-Zeilen-Regel**: Jedes funktionale Python-Modul im Backend (unterhalb von `src/gnom_hub/`) unterliegt einer strikten Obergrenze von 40 Zeilen Code. Dies zwingt Entwickler zu einer defensiven, hochgradig modularisierten Architektur (Clean Architecture) und unterbindet monolithische Komplexität bereits im Keim.
-
----
-
-## 🎯 Philosophie & Leitlinien
-
-* **Local-First & Datensouveränität**: Das gesamte System läuft lokal. Interaktionen, Logs und Zustände werden in einer lokalen SQLite-Datenbank persistiert.
-* **Feste Topologie**: Keine dynamische Generierung von Agenten. Es gibt genau 8 definierte Akteure, was die Vorhersagbarkeit und das Debugging drastisch vereinfacht.
-* **Defensive Architektur**: Durch die Begrenzung der Dateilängen im Backend (strikte 40-Zeilen-Regel) wird eine klare Trennung zwischen Domain-, Application-, Infrastructure- und Presentation-Layer erzwungen.
-* **Keine unendlichen Schleifen (Autonomous Loops)**: Agenten agieren nicht unkontrolliert im Hintergrund. Jeder Task-Schritt wird über das Dashboard (War Room) getriggert, visualisiert und bleibt für den menschlichen Operator transparent.
+Jedes Backend-Modul unterliegt der strengen **40-Zeilen-Regel**. Dies erzwingt Klarheit, Wartbarkeit und verhindert monolithischen Code.
 
 ---
 
-## 🏗️ System-Architektur
+## 🎯 Philosophie
 
-Das folgende Diagramm veranschaulicht den Datenfluss und die Kontrollstrukturen bei einer Anfrage:
+- **Local-First**: Alles läuft lokal. Keine Cloud-Orchestrierung.
+- **Feste Topologie**: Nur 8 definierte Agenten — keine unkontrollierte Agenten-Explosion.
+- **Defensive Architektur**: Clean Architecture + 40-Zeilen-Regel als hartes Prinzip.
+- **Pragmatismus**: Keine autonomen Endlosschleifen. Der Mensch behält die Kontrolle.
+- **Sicherheit durch Design**: System-Agenten überwachen und schützen, Worker arbeiten eingeschränkt.
+
+---
+
+## 🏗️ Architektur
 
 ```mermaid
 graph TD
     User([Nutzer]) -->|POST /api/chat| Hub[FastAPI Hub]
-    Hub -->|Asynchroner Thread| Soul[SoulAG Extractor]
-    Soul -->|Lernen & Upsert| DB[(SQLite soul_memory)]
-    Hub -->|Routing| Router[Smart LLM Router]
+    Hub -->|Asynchroner Thread| Soul[SoulAG]
+    Soul -->|Fakten-Extraktion| DB[(SQLite)]
+    Hub -->|Routing| Router[Smart Router]
     DB -->|Kontext-Injektion| Router
-    State[(SQLite state Tabelle)] -->|Aktiviertes Preset| Router
-    Router -->|LLM Prompt| LLM[Lokales Ollama / DeepSeek / OpenRouter]
-    Router -->|Tool-Filter| Action[Action Handlers]
-    Action -->|Rollen-Validierung| Perm[Permissions Check]
-    Perm -->|Befehlsausführung| OS[Sandboxed OS / Playwright]
+    State[(State)] -->|Aktives Preset| Router
+    Router -->|LLM + Prompt| LLM[Ollama / OpenRouter / DeepSeek]
+    Router -->|Tool-Ausführung| Action[Action Handlers]
+    Action -->|Permission-Check| Perm[agent_definitions.py]
 ```
 
 ---
@@ -126,7 +124,7 @@ Werkzeug-Zugriffe (z. B. Dateizugriffe, HTTP-Anfragen oder Terminalbefehle) werd
 ### Was in Arbeit / geplant ist:
 * [ ] **MCP-Erweiterung**: Dynamische Registrierung und Anbindung externer Model Context Protocol (MCP) Server ist noch rudimentär.
 * [ ] **Erweiterte Sandbox**: Derzeit sind Dateizugriffe außerhalb des Workspace selbst für den `godmode` des CoderAG stark eingeschränkt.
-* [ ] **Browser-Automation**: Die Playwright-Schnittstelle im Backend ist vorbereitet, im Standard-Setup jedoch deaktiviert.
+* [ ] **Browser-Automation**: Die Playwright-Schnittstelle im Backend is vorbereitet, im Standard-Setup jedoch deaktiviert.
 
 ---
 
