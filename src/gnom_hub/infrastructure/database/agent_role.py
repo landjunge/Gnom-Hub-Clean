@@ -18,4 +18,4 @@ def update_agent_role_memory(agent_id: str, role_content: str = None) -> None:
             c.execute("""
                 INSERT INTO chat (id, project, sender, agent_id, msg_type, content, timestamp, metadata)
                 VALUES (?, 'default', 'System', ?, 'role', ?, ?, ?)
-            """, (str(uuid.uuid4()), agent_id, role_content, datetime.now(timezone.utc).isoformat() + "Z", json.dumps({"type": "role", "sender": "System"})))
+            """, (str(uuid.uuid4()), agent_id, role_content, datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"), json.dumps({"type": "role", "sender": "System"})))

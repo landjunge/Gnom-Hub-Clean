@@ -130,7 +130,7 @@ def add_chat_message(project: str, sender: str, agent_id: str, msg_type: str, co
                     INSERT INTO chat (id, project, sender, agent_id, msg_type, content, timestamp, metadata)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """, (msg_id, project, sender, agent_id, msg_type, content,
-                      datetime.now(timezone.utc).isoformat() + "Z",
+                      datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
                       json.dumps(metadata or {})))
                 return msg_id
     except sqlite3.Error as e:
@@ -264,7 +264,7 @@ def add_agent_memory(agent_id: str, content: str, timestamp: str = None, sender:
         with get_db_conn() as conn:
             with conn:
                 msg_id = str(uuid.uuid4())
-                ts = timestamp or (datetime.now(timezone.utc).isoformat() + "Z")
+                ts = timestamp or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
                 meta = metadata or {"sender": sender, "type": msg_type}
                 conn.execute("""
                     INSERT INTO chat (id, project, sender, agent_id, msg_type, content, timestamp, metadata)
@@ -447,7 +447,7 @@ def register_agent_in_db(name: str, port: int, description: str) -> dict:
         with get_db_conn() as conn:
             with conn:
                 row = conn.execute("SELECT * FROM agents WHERE name = ?", (name,)).fetchone()
-                now_str = datetime.now(timezone.utc).isoformat() + "Z"
+                now_str = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
                 if row:
                     conn.execute("""
                         UPDATE agents 
@@ -499,7 +499,7 @@ def update_agent_role_memory(agent_id: str, role_content: str = None):
                 conn.execute("DELETE FROM chat WHERE agent_id = ? AND msg_type = 'role'", (agent_id,))
                 if role_content:
                     msg_id = str(uuid.uuid4())
-                    ts = datetime.now(timezone.utc).isoformat() + "Z"
+                    ts = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
                     meta = {"type": "role", "sender": "System"}
                     conn.execute("""
                         INSERT INTO chat (id, project, sender, agent_id, msg_type, content, timestamp, metadata)
@@ -517,7 +517,7 @@ def save_soul_fact(key: str, value: str):
         with get_db_conn() as conn:
             with conn:
                 conn.execute("INSERT OR REPLACE INTO soul_memory (key, value, timestamp) VALUES (?, ?, ?)", 
-                             (key, value, datetime.now(timezone.utc).isoformat() + "Z"))
+                             (key, value, datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")))
     except sqlite3.Error as e:
         logger.error(f"[DB] Failed to save soul fact: {e}")
 
