@@ -2763,12 +2763,46 @@
           <div id="evolution-log-section" style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px; max-height: 400px; overflow-y: auto; padding-right: 5px;">
             <div class="empty" style="color:var(--text-dim); font-style:italic;">Keine Evolutions-Logs vorhanden.</div>
           </div>
+          <h2 style="margin-top: 30px; display:flex; align-items:center; gap:8px;">
+            <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#10b981; box-shadow: 0 0 8px #10b981;"></span>
+            Submit Swarm Job Feedback
+          </h2>
+          <div id="feedback-section" style="margin-top: 15px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: var(--radius); display: flex; flex-direction: column; gap: 10px;">
+            <div style="display:flex; gap:10px;">
+              <button class="btn-primary" onclick="submitFeedback('up')" style="flex:1; background:rgba(16, 185, 129, 0.1); border:1px solid #10b981; color:#10b981; padding:8px 0; border-radius:var(--radius-sm); font-size:1rem; cursor:pointer; transition:var(--transition);">👍 Daumen hoch</button>
+              <button class="btn-primary" onclick="submitFeedback('down')" style="flex:1; background:rgba(239, 68, 68, 0.1); border:1px solid #ef4444; color:#ef4444; padding:8px 0; border-radius:var(--radius-sm); font-size:1rem; cursor:pointer; transition:var(--transition);">👎 Daumen runter</button>
+            </div>
+            <div style="display:flex; gap:10px; align-items:stretch;">
+              <input type="text" id="feedback-comment" placeholder="Kommentar hinzufügen..." style="flex:1; background:var(--bg-input); border:1px solid var(--glass-border); border-radius:var(--radius-sm); color:var(--text); padding:8px 12px; font-size:0.9rem; outline:none;">
+              <button class="btn-primary" onclick="submitFeedbackComment()" style="padding:0 20px;">Senden</button>
+            </div>
+            <div id="feedback-status" style="font-size:0.8rem; color:var(--green); display:none;">Feedback gesendet!</div>
+          </div>
         </div>
       `;
       await loadDashboardData();
       stopDashboardPolling();
       dashboardInterval = setInterval(runDashboardPolling, 3000);
     }
+    window.submitFeedback = async function(vote) {
+      const comment = document.getElementById('feedback-comment')?.value || '';
+      const res = await api('POST', '/feedback', { vote, comment });
+      if (res && res.status === 'ok') {
+        const s = document.getElementById('feedback-status');
+        if (s) { s.style.display = 'block'; s.textContent = 'Feedback gesendet!'; setTimeout(() => s.style.display = 'none', 3000); }
+      }
+    };
+    window.submitFeedbackComment = async function() {
+      const el = document.getElementById('feedback-comment');
+      const comment = el ? el.value : '';
+      if (!comment.trim()) return;
+      const res = await api('POST', '/feedback', { vote: 'comment', comment });
+      if (res && res.status === 'ok') {
+        if (el) el.value = '';
+        const s = document.getElementById('feedback-status');
+        if (s) { s.style.display = 'block'; s.textContent = 'Kommentar gesendet!'; setTimeout(() => s.style.display = 'none', 3000); }
+      }
+    };
     async function loadDashboardData() {
       const metrics = await api('GET', '/metrics');
       const grid = document.getElementById('dashboard-grid');

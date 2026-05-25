@@ -1,11 +1,9 @@
 # metrics.py — FastAPI Router for agent metrics and audit logs
-from fastapi import APIRouter
+from fastapi import APIRouter; from pydantic import BaseModel
 from gnom_hub.monitoring import get_agent_metrics
-from gnom_hub.db import get_db_conn, get_state_value
-import sqlite3
-
+from gnom_hub.db import get_db_conn, get_state_value; import sqlite3
 router = APIRouter()
-
+class FeedbackMsg(BaseModel): vote: str; comment: str
 @router.get("/api/metrics")
 def get_metrics():
     m = get_agent_metrics()
@@ -16,7 +14,10 @@ def get_metrics():
             m["_evolution_log"] = [dict(r) for r in conn.execute("SELECT key, value, timestamp FROM soul_memory WHERE key LIKE 'evolution_%' ORDER BY timestamp DESC").fetchall()]
     except Exception: m["_evolution_log"] = []
     return m
-
+@router.post("/api/feedback")
+def submit_feedback(msg: FeedbackMsg):
+    from gnom_hub.soul import handle_user_feedback; handle_user_feedback(msg.vote, msg.comment)
+    return {"status": "ok"}
 @router.get("/api/audit-log")
 def get_audit_log(agent: str = None, event: str = None, limit: int = 50):
     try:

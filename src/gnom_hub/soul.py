@@ -14,11 +14,9 @@ class SoulAG:
         return 2
     def _ex(self, m: str):
         try:
-            res = ask_router(f"Extrahiere Fakten/Lektionen/Regeln.\n\nNachricht:\n{m}\n\nAntworte NUR mit JSON-Array [{{\"key\": \"x\", \"value\": \"y\"}}]", sys="Du bist Lerneffekt-Extraktor.", agent_name="SoulAG")
+            res = ask_router(f"Extrahiere Fakten.\nNachricht:\n{m}\nAntworte NUR mit JSON [{{\"key\": \"x\", \"value\": \"y\"}}]", sys="Du bist Lerneffekt-Extraktor.", agent_name="SoulAG")
             s, e = res.find("["), res.rfind("]")
-            if s != -1 and e != -1:
-                for f in json.loads(res[s:e+1]):
-                    if self._val(f.get("key",""), f.get("value","")) >= 2: save_soul_fact(f["key"], f["value"], agent="SoulAG")
+            if s != -1 and e != -1: [save_soul_fact(f.get("key",""), f.get("value",""), agent="SoulAG") for f in json.loads(res[s:e+1]) if self._val(f.get("key",""), f.get("value","")) >= 2]
         except Exception: pass
     def inject_context(self, sys: str, msg: str) -> str:
         facts = retrieve_relevant_facts(msg, top_k=8); ctx = sys + ("\n\n=== RELEVANTE INFORMATIONEN ===\n" + "\n".join(f"- {f}" for f in facts) if facts else "")
@@ -26,13 +24,15 @@ class SoulAG:
         return ctx + ("\n\n=== ERWÄHNTE AGENTEN ===\n" + "\n".join(m_ctx) if m_ctx else "")
     def get_definitions(self) -> dict: from .agent_definitions import AGENT_DEFINITIONS; return AGENT_DEFINITIONS
 soul_instance = SoulAG()
+def _save_rules(res: str, prefix=""):
+    s, e = res.find("["), res.rfind("]")
+    if s != -1 and e != -1: [(save_soul_fact(f"evolution_{f['agent']}_{uuid.uuid4().hex[:6]}", prefix + f["rule"], agent="GeneralAG"), add_chat_message("default", "GeneralAG", "generalag", "chat", f"@user @SoulAG: Regel für {f['agent']} gelernt: '{f['rule']}'")) for f in json.loads(res[s:e+1]) if f.get("agent") and f.get("rule")]
 def run_evolution(task: str, hist: str):
-    try:
-        res = ask_router(f"Analysiere Job '{task}' und den Verlauf:\n{hist}\nSchlage Verbesserungen vor. Antworte NUR im JSON-Format: [{{\"agent\": \"AgentName\", \"rule\": \"Regelinhalt\"}}]", sys="Du bist ein Agenten-Optimierer.", agent_name="GeneralAG")
-        s, e = res.find("["), res.rfind("]")
-        if s != -1 and e != -1:
-            for f in json.loads(res[s:e+1]):
-                if f.get("agent") and f.get("rule"):
-                    save_soul_fact(f"evolution_{f['agent']}_{uuid.uuid4().hex[:6]}", f["rule"], agent="GeneralAG")
-                    add_chat_message("default", "GeneralAG", "generalag", "chat", f"@user @SoulAG: Selbstverbesserungsregel für {f['agent']} gelernt: '{f['rule']}'")
+    try: _save_rules(ask_router(f"Analysiere '{task}' und den Verlauf:\n{hist}\nSchlage Verbesserungen vor. Antworte NUR im JSON-Format: [{{\"agent\": \"AgentName\", \"rule\": \"Regelinhalt\"}}]", sys="Du bist Optimierer.", agent_name="GeneralAG"))
     except Exception: pass
+def handle_user_feedback(vote: str, comment: str):
+    save_soul_fact(f"feedback_{uuid.uuid4().hex[:6]}", f"Vote: {vote} | {comment}", agent="User")
+    add_chat_message("default", "System", "system", "chat", f"@user Feedback: {vote} | {comment}")
+    if comment.strip():
+        try: _save_rules(ask_router(f"User-Feedback: '{comment}'. Schlage Verbesserungen vor. Antworte NUR im JSON-Format: [{{\"agent\": \"AgentName\", \"rule\": \"Regelinhalt\"}}]", sys="Du bist Optimierer.", agent_name="GeneralAG"), "User-Feedback: ")
+        except Exception: pass

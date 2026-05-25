@@ -32,6 +32,7 @@ def run_swarm_coordinator(task, workers):
     sr.set_value("active_workflow", None)
     try:
         from .soul import run_evolution; run_evolution(task, "\n\n".join(all_res))
+        post(next((a.name for a in ar.get_all() if a.role == "general" or a.name.lower() == "generalag"), "GeneralAG"), "Der Workflow ist beendet. War das Ergebnis gut? Bitte gib uns Feedback im Dashboard!")
     except Exception: pass
 def start_coordinator(task, workers):
     if workers: SR().set_value("active_workflow", f"Team-Workflow aktiv: {' → '.join(workers)}"); threading.Thread(target=run_swarm_coordinator, args=(task, workers), daemon=True).start()
