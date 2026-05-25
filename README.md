@@ -1,31 +1,51 @@
-# 🧠 GNOM-HUB — Pragmatische Multi-Agenten-Orchestrierung
+# 🧠 GNOM-HUB — Multi-Agenten-Plattform
 
-Gnom-Hub ist kein Enterprise-Framework für hunderte Agenten und komplexe Workflows. Es ist ein minimalistisches, lokal-fokussiertes Orchestrierungssystem für genau **8 feste Agenten (4 System-Koordinatoren und 4 Worker-Spezialisten)** – nicht mehr, nicht weniger. Die Steuerung und Visualisierung erfolgt über das Web-Dashboard **War Room**.
-
----
-
-## 🎯 Philosophie & Einsatzzweck
-
-Die Plattform wurde nach folgenden technischen Leitlinien entworfen:
-1. **Local-First & Datensparsamkeit**: Alle Agenteninteraktionen, Chatverläufe und Zustände werden in einer lokalen SQLite3-Datenbank abgelegt. Keine Abhängigkeiten von externen Cloud-Orchestrierungsdiensten.
-2. **Defensive Architektur**: Jedes Python-Backend-Modul in `src/gnom_hub/` ist auf **maximal 40 Zeilen Code** begrenzt (Ausnahmen bestehen nur für `db.py` und `hub_app.py`). Diese Restriktion erzwingt kompromisslose Modularisierung und verhindert unübersichtlichen Spaghetticode.
-3. **Pragmatismus**: Gnom-Hub verzichtet auf unkontrollierte autonome Schleifen. Aktionen sind nutzergesteuert und transparent. Die Plattform eignet sich hervorragend für Lehre, Forschung, Experimente mit Prompt-Injektionen und das Testen lokaler LLMs.
+Gnom-Hub ist ein minimalistisches, lokales Multi-Agenten-System. Im Gegensatz zu komplexen, schwerfälligen Orchestrierungsframeworks beschränkt sich Gnom-Hub auf eine **feste Topologie von genau 8 Agenten** (4 System-Koordinatoren und 4 Worker-Spezialisten). Jedes Backend-Python-Modul unterliegt einer **strikten Obergrenze von 40 Zeilen Code** (die 40-Zeilen-Regel). Dies erzwingt kompromisslose Modularisierung und verhindert monolithischen Spaghetticode.
 
 ---
 
-## 🤖 Der Agenten-Schwarm (8 Agenten)
+## 🎯 Philosophie & Leitlinien
 
-Alle Agenteneigenschaften sind in der zentralen Konfigurationsdatei `src/gnom_hub/agent_definitions.py` hinterlegt.
+Der Entwurf von Gnom-Hub stützt sich auf folgende Konzepte:
+* **Local-First & Datensparsamkeit**: Alle Agenten-Interaktionen, Logbücher und Systemzustände werden in einer lokalen SQLite3-Datenbank abgelegt. Keine Cloud-Abhängigkeiten zur Orchestrierung.
+* **Defensive Architektur**: Radikale Begrenzung der Dateilängen im Backend (40-Zeilen-Regel). Dies erzwingt eine strikte Aufteilung in Domain-, Application-, Infrastructure- und Presentation-Layer (Clean Architecture).
+* **Pragmatismus**: Keine autonomen Endlosschleifen. Der Agenten-Schwarm wird kontrolliert über ein Web-Dashboard (War Room) gesteuert. Optimal für Forschung, Lehre und lokales Prototyping.
+
+---
+
+## 🏗️ System-Architektur
+
+Das folgende Diagramm veranschaulicht den Datenfluss bei einer Nutzeranfrage:
+
+```mermaid
+graph TD
+    User([Nutzer]) -->|POST /api/chat| Hub[FastAPI Hub]
+    Hub -->|Asynchroner Thread| Soul[SoulAG Extractor]
+    Soul -->|Lernen & Upsert| DB[(SQLite soul_memory)]
+    Hub -->|Routing| Router[Smart LLM Router]
+    DB -->|Kontext-Injektion| Router
+    State[(SQLite active_preset)] -->|Fokus-Modifikator| Router
+    Router -->|LLM Prompt| LLM[Lokales Ollama / DeepSeek / OpenRouter]
+    Router -->|Tool-Filter| Action[Action Handlers]
+    Action -->|Rollen-Validierung| Perm[Permissions Check]
+    Perm -->|Befehlsausführung| OS[Sandboxed OS / Playwright]
+```
+
+---
+
+## 🤖 Die 8 Agenten (Topologie)
+
+Die Agenten sind in der zentralen Konfigurationsdatei `src/gnom_hub/agent_definitions.py` registriert.
 
 ### System-Agenten (Administrative Rechte)
-System-Agenten besitzen erweiterte Zugriffsrechte (`read`, `write`, `run`, `godmode`, `crawl`, `desktop`, `evolve`):
-* **SoulAG**: Das passive Gedächtnis. Analysiert die Nachrichten des Nutzers im Hintergrund asynchron, extrahiert Fakten oder Regeln und injiziert diese bei Folgeanfragen als Kontext in die System-Prompts.
-* **GeneralAG**: Der Koordinator. Analysiert komplexe `@job`-Anfragen, teilt Aufgaben an Worker-Spezialisten zu und führt Ergebnisse zusammen.
-* **WatchdogAG**: Überwacht die Integrität des Workspace und die Einhaltung der Dateigrenzen.
-* **SecurityAG**: Führt Sicherheitsüberprüfungen durch und signiert Workspace-Dateien kryptografisch.
+Sie steuern die Plattform und besitzen erweiterte Berechtigungen (`read`, `write`, `run`, `godmode`, `crawl`, `desktop`, `evolve`):
+* **SoulAG**: Das passive Langzeitgedächtnis des Schwarms. Analysiert die Nachrichten des Nutzers im Hintergrund asynchron, lernt Vorlieben und injiziert diese als Kontext in die System-Prompts.
+* **GeneralAG**: Der Hauptkoordinator. Analysiert komplexe `@job`-Anfragen, delegiert präzise Teilschritte an die Worker und führt Ergebnisse zusammen.
+* **WatchdogAG**: Überwacht zyklisch die Integrität des Workspace und die Einhaltung der Dateigrenzen.
+* **SecurityAG**: Führt Risikoprüfungen durch und signiert Workspace-Dateien kryptografisch.
 
 ### Worker-Agenten (Eingeschränkte Rechte)
-Worker-Agenten besitzen standardmäßig nur Lese- und Schreibrechte innerhalb ihres Workspace-Verzeichnisses (`read`, `write`, `@job`):
+Worker-Agenten erledigen die eigentliche Arbeit im Workspace. Sie besitzen standardmäßig Lese- und Schreibrechte im Workspace (`read`, `write`, `@job`):
 * **CoderAG**: Entwickelt und debuggt Code. Erhält über `godmode` zusätzliche Rechte für die Playwright-Browsersteuerung und terminalbasierte Befehlsausführung.
 * **ResearcherAG**: Sucht Dokumentationen, liest Web-Inhalte via Crawling-APIs und validiert Quellen.
 * **WriterAG**: Erstellt Entwürfe, Dokumentationen und Texte.
@@ -35,9 +55,9 @@ Worker-Agenten besitzen standardmäßig nur Lese- und Schreibrechte innerhalb ih
 
 ## 🎛️ Das Preset-System (6 Modi)
 
-Das Preset-System dient dazu, den Fokus und die Modelle der Worker-Agenten mit einem Klick an eine bestimmte Aufgabe anzupassen. Die Auswahl erfolgt über das Dropdown-Menü direkt unter der Showbox.
+Das Preset-System dient dazu, den Fokus und die LLM-Modelle der Worker-Agenten mit einem Klick anzupassen. Die Auswahl erfolgt über das Dropdown-Menü unter der Showbox.
 
-### Die 6 vordefinierten Modi:
+### Die 6 Workflow-Modi:
 1. 💻 **Web Development**: Fokus auf semantisches HTML5, native Web-APIs, Barrierefreiheit (ARIA) und CSS.
 2. 🎨 **Graphic Design**: Fokus auf SVGs, Layout-Grids, Farbpaletten (HSL) und Kontraste.
 3. 🎵 **Audio Production**: Fokus auf Web Audio API, DSP-Algorithmen und Sound-Synthese.
@@ -48,64 +68,36 @@ Das Preset-System dient dazu, den Fokus und die Modelle der Worker-Agenten mit e
 ### Technische Funktionsweise:
 * Bei einem Preset-Wechsel wird das Preset im State-Repository gespeichert.
 * Der Router liest bei jeder Anfrage an einen Worker-Agenten die entsprechenden Prompt-Modifikatoren aus der `presets.json` aus und stellt diese dem System-Prompt voran.
-* Zudem werden die LLM-Modelle der Worker dynamisch angepasst (z. B. spezialisierte Coder-Modelle bei Web Dev). Custom-LLM-Einstellungen, die der Nutzer im Einstellungsmenü speichert, werden an das jeweilige Preset gekoppelt und bei Auswahl automatisch wiederhergestellt.
+* Zudem werden die LLM-Modelle der Worker dynamisch angepasst. Custom-LLM-Einstellungen, die der Nutzer im Einstellungsmenü speichert, werden an das jeweilige Preset gekoppelt und bei Auswahl automatisch wiederhergestellt.
 
 ---
 
 ## 🧠 SoulAG: Technisches Gedächtnis & Asynchroner Kontext-Injektor
 
-SoulAG fungiert als passives, unsichtbares Kontrollzentrum für das Langzeitgedächtnis des Schwarms. Er nimmt nicht aktiv am Chat teil, sondern überwacht den Datenstrom, um den Swarm-Kontext permanent an die Präferenzen des Nutzers anzupassen.
-
-### 1. Das passive Überwachungs- und Extraktionsmodell
-* **Event-Trigger**: Jede eingehende Chat-Nachricht an den `/api/chat`-Endpoint mit dem Sender `"user"` wird von SoulAG über `on_message()` registriert.
-* **Asynchroner Worker**: Um die Antwortzeit des Dashboards nicht zu blockieren, startet SoulAG die Analyse in einem separaten Hintergrund-Thread (`threading.Thread`).
-* **LLM-Analyse & Regeln**: Über das Standard-LLM des Schwarms (z. B. `deepseek-chat`) wird ein spezialisierter Extraktions-Prompt ausgeführt. Das LLM erhält die Anweisung, die Nachricht nach expliziten oder impliziten Regeln, Vorlieben, Dateipfaden, bevorzugten Technologien oder Einschränkungen des Nutzers zu filtern.
-* **Strikte JSON-Strukturierung**: Die Antwort des LLMs wird auf ein valides JSON-Array erzwungen:
-  ```json
-  [
-    {"key": "user_name", "value": "Daniel"},
-    {"key": "preferred_language", "value": "Python 3.11"},
-    {"key": "code_rule", "value": "Nutze für DB-Zugriffe immer SQLite WAL"}
-  ]
-  ```
-
-### 2. Datenpersistenz im DB-Schema
-* **Tabelle `soul_memory`**: Speichert die extrahierten Fakten relational mit folgendem Schema:
-  ```sql
-  CREATE TABLE IF NOT EXISTS soul_memory (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      key TEXT NOT NULL,
-      value TEXT NOT NULL,
-      timestamp TEXT NOT NULL,
-      UNIQUE(key)
-  );
-  ```
-  Die `UNIQUE(key)`-Einschränkung stellt sicher, dass Fakten bei erneuter Nennung überschrieben statt dupliziert werden (`INSERT OR REPLACE INTO soul_memory`).
-* **Tabelle `flexsoul`**: Diese Tabelle ist strukturell für die zusätzliche Haltung von Kurzzeitgedächtnissen (`short_term`) und einer Langzeit-Zusammenfassung (`long_term_summary`) pro Agenten-ID (`agent_id`) vorgesehen.
-* **Tabelle `chat`**: Die relationale Haupttabelle für Chat-Verläufe, aus der SoulAG bei Bedarf historische Kontexte liest.
-
-### 3. Der Injektions-Zyklus
-* Vor jedem LLM-Aufruf eines Worker-Agenten (`CoderAG`, `ResearcherAG`, etc.) wird der System-Prompt durch `soul_instance.inject_context(sys_prompt, msg_content)` modifiziert.
-* **Fakten-Retrieval**: Über `SQLiteSoulRepository.get_relevant_facts()` werden die bis zu 20 neuesten gelernten Fakten aus der Tabelle `soul_memory` (sortiert nach Timestamp) abgerufen.
-* **Prompt-Injektion**: Die Fakten werden strukturiert formatiert und als Anhang an den System-Prompt des ausführenden Agenten angefügt:
-  ```markdown
-  === RELEVANTE INFORMATIONEN ===
-  - preferred_language: Python 3.11
-  - code_rule: Nutze für DB-Zugriffe immer SQLite WAL
-  ```
-  Dadurch "erinnern" sich die Worker-Agenten bei jeder Aufgabe an zuvor getroffene Absprachen, ohne dass der Nutzer diese wiederholen muss.
-
-### 4. Interaktion mit Preset-Wechseln
-* Wechselt der Nutzer das Preset im Dropdown-Menü unter der Showbox, wird das neue Preset als Fakt (`active_preset`) in `soul_memory` hinterlegt.
-* Da die Preset-Modelle und Standard-Systemprompts (geladen aus `presets.json`) direkt im Router manipuliert werden, bleibt die Kontext-Injektion von SoulAG vollkommen unabhängig und ergänzt die Preset-Direktiven passgenau um das gelernte Nutzerprofil.
+SoulAG arbeitet passiv im Hintergrund und nimmt nicht aktiv am Chat teil:
+1. **Asynchrone Extraktion**: Jede Nachricht des Nutzers wird asynchron in einem Hintergrund-Thread (`threading.Thread`) analysiert. Das LLM filtert die Eingabe nach Regeln, Vorlieben und Dateipfaden.
+2. **Strikte JSON-Strukturierung**: Die Antwort des LLMs wird auf ein JSON-Array der Form `[{"key": "fact_key", "value": "fact_value"}]` erzwungen.
+3. **Relationale Persistenz**: Daten werden relational in der Tabelle `soul_memory` abgelegt:
+   ```sql
+   CREATE TABLE IF NOT EXISTS soul_memory (
+       id INTEGER PRIMARY KEY AUTOINCREMENT,
+       key TEXT NOT NULL,
+       value TEXT NOT NULL,
+       timestamp TEXT NOT NULL,
+       UNIQUE(key)
+   );
+   ```
+   Die `UNIQUE(key)`-Einschränkung stellt sicher, dass Fakten bei erneuter Nennung überschrieben statt dupliziert werden (`INSERT OR REPLACE`).
+4. **Kontext-Injektion**: Vor jedem Aufruf eines Workers fragt SoulAG die bis zu 20 neuesten gelernten Fakten aus der Datenbank ab und hängt diese an das System-Prompt an.
+5. **Preset-Interaktion**: Preset-Wechsel werden als Fakt (`active_preset`) in `soul_memory` abgelegt. Die Kontext-Injektion ergänzt die Preset-Direktiven passgenau.
 
 ---
 
-## 🏗️ Technische Entscheidungen & Architektur
+## 🛡️ Sicherheit & Permission-Modell
 
-* **Clean Architecture**: Strikte Aufteilung in Domain (Zustands- und Validierungsregeln), Application (Anwendungsfälle wie Senden/Brainstorming), Infrastructure (Datenbanken, Router, OS-Prozesse) und Presentation (FastAPI-Schnittstellen und Dashboard).
-* **40-Zeilen-Regel**: Begrenzt Dateilängen im Backend drastisch. Dies zwingt Entwickler zu kompromissloser Modularisierung und verhindert monolithischen Code. Ausnahmen bestehen nur für die Datenbank-Konfiguration (`db.py`) und die Anwendungs-Initialisierung (`hub_app.py`).
-* **Sichere Tool-Berechtigungen**: Werkzeug-Zugriffe (z. B. Dateisystem-Schreibzugriffe oder Shell-Befehle) werden in `action_handlers.py` in Echtzeit gegen die in `agent_definitions.py` definierten Rollen-Berechtigungen abgeglichen.
+Werkzeug-Zugriffe (z. B. Dateisystem-Schreibzugriffe oder Shell-Befehle) werden in `action_handlers.py` in Echtzeit gegen die in `agent_definitions.py` definierten Rollen-Berechtigungen abgeglichen:
+* **Pfadvalidierung**: Alle Lese- und Schreibzugriffe werden über `path_validator.py` validiert. Pfade außerhalb des aktiven Workspace werden abgelehnt, es sei denn, ein Agent besitzt die `run`-Berechtigung (durch `godmode`).
+* **Shell-Schutz**: Terminalbefehle werden vor Ausführung in der Sandbox gegen ein Regex-Muster gefährlicher Befehle (z. B. `rm -rf /`) abgeglichen.
 
 ---
 
