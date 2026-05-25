@@ -12,7 +12,7 @@ def add_memory(e: MemoryEntry):
     nudge(e.agent_id); return n
 @router.get("/api/memory/search")
 def search_memory(q: str):
-    from .db import search_memories; return search_memories(q)
+    from .semantic_search import semantic_search_memories; return semantic_search_memories(q)
 @router.get("/api/agents/{a_id}/memory")
 def get_agent_memory(a_id: str):
     from .db import get_agent_memories; return get_agent_memories(a_id)

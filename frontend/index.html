@@ -2618,18 +2618,11 @@
         <span data-tooltip="Brainstorm: Activate the swarm for complex ideas.">@bs</span>
         <span data-tooltip="Research: Start an autonomous research job.">@research</span>
         <span data-tooltip="Job Task: Distribute background tasks to agents.">@job</span>
-        <span data-tooltip="Idea: Write down a thought in system memory.">@idea</span>
-        <span data-tooltip="Skill: Inject a new skill into an agent.">@skill</span>
         <span data-tooltip="Free: Clear active jobs from an agent.">@free</span>
         <span data-tooltip="Switch project: (e.g. @@project netzwerkpunkt)">@@project</span>
         <span data-tooltip="Clear: (@@clear chat, @@clear @project, @@clear all agents)">@@clear</span>
         <span data-tooltip="Status: Get system and agent status.">@@status</span>
-        <span data-tooltip="Switch provider: (e.g. @@provider ollama llama3)">@@provider</span>
         <span data-tooltip="Git: Run git commands (e.g. @@git status)">@@git</span>
-        <span data-tooltip="Rollback: Undo changes (Swarm Checkpoint)">@@rollback</span>
-        <span data-tooltip="Checkpoint: Force current memory checkpoint">@@checkpoint</span>
-        <span data-tooltip="Summarize: Generate a short summary">@@summary</span>
-        <span data-tooltip="Evolve: Automatically improve agent code">@@evolve</span>
         <span data-tooltip="Coffee break: (Animation)">/coffee</span>
         <span data-tooltip="UFO Event: (Animation)">/ufo</span>
         <span data-tooltip="Ghost: (Animation)">/ghost</span>
@@ -2809,7 +2802,7 @@
     }
 
     // ── Autocomplete ──
-    const BUILTIN_CMDS = ['bs', 'research', 'job', 'idea', 'summary', 'status', 'clear', 'skill', 'free', 'provider', 'git', 'rollback', 'checkpoint', 'project', 'projekt', 'evolve', 'tts', 'showbox', 'showbox time on', 'showbox time off', 'showbox timer'];
+    const BUILTIN_CMDS = ['bs', 'research', 'job', 'status', 'clear', 'free', 'project', 'git', 'tts', 'showbox', 'showbox time on', 'showbox time off', 'showbox timer'];
     let acIdx = -1;
 
     function onChatInput(ta) {
@@ -3745,10 +3738,18 @@
             <div style="flex:1; min-width: 250px; background:var(--bg-card); padding:15px; border-radius:var(--radius); border:1px solid rgba(255,255,255,0.1); display:flex; flex-direction:column; gap:15px;">
               <div>
                 <h3 style="margin-bottom:5px;">API Keys</h3>
-                <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:5px;">One key per line</p>
-                <textarea id="llm-keys-input" rows="3" style="width:100%; margin-bottom:10px; background:var(--bg); border:1px solid rgba(255,255,255,0.2); color:white; padding:8px; border-radius:4px; font-size:0.85rem;" placeholder="sk-..."></textarea>
-                <button class="btn-primary" onclick="saveAndTestKeys()" style="width:100%; font-size:0.85rem; padding:6px;">Save & Test</button>
-                <div id="llm-keys-status" style="margin-top:10px; font-size:0.85rem; max-height:100px; overflow-y:auto;"></div>
+                <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:5px;">Füge alle API-Keys ein (ein Key pro Zeile)</p>
+                <textarea id="llm-keys-input" rows="6" style="width:100%; margin-bottom:10px; background:var(--bg); border:1px solid rgba(255,255,255,0.2); color:white; padding:8px; border-radius:4px; font-size:0.85rem;" placeholder="Einfügen per Cmd+V&#10;- sk-... (OpenAI / DeepSeek / Mistral)&#10;- sk-ant-... (Anthropic)&#10;- AIzaSy... (Gemini)&#10;- sk-or-... (OpenRouter)"></textarea>
+                <button class="btn-primary" onclick="saveAndTestKeys()" style="width:100%; font-size:0.85rem; padding:6px;">Save, Test & Assign</button>
+                <div id="llm-keys-status" style="margin-top:10px; font-size:0.85rem; max-height:200px; overflow-y:auto; display:flex; flex-direction:column; gap:4px;"></div>
+                <div id="llm-keys-legend" style="margin-top:12px; font-size:0.7rem; border-top:1px solid rgba(255,255,255,0.1); padding-top:8px; color:var(--text-muted); display:flex; flex-direction:column; gap:4px;">
+                  <div style="font-weight:bold; color:white; margin-bottom:2px;">Fähigkeiten-Legende:</div>
+                  <div style="display:flex; align-items:center; gap:6px;"><span style="width:8px; height:8px; border-radius:50%; background:#39ff14; display:inline-block; box-shadow:0 0 4px #39ff14;"></span><span>Text Chat (Unterhaltung, Brainstorming)</span></div>
+                  <div style="display:flex; align-items:center; gap:6px;"><span style="width:8px; height:8px; border-radius:50%; background:#00e5ff; display:inline-block; box-shadow:0 0 4px #00e5ff;"></span><span>Vision (Bilder analysieren / sehen)</span></div>
+                  <div style="display:flex; align-items:center; gap:6px;"><span style="width:8px; height:8px; border-radius:50%; background:#ff007f; display:inline-block; box-shadow:0 0 4px #ff007f;"></span><span>Bildgenerierung (Text zu Bild)</span></div>
+                  <div style="display:flex; align-items:center; gap:6px;"><span style="width:8px; height:8px; border-radius:50%; background:#ffa500; display:inline-block; box-shadow:0 0 4px #ffa500;"></span><span>Audio (Sprache, Text-to-Speech)</span></div>
+                  <div style="display:flex; align-items:center; gap:6px;"><span style="width:8px; height:8px; border-radius:50%; background:#b026ff; display:inline-block; box-shadow:0 0 4px #b026ff;"></span><span>Tools (Function Calling, Dateizugriff)</span></div>
+                </div>
               </div>
               <div>
                 <h3 style="margin-bottom:5px;">System Language</h3>
@@ -3849,6 +3850,38 @@
         document.getElementById('system-info-panel').innerHTML = "System Info not available.";
       }
     }
+    function getAgentCapsHtml(pSel) {
+      const capConfig = [
+        { name: 'text', color: '#39ff14', title: 'Text Chat' },
+        { name: 'vision', color: '#00e5ff', title: 'Vision' },
+        { name: 'image', color: '#ff007f', title: 'Bildgenerierung' },
+        { name: 'audio', color: '#ffa500', title: 'Audio' },
+        { name: 'tools', color: '#b026ff', title: 'Tools (Function Calling)' }
+      ];
+      let activeCaps = [];
+      if (pSel === 'lokal') {
+        activeCaps = ['text', 'vision', 'tools'];
+      } else {
+        (globalKeys || []).forEach(k => {
+          if (k.provider === pSel && k.valid) {
+            if (k.caps && Array.isArray(k.caps)) {
+              k.caps.forEach(c => {
+                if (!activeCaps.includes(c)) {
+                  activeCaps.push(c);
+                }
+              });
+            }
+          }
+        });
+      }
+      return capConfig.map(c => {
+        let hasCap = activeCaps.includes(c.name);
+        let bg = hasCap ? c.color : 'rgba(255,255,255,0.1)';
+        let boxS = hasCap ? `0 0 4px ${c.color}` : 'none';
+        return `<span style="width:8px; height:8px; border-radius:50%; background:${bg}; box-shadow:${boxS}; display:inline-block;" title="${c.title}: ${hasCap ? 'Ja' : 'Nein'}"></span>`;
+      }).join('');
+    }
+
     function loadLLMAgentsListState(agentsRes, llmAgentsRes, models, providers) {
       let html = '';
       if (agentsRes && Array.isArray(agentsRes)) {
@@ -3863,11 +3896,14 @@
              <select id="prov-${a.name}" onchange="updateModels('${a.name}')" style="background:var(--bg); color:white; border:1px solid rgba(255,255,255,0.2); padding:4px; border-radius:4px; width:120px;">
                ${providers.map(p => `<option value="${p}" ${p === pSel ? 'selected':''}>${p}</option>`).join('')}
              </select>
-             <select id="mod-${a.name}" style="background:var(--bg); color:white; border:1px solid rgba(255,255,255,0.2); padding:4px; border-radius:4px; flex:1; min-width:150px;">
+             <select id="mod-${a.name}" style="background:var(--bg); color:white; border:1px solid rgba(255,255,255,0.2); padding:4px; border-radius:4px; width:140px; flex-shrink:0;">
                ${(models[pSel]||[]).map(m => `<option value="${m}" ${m === mSel ? 'selected':''}>${m}</option>`).join('')}
              </select>
-             <button class="btn-primary" onclick="testAgentLLM('${a.name}')" style="padding:4px 10px; font-size:0.8rem;">Test</button>
-             <div id="lamp-${a.name}" style="width:12px; height:12px; border-radius:50%; background:gray; box-shadow:0 0 5px rgba(0,0,0,0.5);"></div>
+             <button class="btn-primary" onclick="testAgentLLM('${a.name}')" style="padding:4px 10px; font-size:0.8rem; flex-shrink:0;">Test</button>
+             <div id="lamp-${a.name}" style="width:12px; height:12px; border-radius:50%; background:gray; box-shadow:0 0 5px rgba(0,0,0,0.5); flex-shrink:0;"></div>
+             <div id="caps-agent-${a.name}" style="display:flex; gap:3px; align-items:center; flex-shrink:0; margin-left:4px;">
+               ${getAgentCapsHtml(pSel)}
+             </div>
            </div>`;
         });
       }
@@ -3881,25 +3917,29 @@
       const keysRes = await api('GET', '/llm/keys');
       if (keysRes) {
         globalKeys = Object.keys(keysRes).length > 0 ? Object.values(keysRes) : [];
+        renderKeyStatus(globalKeys);
         if (globalKeys.length > 0 && globalKeys[0].key) {
            document.getElementById('llm-keys-input').value = globalKeys.map(k => k.key).join('\n');
-           renderKeyStatus(globalKeys);
         }
       }
 
       const agentsRes = await api('GET', '/agents');
       const llmAgentsRes = await api('GET', '/llm/agents');
       
-      const providers = ['deepseek', 'openrouter', 'lokal'];
+      const providers = ['deepseek', 'openrouter', 'openai', 'anthropic', 'gemini', 'mistral', 'lokal'];
       let models = {
         'deepseek': ['deepseek-chat', 'deepseek-reasoner'],
         'openrouter': ['deepseek/deepseek-v4-flash:free', 'qwen/qwen3-coder:free', 'meta-llama/llama-3.3-70b-instruct:free'],
+        'openai': ['gpt-4o', 'gpt-4o-mini', 'o1-mini', 'o1-preview'],
+        'anthropic': ['claude-3-5-sonnet-20241022', 'claude-3-5-haiku-20241022', 'claude-3-opus-20240229'],
+        'gemini': ['gemini-1.5-pro', 'gemini-1.5-flash', 'gemini-2.0-flash-exp'],
+        'mistral': ['mistral-large-latest', 'pixtral-large-latest', 'codestral-latest'],
         'lokal': ['llama3', 'mistral', 'qwen2', 'phi3', 'llama3.2', 'gemma2']
       };
       try {
         const availableModels = await api('GET', '/llm/available_models');
-        if (availableModels && availableModels.deepseek) {
-          models = availableModels;
+        if (availableModels) {
+          models = { ...models, ...availableModels };
         }
       } catch (e) {
         console.error("Failed to load available models", e);
@@ -3914,34 +3954,40 @@
       const modSelect = document.getElementById(`mod-${aName}`);
       const mods = window.llmModelsMap[p] || [];
       modSelect.innerHTML = mods.map(m => `<option value="${m}">${m}</option>`).join('');
+      
+      const capsContainer = document.getElementById(`caps-agent-${aName}`);
+      if (capsContainer) {
+        capsContainer.innerHTML = getAgentCapsHtml(p);
+      }
     };
 
     async function saveAndTestKeys() {
       const input = document.getElementById('llm-keys-input').value;
       const rawKeys = input.split('\n').map(k => k.trim()).filter(k => k);
       
-      document.getElementById('llm-keys-status').innerHTML = 'Testing Keys...';
+      document.getElementById('llm-keys-status').innerHTML = 'Testing & assigning keys...';
       
       let testedKeys = [];
       let nextId = Date.now();
       
       for(let k of rawKeys) {
-        let prov = 'deepseek';
-        if (k.startsWith('sk-or-')) prov = 'openrouter';
-        
-        let res = await api('POST', '/llm/test', { key: k, provider: prov });
+        let res = await api('POST', '/llm/test', { key: k });
         testedKeys.push({
           id: 'k_' + (nextId++),
           key: k,
-          provider: prov,
+          provider: res ? res.provider : 'unknown',
           valid: res && res.valid,
-          info: res ? res.info : 'Error'
+          info: res ? res.info : 'Error',
+          caps: res && res.caps ? res.caps : []
         });
       }
       
       let toSave = {};
       testedKeys.forEach(k => toSave[k.id] = k);
       await api('POST', '/llm/keys', toSave);
+      
+      // Auto-assign keys
+      await api('POST', '/llm/auto_assign');
       
       globalKeys = testedKeys;
       renderKeyStatus(testedKeys);
@@ -3951,10 +3997,34 @@
     function renderKeyStatus(keys) {
       let h = '';
       keys.forEach((k, idx) => {
-        let c = k.valid ? 'var(--green)' : '#ff3333';
-        h += `<div style="color:${c}; margin-bottom:5px;">${k.valid ? '✅' : '❌'} Key ${idx+1} (${k.provider}) ${k.info !== 'OK' ? '('+k.info.substring(0,20)+')' : ''}</div>`;
+        let mainColor = k.valid ? '#39ff14' : '#ff3333';
+        let keyObscured = k.key ? k.key.substring(0, 8) + '...' + k.key.substring(k.key.length - 4) : 'Unknown';
+        
+        let capsHtml = '';
+        const capConfig = [
+          { name: 'text', color: '#39ff14', title: 'Text Chat' },
+          { name: 'vision', color: '#00e5ff', title: 'Vision' },
+          { name: 'image', color: '#ff007f', title: 'Bildgenerierung' },
+          { name: 'audio', color: '#ffa500', title: 'Audio' },
+          { name: 'tools', color: '#b026ff', title: 'Tools (Function Calling)' }
+        ];
+        
+        capConfig.forEach(c => {
+          let hasCap = k.caps && k.caps.includes(c.name);
+          let bg = hasCap ? c.color : 'rgba(255,255,255,0.1)';
+          let boxS = hasCap ? `0 0 4px ${c.color}` : 'none';
+          capsHtml += `<span style="width:8px; height:8px; border-radius:50%; background:${bg}; box-shadow:${boxS}; display:inline-block; margin-left:4px;" title="${c.title}: ${hasCap ? 'Ja' : 'Nein'}"></span>`;
+        });
+
+        h += `
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px; font-size:0.8rem; background:rgba(255,255,255,0.02); padding:6px; border-radius:4px; border:1px solid rgba(255,255,255,0.05);">
+            <div style="width:12px; height:12px; border-radius:50%; background:${mainColor}; box-shadow:0 0 6px ${mainColor}; flex-shrink:0;" title="${k.valid ? 'Gültig' : 'Ungültig'}"></div>
+            <div style="flex-grow:1; font-family:monospace; overflow:hidden; text-overflow:ellipsis;" title="${k.key}">${keyObscured} (${k.provider || 'Unbekannt'})</div>
+            <div style="display:flex; gap:2px; align-items:center; flex-shrink:0;">${capsHtml}</div>
+          </div>
+        `;
       });
-      document.getElementById('llm-keys-status').innerHTML = h;
+      document.getElementById('llm-keys-status').innerHTML = h || '<div style="color:var(--text-muted)">Keine Keys hinterlegt.</div>';
     }
 
     async function saveAgentLLMs() {

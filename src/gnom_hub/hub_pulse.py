@@ -1,12 +1,19 @@
-import time, threading, requests; from .db import get_all_agents, pulse_agent_alive
-def _alive(port):
-    try: requests.get(f"http://127.0.0.1:{port}/", timeout=1); return True
-    except Exception: return False
+import time, threading
+from gnom_hub.infrastructure.database.agent_repo import SQLiteAgentRepository
+from gnom_hub.infrastructure.process.psutil_mgr import AGENTS, _get_proc
+
 def pulse_janitor():
-    """Prüft Agenten-Status. Port lebt → auto-online. Kein Agent wird offline gesetzt."""
-    for a in get_all_agents():
-        p = a.get("port", 0)
-        if p and _alive(p): pulse_agent_alive(a["name"])
+    repo = SQLiteAgentRepository()
+    for name in AGENTS:
+        proc = _get_proc(name)
+        status = "running" if proc else "stopped"
+        agent = repo.get_by_name(name)
+        if agent:
+            if agent.status != status or (proc and agent.pid != proc.pid):
+                agent.status = status
+                agent.pid = proc.pid if proc else None
+                repo.save(agent)
+
 def start_pulse(interval=30):
     def loop():
         while True:
@@ -14,4 +21,5 @@ def start_pulse(interval=30):
             except Exception as e: print(f"[PULSE] Fehler: {e}")
             time.sleep(interval)
     t = threading.Thread(target=loop, daemon=True)
-    t.start(); return t
+    t.start()
+    return t

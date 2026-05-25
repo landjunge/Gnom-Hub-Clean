@@ -45,3 +45,11 @@ startup_log.txt
 *.swp
 *.swo
 *~
+
+# Database & Archives
+*.db
+*.zip
+data/
+src/data/
+.hub_secret
+config/.hub_secret

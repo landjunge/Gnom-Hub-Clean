@@ -1,0 +1,40 @@
+from datetime import datetime, timezone
+import uuid; from typing import Optional
+from fastapi import APIRouter, HTTPException, Request
+from pydantic import BaseModel
+from gnom_hub.domain.chat.entities import ChatMessage
+from gnom_hub.infrastructure.database.agent_repo import SQLiteAgentRepository
+from gnom_hub.infrastructure.database.chat_repo import SQLiteChatRepository
+from gnom_hub.presentation.api.v1.nudge import nudge
+
+router = APIRouter()
+class MemoryEntry(BaseModel):
+    agent_id: str; content: str; timestamp: Optional[str] = None
+
+@router.post("/api/memory")
+@router.post("/api/tools/save_memory")
+def add_memory(e: MemoryEntry):
+    if not SQLiteAgentRepository().get_by_name(e.agent_id): raise HTTPException(404, "Agent not found")
+    m = ChatMessage(id=str(uuid.uuid4()), project="default", sender="user", agent_id=e.agent_id, msg_type="chat", content=e.content, timestamp=datetime.now(timezone.utc))
+    SQLiteChatRepository().add_message(m); nudge(e.agent_id); return m.__dict__
+
+@router.get("/api/agents/{a_id}/memory")
+def get_agent_memory(a_id: str):
+    return [dict(m.__dict__) for m in SQLiteChatRepository().get_agent_memories(a_id, 100)]
+
+@router.get("/api/agents/{a_id}/memory/count")
+def count_memory(a_id: str): return {"count": SQLiteChatRepository().count_messages(a_id)}
+
+@router.put("/api/memory/{m_id}")
+async def update_memory(m_id: str, request: Request):
+    body = await request.json(); content = body.get("content") if isinstance(body, dict) else None
+    if not content: raise HTTPException(422, "Missing 'content'")
+    m = SQLiteChatRepository().update_message_content(m_id, content)
+    if not m: raise HTTPException(404, "Not found")
+    return m.__dict__
+
+@router.delete("/api/memory/{m_id}")
+def delete_memory(m_id: str): SQLiteChatRepository().delete_by_id(m_id); return {"status": "ok"}
+
+@router.delete("/api/agents/{a_id}/memory")
+def clear_agent_memory(a_id: str): SQLiteChatRepository().delete_by_agent(a_id); return {"status": "ok"}
