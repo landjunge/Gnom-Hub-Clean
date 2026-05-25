@@ -3984,7 +3984,7 @@
         if (globalKeys.length > 0) {
            document.getElementById('llm-keys-input').value = globalKeys.map(k => {
              if (!k.key) return '';
-             const keyName = k.provider ? k.provider.toUpperCase() + "_API_KEY=" : "";
+             const keyName = k.label ? k.label + "=" : (k.provider ? k.provider.toUpperCase() + "_API_KEY=" : "");
              const displayKey = window.showKeysFull ? k.key : maskKey(k.key);
              return keyName + displayKey;
            }).filter(k => k).join('\n');
@@ -4049,7 +4049,7 @@
       if (globalKeys.length > 0) {
         document.getElementById('llm-keys-input').value = globalKeys.map(k => {
           if (!k.key) return '';
-          const keyName = k.provider ? k.provider.toUpperCase() + "_API_KEY=" : "";
+          const keyName = k.label ? k.label + "=" : (k.provider ? k.provider.toUpperCase() + "_API_KEY=" : "");
           const displayKey = window.showKeysFull ? k.key : maskKey(k.key);
           return keyName + displayKey;
         }).filter(k => k).join('\n');
@@ -4103,6 +4103,12 @@
         let k = cleanKey(line);
         if (!k) continue;
         
+        let label = '';
+        if (line.includes('=')) {
+          label = line.split('=')[0].trim();
+          label = label.replace(/^#\s*UNGÜLTIG:\s*/i, '').replace(/^#\s*/, '').trim();
+        }
+        
         let existing = null;
         if (isMasked) {
           existing = globalKeys.find(gk => maskKey(gk.key) === k);
@@ -4111,6 +4117,9 @@
         }
         
         if (existing) {
+          if (label && (!existing.label || existing.label !== label)) {
+            existing.label = label;
+          }
           testedKeys.push(existing);
         } else {
           let p = detectProvider(line, k);
@@ -4121,7 +4130,8 @@
             provider: res ? (res.provider || p || 'unknown') : (p || 'unknown'),
             valid: res && res.valid,
             info: res ? res.info : 'Error',
-            caps: res && res.caps ? res.caps : []
+            caps: res && res.caps ? res.caps : [],
+            label: label || (res && res.provider ? res.provider.toUpperCase() + '_API_KEY' : 'API_KEY')
           });
         }
       }
@@ -4165,7 +4175,7 @@
         h += `
           <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px; font-size:0.8rem; background:rgba(255,255,255,0.02); padding:6px; border-radius:4px; border:1px solid rgba(255,255,255,0.05);">
             <div style="width:12px; height:12px; border-radius:50%; background:${mainColor}; box-shadow:0 0 6px ${mainColor}; flex-shrink:0;" title="${k.valid ? 'Gültig' : 'Ungültig'}"></div>
-            <div style="flex-grow:1; font-family:monospace; overflow:hidden; text-overflow:ellipsis;" title="${keyObscured}">${keyObscured} (${getProviderDisplayName(k.provider) || 'Unbekannt'})</div>
+            <div style="flex-grow:1; font-family:monospace; overflow:hidden; text-overflow:ellipsis;" title="${keyObscured}">${k.label ? k.label + ': ' : ''}${keyObscured} (${getProviderDisplayName(k.provider) || 'Unbekannt'})</div>
             <div style="display:flex; gap:2px; align-items:center; flex-shrink:0;">${capsHtml}</div>
           </div>
         `;
