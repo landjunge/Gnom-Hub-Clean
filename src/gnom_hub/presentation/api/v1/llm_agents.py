@@ -28,9 +28,9 @@ async def test_agent(req: Request):
     if not k:
         if p == "deepseek" and DS_KEY: k = DS_KEY
         elif p == "openrouter" and OR_KEY: k = OR_KEY
-    if not k and p != "lokal": return {"valid": False, "info": f"Kein g\u00fcltiger Key f\u00fcr {p}"}
+    if not k and p != "lokal": return {"valid": False, "info": f"Kein gültiger Key für {p}", "resolved_provider": p, "resolved_model": m}
     try:
         loop = asyncio.get_running_loop()
         ans = await loop.run_in_executor(None, _call, p, m, k or "", [{"role":"user", "content":"Ping. Reply OK."}], "Test")
-        return {"valid": bool(ans), "info": "OK" if ans else "Keine Antwort"}
-    except Exception as e: return {"valid": False, "info": str(e)}
+        return {"valid": bool(ans), "info": "OK" if ans else "Keine Antwort", "resolved_provider": p, "resolved_model": m}
+    except Exception as e: return {"valid": False, "info": str(e), "resolved_provider": p, "resolved_model": m}
