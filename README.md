@@ -1,21 +1,23 @@
-# 🧠 GNOM-HUB — Multi-Agenten-Plattform
+# 🧠 GNOM-HUB — Minimalistisches Multi-Agenten-System
 
-Gnom-Hub ist ein minimalistisches, lokales Multi-Agenten-System. Im Gegensatz zu komplexen, schwerfälligen Orchestrierungsframeworks beschränkt sich Gnom-Hub auf eine **feste Topologie von genau 8 Agenten** (4 System-Koordinatoren und 4 Worker-Spezialisten). Jedes Backend-Python-Modul unterliegt einer **strikten Obergrenze von 40 Zeilen Code** (die 40-Zeilen-Regel). Dies erzwingt kompromisslose Modularisierung und verhindert monolithischen Spaghetticode.
+Gnom-Hub ist ein lokal-first ausgerichtetes Multi-Agenten-System, das auf radikale Weise Einfachheit und Zuverlässigkeit in den Vordergrund stellt. Statt der in modernen Frameworks üblichen dynamischen und schwer kontrollierbaren Agenten-Schwärme setzt Gnom-Hub auf eine **feste Topologie von genau 8 Agenten** (4 System-Koordinatoren und 4 Worker-Spezialisten). 
+
+Ein zentrales Design-Prinzip ist die **40-Zeilen-Regel**: Jedes funktionale Python-Modul im Backend (unterhalb von `src/gnom_hub/`) unterliegt einer strikten Obergrenze von 40 Zeilen Code. Dies zwingt Entwickler zu einer defensiven, hochgradig modularisierten Architektur (Clean Architecture) und unterbindet monolithische Komplexität bereits im Keim.
 
 ---
 
 ## 🎯 Philosophie & Leitlinien
 
-Der Entwurf von Gnom-Hub stützt sich auf folgende Konzepte:
-* **Local-First & Datensparsamkeit**: Alle Agenten-Interaktionen, Logbücher und Systemzustände werden in einer lokalen SQLite3-Datenbank abgelegt. Keine Cloud-Abhängigkeiten zur Orchestrierung.
-* **Defensive Architektur**: Radikale Begrenzung der Dateilängen im Backend (40-Zeilen-Regel). Dies erzwingt eine strikte Aufteilung in Domain-, Application-, Infrastructure- und Presentation-Layer (Clean Architecture).
-* **Pragmatismus**: Keine autonomen Endlosschleifen. Der Agenten-Schwarm wird kontrolliert über ein Web-Dashboard (War Room) gesteuert. Optimal für Forschung, Lehre und lokales Prototyping.
+* **Local-First & Datensouveränität**: Das gesamte System läuft lokal. Interaktionen, Logs und Zustände werden in einer lokalen SQLite-Datenbank persistiert.
+* **Feste Topologie**: Keine dynamische Generierung von Agenten. Es gibt genau 8 definierte Akteure, was die Vorhersagbarkeit und das Debugging drastisch vereinfacht.
+* **Defensive Architektur**: Durch die Begrenzung der Dateilängen im Backend (strikte 40-Zeilen-Regel) wird eine klare Trennung zwischen Domain-, Application-, Infrastructure- und Presentation-Layer erzwungen.
+* **Keine unendlichen Schleifen (Autonomous Loops)**: Agenten agieren nicht unkontrolliert im Hintergrund. Jeder Task-Schritt wird über das Dashboard (War Room) getriggert, visualisiert und bleibt für den menschlichen Operator transparent.
 
 ---
 
 ## 🏗️ System-Architektur
 
-Das folgende Diagramm veranschaulicht den Datenfluss bei einer Nutzeranfrage:
+Das folgende Diagramm veranschaulicht den Datenfluss und die Kontrollstrukturen bei einer Anfrage:
 
 ```mermaid
 graph TD
@@ -24,7 +26,7 @@ graph TD
     Soul -->|Lernen & Upsert| DB[(SQLite soul_memory)]
     Hub -->|Routing| Router[Smart LLM Router]
     DB -->|Kontext-Injektion| Router
-    State[(SQLite active_preset)] -->|Fokus-Modifikator| Router
+    State[(SQLite state Tabelle)] -->|Aktiviertes Preset| Router
     Router -->|LLM Prompt| LLM[Lokales Ollama / DeepSeek / OpenRouter]
     Router -->|Tool-Filter| Action[Action Handlers]
     Action -->|Rollen-Validierung| Perm[Permissions Check]
@@ -35,49 +37,53 @@ graph TD
 
 ## 🤖 Die 8 Agenten (Topologie)
 
-Die Agenten sind in der zentralen Konfigurationsdatei `src/gnom_hub/agent_definitions.py` registriert.
+Die vollständige Definition aller Agenten-Eigenschaften, Prompts und Rechte erfolgt zentral in [agent_definitions.py](file:///Users/landjunge/Documents/AG-Flega/src/gnom_hub/agent_definitions.py).
 
 ### System-Agenten (Administrative Rechte)
-Sie steuern die Plattform und besitzen erweiterte Berechtigungen (`read`, `write`, `run`, `godmode`, `crawl`, `desktop`, `evolve`):
-* **SoulAG**: Das passive Langzeitgedächtnis des Schwarms. Analysiert die Nachrichten des Nutzers im Hintergrund asynchron, lernt Vorlieben und injiziert diese als Kontext in die System-Prompts.
-* **GeneralAG**: Der Hauptkoordinator. Analysiert komplexe `@job`-Anfragen, delegiert präzise Teilschritte an die Worker und führt Ergebnisse zusammen.
-* **WatchdogAG**: Überwacht zyklisch die Integrität des Workspace und die Einhaltung der Dateigrenzen.
-* **SecurityAG**: Führt Risikoprüfungen durch und signiert Workspace-Dateien kryptografisch.
+Diese Agenten steuern die Plattform und besitzen administrative Berechtigungen (`read`, `write`, `run`, `godmode`, `crawl`, `desktop`, `evolve`):
+1. **SoulAG**: Das passive Gedächtnis des Schwarms. Lernt asynchron Präferenzen des Nutzers und stellt diese als Kontext bereit.
+2. **GeneralAG**: Der zentrale Koordinator. Analysiert komplexe `@job`-Anfragen, warnt bei Regelverstößen und delegiert Aufgaben im Format `@AgentName -> Aufgabe`.
+3. **WatchdogAG**: Überwacht zyklisch die Einhaltung der Dateigrenzen (40-Zeilen-Regel) und die Integrität des Workspace.
+4. **SecurityAG**: Validiert die Integrität der Workspace-Dateien und führt Risikoprüfungen durch.
 
 ### Worker-Agenten (Eingeschränkte Rechte)
-Worker-Agenten erledigen die eigentliche Arbeit im Workspace. Sie besitzen standardmäßig Lese- und Schreibrechte im Workspace (`read`, `write`, `@job`):
-* **CoderAG**: Entwickelt und debuggt Code. Erhält über `godmode` zusätzliche Rechte für die Playwright-Browsersteuerung und terminalbasierte Befehlsausführung.
-* **ResearcherAG**: Sucht Dokumentationen, liest Web-Inhalte via Crawling-APIs und validiert Quellen.
-* **WriterAG**: Erstellt Entwürfe, Dokumentationen und Texte.
-* **EditorAG**: Führt Lektorate, Korrekturlesen und Qualitätskontrollen durch.
+Worker arbeiten ausschließlich im Workspace und besitzen standardmäßig nur Lese-, Schreib- und Chat-Berechtigungen (`read`, `write`, `@job`):
+5. **CoderAG**: Entwickelt und debuggt Code. Besitzt als einziger Worker den `godmode`-Status, welcher die Playwright-Browsersteuerung und die Ausführung von Shell-Befehlen freischaltet.
+6. **ResearcherAG**: Recherchiert im Web, crawlt Dokumentationen und prüft Quellen.
+7. **WriterAG**: Erstellt strukturierte Entwürfe, Dokumentationen und Texte.
+8. **EditorAG**: Übernimmt Lektorat, Korrekturschleifen und die finale Qualitätskontrolle.
 
 ---
 
 ## 🎛️ Das Preset-System (6 Modi)
 
-Das Preset-System dient dazu, den Fokus und die LLM-Modelle der Worker-Agenten mit einem Klick anzupassen. Die Auswahl erfolgt über das Dropdown-Menü unter der Showbox.
+Das Preset-System erlaubt das Umschalten des gesamten Schwarms auf ein bestimmtes Aufgabengebiet. Die Auswahl erfolgt über das Dropdown-Menü im Dashboard.
 
-### Die 6 Workflow-Modi:
-1. 💻 **Web Development**: Fokus auf semantisches HTML5, native Web-APIs, Barrierefreiheit (ARIA) und CSS.
-2. 🎨 **Graphic Design**: Fokus auf SVGs, Layout-Grids, Farbpaletten (HSL) und Kontraste.
+### Die 6 vordefinierten Workflow-Modi:
+1. 💻 **Web Development**: Fokus auf semantisches HTML5, native Web-APIs, Barrierefreiheit (ARIA) und performantes CSS.
+2. 🎨 **Graphic Design**: Fokus auf SVGs, Layout-Grids, Typografie und harmonische Farbpaletten (HSL).
 3. 🎵 **Audio Production**: Fokus auf Web Audio API, DSP-Algorithmen und Sound-Synthese.
-4. 🎬 **Video Production**: Fokus auf Canvas-Animationen, Render-Pipelines und Storyboards.
-5. ✍️ **Marketing & Copy**: Fokus auf SEO-Keywords, AIDA-Textstrukturen und Call-to-Actions.
-6. 🔍 **Research & Analysis**: Fokus auf Faktenprüfung, akademische Quellen und Python-Datenanalyse.
+4. 🎬 **Video Production**: Fokus auf Canvas-Animationen, CSS-Transitions und Render-Pipelines.
+5. ✍️ **Marketing & Copy**: Fokus auf SEO-Keywords, AIDA-Modelle und zielgruppengerechte Tonalität.
+6. 🔍 **Research & Analysis**: Fokus auf Faktenprüfung, akademische Quellen und statistische Datenanalyse.
 
-### Technische Funktionsweise:
-* Bei einem Preset-Wechsel wird das Preset im State-Repository gespeichert.
-* Der Router liest bei jeder Anfrage an einen Worker-Agenten die entsprechenden Prompt-Modifikatoren aus der `presets.json` aus und stellt diese dem System-Prompt voran.
-* Zudem werden die LLM-Modelle der Worker dynamisch angepasst. Custom-LLM-Einstellungen, die der Nutzer im Einstellungsmenü speichert, werden an das jeweilige Preset gekoppelt und bei Auswahl automatisch wiederhergestellt.
+### Technische Umsetzung:
+* Der Preset-Wechsel speichert den aktuellen Modus in der Tabelle `state` in der SQLite-Datenbank.
+* Bei jeder LLM-Anfrage lädt der Router den passenden Prompt-Modifikator aus der Konfiguration und stellt ihn dem System-Prompt des Workers voran.
+* LLM-Einstellungen und Modell-Auswahlen werden pro Preset benutzerdefiniert gespeichert und beim Umschalten automatisch wiederhergestellt.
 
 ---
 
 ## 🧠 SoulAG: Technisches Gedächtnis & Asynchroner Kontext-Injektor
 
-SoulAG arbeitet passiv im Hintergrund und nimmt nicht aktiv am Chat teil:
-1. **Asynchrone Extraktion**: Jede Nachricht des Nutzers wird asynchron in einem Hintergrund-Thread (`threading.Thread`) analysiert. Das LLM filtert die Eingabe nach Regeln, Vorlieben und Dateipfaden.
-2. **Strikte JSON-Strukturierung**: Die Antwort des LLMs wird auf ein JSON-Array der Form `[{"key": "fact_key", "value": "fact_value"}]` erzwungen.
-3. **Relationale Persistenz**: Daten werden relational in der Tabelle `soul_memory` abgelegt:
+[soul.py](file:///Users/landjunge/Documents/AG-Flega/src/gnom_hub/soul.py) arbeitet passiv im Hintergrund und greift nicht direkt in den Chatverlauf ein. Der Ablauf ist vollkommen asynchron gestaltet:
+
+1. **Passives Mitlesen**: Sobald eine Nachricht des Typs `user` im Chat registriert wird, startet ein entkoppelter Hintergrund-Thread (`threading.Thread`).
+2. **Extraktion per LLM**: Der Thread sendet die Nachricht an das LLM mit der strikten Anweisung, wichtige Fakten, Vorlieben und Dateipfade zu extrahieren und ausschließlich als JSON-Array zurückzugeben:
+   ```json
+   [{"key": "fact_key", "value": "fact_value"}]
+   ```
+3. **Relationale Persistenz**: In [db.py](file:///Users/landjunge/Documents/AG-Flega/src/gnom_hub/db.py) werden diese Fakten in der Tabelle `soul_memory` gespeichert:
    ```sql
    CREATE TABLE IF NOT EXISTS soul_memory (
        id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -87,48 +93,57 @@ SoulAG arbeitet passiv im Hintergrund und nimmt nicht aktiv am Chat teil:
        UNIQUE(key)
    );
    ```
-   Die `UNIQUE(key)`-Einschränkung stellt sicher, dass Fakten bei erneuter Nennung überschrieben statt dupliziert werden (`INSERT OR REPLACE`).
-4. **Kontext-Injektion**: Vor jedem Aufruf eines Workers fragt SoulAG die bis zu 20 neuesten gelernten Fakten aus der Datenbank ab und hängt diese an das System-Prompt an.
-5. **Preset-Interaktion**: Preset-Wechsel werden als Fakt (`active_preset`) in `soul_memory` abgelegt. Die Kontext-Injektion ergänzt die Preset-Direktiven passgenau.
+   Dank `UNIQUE(key)` überschreibt ein neuerer Fakt mit demselben Schlüssel den alten Wert atomar (`INSERT OR REPLACE`).
+4. **Kontext-Injektion**: Vor jeder Anfrage an einen Worker-Agenten ruft der Router die bis zu 20 neuesten Einträge aus `soul_memory` ab und hängt sie strukturiert an das System-Prompt an:
+   ```
+   === RELEVANTE INFORMATIONEN ===
+   - user_name: Max Mustermann
+   - prefer_language: German
+   - active_preset: Web Development
+   ```
+   Dadurch wissen alle Worker-Agenten sofort über den aktuellen Kontext Bescheid, ohne dass dieser manuell im Chat wiederholt werden muss.
 
 ---
 
 ## 🛡️ Sicherheit & Permission-Modell
 
-Werkzeug-Zugriffe (z. B. Dateisystem-Schreibzugriffe oder Shell-Befehle) werden in `action_handlers.py` in Echtzeit gegen die in `agent_definitions.py` definierten Rollen-Berechtigungen abgeglichen:
-* **Pfadvalidierung**: Alle Lese- und Schreibzugriffe werden über `path_validator.py` validiert. Pfade außerhalb des aktiven Workspace werden abgelehnt, es sei denn, ein Agent besitzt die `run`-Berechtigung (durch `godmode`).
-* **Shell-Schutz**: Terminalbefehle werden vor Ausführung in der Sandbox gegen ein Regex-Muster gefährlicher Befehle (z. B. `rm -rf /`) abgeglichen.
+Werkzeug-Zugriffe (z. B. Dateizugriffe, HTTP-Anfragen oder Terminalbefehle) werden bei jeder Aktion in [action_handlers.py](file:///Users/landjunge/Documents/AG-Flega/src/gnom_hub/action_handlers.py) gegen die in [agent_definitions.py](file:///Users/landjunge/Documents/AG-Flega/src/gnom_hub/agent_definitions.py) definierten Berechtigungen abgeglichen:
+
+* **Pfad-Validierung**: Alle Dateizugriffe durchlaufen [path_validator.py](file:///Users/landjunge/Documents/AG-Flega/src/gnom_hub/path_validator.py). Schreib- und Lesezugriffe außerhalb des aktiven Projekt-Workspace werden blockiert, es sei denn, ein Agent besitzt das explizite `run`-Recht (gekoppelt an `godmode`).
+* **Shell-Schutz**: System-Befehle werden in einer Sandbox ausgeführt. Gefährliche Befehle (z. B. rekursives Löschen auf Systemebene) werden per Regex-Muster blockiert.
 
 ---
 
 ## 🚦 Entwicklungsstand (Ehrlich & Konkret)
 
-### Was funktioniert:
-* [x] Stabiles Prozessmanagement (Start/Stopp der 8 Hintergrundprozesse via `psutil` und PID-Dateien).
-* [x] Datenpersistenz und Transaktionssicherheit über SQLite (WAL-Modus).
-* [x] Vollständiger Preset-Wechsel inklusive dynamischer Prompt- und Modell-Anpassung.
-* [x] Kontext-Injektion und automatisches Faktenlernen über SoulAG im Hintergrund.
-* [x] Sandboxed Shell-Ausführung für CoderAG (mit Validierung gegen gefährliche Befehle).
-* [x] UI-Skalierung (1/3 kleinere Schrift für bessere Übersicht bei langen Chats).
+### Was voll funktionsfähig ist:
+* [x] **Prozessmanagement**: Zuverlässiger Start, Stopp und Statusabgleich der 8 Hintergrund-Agenten via `psutil` und PID-Dateien unter `~/.gnom-hub/run/`.
+* [x] **Datenkonsistenz**: Transaktionssichere Speicherung aller Chats, Agenten-Zustände und Fakten in SQLite (WAL-Modus).
+* [x] **Preset-Steuerung**: Dynamische Anpassung von Prompts und LLM-Modellen je nach Preset ohne Server-Neustart.
+* [x] **Gedächtnis (SoulAG)**: Asynchrones Mitlernen von Benutzereingaben und automatische Kontext-Injektion.
+* [x] **Ausführungsschutz**: Validierung von Dateipfaden auf den aktiven Workspace.
 
-### Was noch in Arbeit / geplant ist:
-* [ ] **Erweiterte MCP-Client-Unterstützung**: Derzeit sind nur Basisfunktionen integriert; die dynamische Registrierung externer MCP-Server ist in der Entwicklung.
-* [ ] **Erweiterter Godmode**: Derzeit sind Dateizugriffe außerhalb des Workspace-Pfads auch bei `godmode`-Rechten stark reglementiert.
-* [ ] **Playwright Browser-Automation**: Der Browser-Tag `[BROWSER:]` ist im Code vorbereitet, aber in der aktuellen Standardkonfiguration deaktiviert.
+### Was in Arbeit / geplant ist:
+* [ ] **MCP-Erweiterung**: Dynamische Registrierung und Anbindung externer Model Context Protocol (MCP) Server ist noch rudimentär.
+* [ ] **Erweiterte Sandbox**: Derzeit sind Dateizugriffe außerhalb des Workspace selbst für den `godmode` des CoderAG stark eingeschränkt.
+* [ ] **Browser-Automation**: Die Playwright-Schnittstelle im Backend ist vorbereitet, im Standard-Setup jedoch deaktiviert.
 
 ---
 
 ## 🚀 Schnellstart
 
-Tragen Sie vor dem ersten Start Ihre API-Schlüssel in `config/.env` ein (z. B. DeepSeek oder OpenRouter).
+1. **API-Schlüssel eintragen**:  
+   Kopieren Sie `config/.env.example` nach `config/.env` und tragen Sie Ihre API-Schlüssel (z. B. für OpenRouter oder DeepSeek) ein.
 
-1. **Server und Agenten starten**:
+2. **Server & Agenten starten**:  
+   Führen Sie das Start-Skript [run.sh](file:///Users/landjunge/Documents/AG-Flega/run.sh) aus:
    ```bash
    chmod +x run.sh
    ./run.sh
    ```
-2. **Dashboard öffnen**:
-   Navigieren Sie im Webbrowser zu: **[http://127.0.0.1:3002](http://127.0.0.1:3002)**
+
+3. **Dashboard aufrufen**:  
+   Öffnen Sie im Webbrowser: **[http://127.0.0.1:3002](http://127.0.0.1:3002)**
 
 ---
-**Entwicklungsstand:** Mai 2026 — Experimenteller Prototyp.
+**Projektstatus:** Mai 2026 — Experimenteller, funktionsfähiger Prototyp für Entwicklung und Forschung.
