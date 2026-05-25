@@ -28,6 +28,10 @@ app.include_router(chat_commands.router)
 FRONT = Path(__file__).parent.parent.parent.parent / "frontend"
 if FRONT.exists(): app.mount("/static", StaticFiles(directory=str(FRONT)), name="static")
 
+@app.get("/api/health")
+def api_health():
+    return {"status": "ok"}
+
 @app.get("/")
 def root():
     p = FRONT / "index.html"
