@@ -1,30 +1,43 @@
 # swarm_coordinator.py — Coordinates team workflows and gathers results
-import time, threading
-from gnom_hub.infrastructure.database.agent_repo import SQLiteAgentRepository
-from gnom_hub.infrastructure.database.state_repo import SQLiteStateRepository
-from gnom_hub.role_tools import _llm
-from gnom_hub.brainstorm import _collect_worker_responses
-from gnom_hub.brainstorm_helpers import post, get_workspace_dir
-from gnom_hub.action_handlers import process_actions
-from gnom_hub.soul_initializer import get_soul
+import time, threading, re
+from .infrastructure.database.agent_repo import SQLiteAgentRepository as AR
+from .infrastructure.database.state_repo import SQLiteStateRepository as SR
+from .role_tools import _llm; from .brainstorm import _collect_worker_responses, dispatch
+from .brainstorm_helpers import post, get_workspace_dir; from .action_handlers import process_actions; from .soul_initializer import get_soul
+
+def _wait(ar, workers, timeout=40):
+    t0 = time.time()
+    while time.time() - t0 < timeout:
+        if not any(a.active_job for a in ar.get_all() if a.name in workers): break
+        time.sleep(2)
+
+def _dispatch(ar, sr, ans):
+    nxt = []
+    for a in ar.get_all():
+        aj = next((m.group(2).strip() for m in re.finditer(r'@(\w+)[\s→>:\-]+(.+)', ans) if m.group(1).lower() == a.name.lower()), "")
+        if aj:
+            ar.update_active_job(a.name, aj); nxt.append(a.name)
+            time.sleep(1.5); dispatch(aj, target=a.name)
+    if nxt: sr.set_value("active_workflow", f"Team-Workflow aktiv: {' → '.join(nxt)}")
+    return nxt
+
+def _eval(ar, task, history):
+    sys_p = "Du bist GeneralAG. Führe Ergebnisse des Team-Workflows zusammen. Wenn unvollständig, weise nächste Schritte zu im Format '@AgentName -> Aufgabe'. Wenn fertig, schreibe '[WRITE: dateiname]inhalt[/WRITE]'."
+    ans = _llm(sys_p, f"Hauptaufgabe: {task}\n\nWorker-Ergebnisse:\n{history}")
+    gen = next((a for a in ar.get_all() if a.role == "general" or a.name.lower() == "generalag"), None)
+    if gen: post(gen.name, process_actions(ans, {"name": gen.name}, (get_soul(gen.name) or {}).get("permissions", []), False, get_workspace_dir()))
+    return ans
 
 def run_swarm_coordinator(task, workers):
-    agent_repo = SQLiteAgentRepository()
-    time.sleep(5)
-    for _ in range(60):
-        time.sleep(2)
-        active = [a for a in agent_repo.get_all() if a.name in workers]
-        if not any(a.active_job for a in active): break
-    responses = _collect_worker_responses(workers)
-    sys_p = "Du bist GeneralAG. Führe die Ergebnisse des Team-Workflows zusammen und erstelle ein fertiges Dokument/Code im Format [WRITE: dateiname]inhalt[/WRITE]."
-    ans = _llm(sys_p, f"Job: {task}\n\nErgebnisse:\n{responses}")
-    gen = next((a for a in agent_repo.get_all() if a.role == "general" or a.name.lower() == "generalag"), None)
-    if gen:
-        soul = get_soul(gen.name) or {}
-        post(gen.name, process_actions(ans, {"name": gen.name}, soul.get("permissions", []), False, get_workspace_dir()))
-    SQLiteStateRepository().set_value("active_workflow", None)
+    ar, sr = AR(), SR(); all_res, cur = [], list(workers)
+    for _ in range(4):
+        if not cur: break
+        _wait(ar, cur); new_resp = _collect_worker_responses(cur)
+        if new_resp: all_res.append(new_resp)
+        cur = _dispatch(ar, sr, _eval(ar, task, "\n\n".join(all_res)))
+    sr.set_value("active_workflow", None)
 
 def start_coordinator(task, workers):
     if workers:
-        SQLiteStateRepository().set_value("active_workflow", f"Team-Workflow aktiv: {' → '.join(workers)}")
+        SR().set_value("active_workflow", f"Team-Workflow aktiv: {' → '.join(workers)}")
         threading.Thread(target=run_swarm_coordinator, args=(task, workers), daemon=True).start()
