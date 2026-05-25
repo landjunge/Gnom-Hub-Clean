@@ -1714,7 +1714,6 @@
         </div>
       </div>
       <div class="preset-container" style="padding: 0 10px 15px 10px; flex-shrink: 0;">
-        <label for="preset-select" style="display: block; font-size: 0.72rem; font-weight: 700; color: rgba(255,255,255,0.4); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.8px;">Workflow Preset</label>
         <select id="preset-select" onchange="changePreset(this.value)" style="width: 100%; background: rgba(18, 22, 36, 0.85); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-sm); padding: 8px 10px; font-size: 0.82rem; outline: none; cursor: pointer; transition: var(--transition); font-weight: 500;">
           <option value="Web Development">💻 Web Development</option>
           <option value="Graphic Design">🎨 Graphic Design</option>
@@ -2375,11 +2374,37 @@
       } catch (e) { console.error('API:', path, e); return null; }
     }
 
+    function showPresetInShowbox(preset) {
+      const focusMap = {
+        "Web Development": "Fokus auf sauberen HTML, CSS, JavaScript Code, Responsive Design, Barrierefreiheit, Performance und moderne Web-APIs.",
+        "Graphic Design": "Fokus auf visuelle Ästhetik, Farbharmonien, Typografie, UI/UX Layouts, SVG-Generierung und Grafik-Design-Prinzipien.",
+        "Audio Production": "Fokus auf Sound-Synthese, Web Audio API, Audio-Processing, Soundeffekte, Musiktheorie und akustische Gestaltung.",
+        "Video Production": "Fokus auf Video-Streaming, Canvas-Animationen, CSS-Transitions, Video-Editing-Konzepte und visuelle Effekte.",
+        "Marketing & Copy": "Fokus auf überzeugende Texte, SEO-Optimierung, Conversion-Rates, Social Media Strategien und zielgruppengerechte Ansprache.",
+        "Research & Analysis": "Fokus auf tiefgehende Recherche, Datenanalyse, Faktenprüfung, strukturierte Berichte und wissenschaftliche Genauigkeit."
+      };
+      const info = focusMap[preset] || "Allgemeine Unterstützung des Schwarms.";
+      if(showboxInterval) clearInterval(showboxInterval);
+      if(showboxTimeout) clearTimeout(showboxTimeout);
+      window.activeShowboxIndex = 99;
+      window.showboxActive = true;
+      document.querySelectorAll('[id^="layer-"]').forEach(l => l.classList.remove('active'));
+      const sbLayer = document.getElementById('layer-showbox');
+      const sbText = document.getElementById('showbox-text');
+      if (sbLayer && sbText) {
+        sbText.innerHTML = `<div style="font-size: 1.2rem; margin-bottom: 12px; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 0 10px rgba(0,229,255,0.4);">${preset}</div><div style="font-size: 0.95rem; font-weight: normal; line-height: 1.5; color: rgba(255,255,255,0.9); padding: 0 20px;">${info}</div>`;
+        resizeShowboxText(sbText, sbLayer);
+        sbText.style.opacity = 1;
+        sbLayer.classList.add('active');
+      }
+    }
+
     async function changePreset(preset) {
       try {
         const res = await api('POST', '/admin/preset', { preset });
         if (res && res.status === 'ok') {
           toast(`Preset gewechselt zu: ${preset}`, 'success');
+          showPresetInShowbox(preset);
           setTimeout(refreshChat, 1000);
         } else {
           toast(`Fehler beim Wechseln des Presets`, 'error');
