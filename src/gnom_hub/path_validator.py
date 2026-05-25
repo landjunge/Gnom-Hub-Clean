@@ -16,9 +16,7 @@ def is_worker_blocked(agent, f, wd, perms):
     check = p or os.path.join(wd, f)
     path_str = os.path.realpath(check).replace("\\", "/").lower()
     if any(part in path_str for part in ["src/gnom_hub", "config/", "scripts/", "run.sh", "index.html", ".env"]):
-        from .db import get_state_value, add_chat_message
-        approved = [os.path.realpath(os.path.join(wd, a)) for a in (get_state_value("approved_system_paths", []) or [])]
-        if os.path.realpath(check) in approved: return False
+        from .db import add_chat_message
         msg = f"@user @SoulAG: Warnung! Worker {agent.get('name')} versucht auf Systemdatei '{f}' zuzugreifen. Zugriff blockiert."
         add_chat_message("default", "WatchdogAG", "watchdogag", "chat", msg)
         return True
