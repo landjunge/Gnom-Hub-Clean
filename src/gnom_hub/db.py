@@ -38,9 +38,9 @@ def get_db_conn():
 
 def _seed_agents(conn):
     """Initialisiert die 8 Standard-Agenten direkt in der übergebenen Verbindung."""
-    from .agent_definitions import AGENT_DEFINITIONS
+    from .soul import soul_instance
     try:
-        for k, v in AGENT_DEFINITIONS.items():
+        for k, v in soul_instance.get_definitions().items():
             conn.execute("""
                 INSERT OR REPLACE INTO agents (name, id, port, description, status, capabilities, role, active_job, last_seen)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -49,6 +49,7 @@ def _seed_agents(conn):
         logger.info("[DB] Default 8 agents successfully seeded.")
     except sqlite3.Error as e:
         logger.error(f"[DB] Error seeding agents: {e}")
+
 
 
 def init_db():

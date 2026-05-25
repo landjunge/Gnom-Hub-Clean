@@ -30,4 +30,8 @@ class SoulAG:
         if not facts: return sys_prompt
         return sys_prompt + "\n\n=== RELEVANTE INFORMATIONEN ===\n" + "\n".join(f"- {f}" for f in facts)
 
+    def get_definitions(self) -> dict:
+        from .agent_definitions import AGENT_DEFINITIONS
+        return AGENT_DEFINITIONS
+
 soul_instance = SoulAG()
