@@ -4,12 +4,16 @@ from .openrouter import OpenRouterClient
 from .ollama import OllamaClient
 from ..llm.key_assigner import KeyAssigner
 from ...infrastructure.database.agent_repo import SQLiteAgentRepository
+from ...infrastructure.database.state_repo import SQLiteStateRepository
 
 class LLMOrchestrator:
     def __init__(self):
         self.default_provider = Config.DEFAULT_LLM_PROVIDER
 
     async def _get_client(self, provider: str):
+        for k in SQLiteStateRepository().get_value("llm_keys", {}).values():
+            if k.get("provider") == "openrouter" and k.get("valid"):
+                Config.OPENROUTER_API_KEY = k.get("key")
         return OpenRouterClient() if provider == "openrouter" else OllamaClient()
 
     async def ask(self, agent_role: str, prompt: str, model: Optional[str] = None) -> str:
@@ -31,6 +35,5 @@ class LLMOrchestrator:
         except Exception:
             fb = "ollama" if provider == "openrouter" else "openrouter"
             return await (await self._get_client(fb)).ask(prompt, final_model)
-
     async def generate_response(self, agent_id: str, messages: List) -> str:
         return await self.ask(agent_id, messages[-1].content if messages else "")
