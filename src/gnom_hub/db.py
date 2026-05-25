@@ -90,6 +90,17 @@ def init_db():
                         timestamp TEXT NOT NULL,
                         UNIQUE(key)
                     );
+                    CREATE TABLE IF NOT EXISTS audit_log (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        timestamp TEXT NOT NULL,
+                        agent TEXT NOT NULL,
+                        event_type TEXT NOT NULL,
+                        details TEXT NOT NULL,
+                        trace_id TEXT,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    );
+                    CREATE INDEX IF NOT EXISTS idx_agent_event ON audit_log(agent, event_type);
+                    CREATE INDEX IF NOT EXISTS idx_timestamp ON audit_log(timestamp DESC);
                 """)
                 conn.execute("INSERT OR IGNORE INTO state (key, value) VALUES ('active_project', '\"default\"')")
                 conn.execute("INSERT OR IGNORE INTO state (key, value) VALUES ('language', '\"en\"')")
@@ -540,3 +551,15 @@ def get_relevant_facts(user_message: str) -> list:
     except sqlite3.Error as e:
         logger.error(f"[DB] Failed to get relevant facts: {e}")
         return []
+
+def log_audit_event(agent: str, event_type: str, details: dict, trace_id: str = None):
+    try:
+        with get_db_conn() as conn:
+            with conn:
+                conn.execute("""
+                    INSERT INTO audit_log (timestamp, agent, event_type, details, trace_id)
+                    VALUES (?, ?, ?, ?, ?)
+                """, (datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+                      agent, event_type, json.dumps(details), trace_id))
+    except sqlite3.Error as e:
+        logger.error(f"[DB] Failed to save audit log: {e}")
