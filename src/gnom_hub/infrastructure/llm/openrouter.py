@@ -1,5 +1,5 @@
 import httpx
-from typing import Optional, List
+from typing import Optional
 from ...core.config import Config
 from ...common.exceptions import LLMProviderError
 
@@ -15,10 +15,12 @@ class OpenRouterClient:
         models_to_try = [model] if model else []
         for m in Config.OPENROUTER_FREE_MODELS:
             if m not in models_to_try: models_to_try.append(m)
+
         for i, current_model in enumerate(models_to_try, 1):
             print(f"🟡 OpenRouter Versuch {i}/{len(models_to_try)} → {current_model}")
             headers = {"Authorization": f"Bearer {self.api_key}", "HTTP-Referer": "http://localhost:8000", "X-Title": "Gnom-Hub"}
             payload = {"model": current_model, "messages": [{"role": "user", "content": prompt}]}
+
             async with httpx.AsyncClient(timeout=60.0) as client:
                 try:
                     response = await client.post(f"{self.base_url}/chat/completions", json=payload, headers=headers)
@@ -28,4 +30,5 @@ class OpenRouterClient:
                     return content
                 except Exception as e:
                     print(f"❌ Fehlgeschlagen mit {current_model}: {e}"); continue
+
         raise LLMProviderError("OpenRouter: Kein Modell hat funktioniert")
