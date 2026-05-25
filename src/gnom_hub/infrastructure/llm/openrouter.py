@@ -4,8 +4,6 @@ from ...core.config import Config
 from ...common.exceptions import LLMProviderError
 
 class OpenRouterClient:
-    FREE_MODELS = ["google/gemma-2-9b-it", "meta-llama/llama-3.1-8b-instruct", "mistralai/mistral-7b-instruct", "qwen/qwen2.5-7b-instruct", "deepseek/deepseek-chat", "llama3.2"]
-
     def __init__(self):
         self.api_key = Config.OPENROUTER_API_KEY
         self.base_url = "https://openrouter.ai/api/v1"
@@ -14,7 +12,7 @@ class OpenRouterClient:
 
     async def ask(self, prompt: str, model: Optional[str] = None) -> str:
         models_to_try = [model] if model else []
-        for m in self.FREE_MODELS:
+        for m in Config.OPENROUTER_FREE_MODELS:
             if m not in models_to_try: models_to_try.append(m)
         for i, current_model in enumerate(models_to_try, 1):
             print(f"🟡 OpenRouter Versuch {i}/{len(models_to_try)} → {current_model}")
