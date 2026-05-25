@@ -12,7 +12,7 @@ except ImportError:
 _search_cache = {}
 
 class SoulEmbedder:
-    def __init__(self, model_name: str = "all-MiniLM-L6-v2", db_path: str = "gnomhub.db"):
+    def __init__(self, model_name: str = "nli-MiniLM-L6-v2", db_path: str = "gnomhub.db"):
         self.db_path, self.smr, self.helper = db_path, SemanticMemoryRetriever(), None
         if HAS_LIBS:
             from gnom_hub.emb_faiss import FaissEmbeddingHelper
