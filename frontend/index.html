@@ -798,7 +798,8 @@
       margin-bottom: 2px;
       cursor: pointer;
       transition: var(--transition);
-      border-left: 3px solid transparent;
+      border-left: 3px solid var(--agent-color, transparent);
+      border-right: 3px solid var(--agent-color, transparent);
     }
 
     .agent-card:hover {
@@ -808,6 +809,23 @@
     .agent-card.active {
       background: rgba(61, 220, 132, 0.04);
       border-color: var(--glass-border);
+    }
+
+    .agent-card.busy {
+      animation: card-busy-pulse 0.8s ease-in-out infinite alternate;
+    }
+
+    @keyframes card-busy-pulse {
+      0% {
+        box-shadow: 0 0 2px rgba(255, 255, 255, 0.05);
+        border-left-color: rgba(255, 255, 255, 0.1);
+        border-right-color: rgba(255, 255, 255, 0.1);
+      }
+      100% {
+        box-shadow: 0 0 12px var(--agent-color, #ffaa00);
+        border-left-color: var(--agent-color, #ffaa00);
+        border-right-color: var(--agent-color, #ffaa00);
+      }
     }
 
     .agent-card h3 {
@@ -2480,12 +2498,12 @@
       } else {
         const renderCard = (a) => {
           const stClass = a.status === 'busy' ? 'busy' : (a.status === 'online' ? 'on' : 'off');
-          const role = a.role && a.role !== 'normal' ? a.role : '';
+          const isCore = coreNames.includes(a.name.toLowerCase());
+          const role = a.role && a.role !== 'normal' && !isCore ? a.role : '';
           const roleIcon = role === 'general' ? ' 👑' : role === 'summarizer' ? ' 📋' : '';
           const c = agentColor(a.name);
-          const dotStyle = a.status === 'busy' ? '--c:#ffaa00' : (a.status === 'online' ? `--c:${c}` : '');
-          return `<div class="agent-card ${a.id === selectedId ? 'active' : ''}" id="card-${a.id}" onclick="selectAgent('${a.id}')" style="border-left-color:${c};">
-        <h3><span class="dot ${stClass}" style="${dotStyle}"></span><span>${a.name}</span>${roleIcon}</h3>
+          return `<div class="agent-card ${stClass} ${a.id === selectedId ? 'active' : ''}" id="card-${a.id}" onclick="selectAgent('${a.id}')" style="--agent-color:${c};">
+        <h3><span>${a.name}</span>${roleIcon}</h3>
         <div class="desc">${a.description || '–'}</div>
         <div class="meta">${a.port ? `<span class="badge port">:${a.port}</span>` : ''}${role ? `<span class="badge role ${role}">${role}</span>` : ''}</div>
       </div>`;

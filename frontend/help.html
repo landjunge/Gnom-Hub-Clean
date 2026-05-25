@@ -360,7 +360,7 @@
           </thead>
           <tbody>
             <tr>
-              <td><span class="badge badge-cmd">@status</span></td>
+              <td><span class="badge badge-cmd">@@status</span></td>
               <td><i>keine</i></td>
               <td>Monitoring</td>
               <td>Zeigt den Status aller Agenten sowie deren aktive Rollen ab.</td>
@@ -384,7 +384,7 @@
               <td>Startet ein Brainstorming, bei dem sich die aktiven Agenten austauschen.</td>
             </tr>
             <tr>
-              <td><span class="badge badge-cmd">@clear</span></td>
+              <td><span class="badge badge-cmd">@@clear</span></td>
               <td><code>[suchbegriff]</code></td>
               <td>Verwaltung</td>
               <td>Leert den Chat-Verlauf oder bereinigt spezifische Einträge per Suchbegriff.</td>
@@ -396,16 +396,16 @@
               <td>Setzt alle laufenden Aufgaben zurück — optional nur für einen bestimmten Agenten.</td>
             </tr>
             <tr>
-              <td><span class="badge badge-cmd">@git</span></td>
+              <td><span class="badge badge-cmd">@@git</span></td>
               <td><code>&lt;befehl&gt;</code></td>
               <td>Entwicklung</td>
               <td>Führt einen Git-Befehl aus (z.&nbsp;B. <code>log -n 5</code> oder <code>status</code>).</td>
             </tr>
             <tr>
-              <td><span class="badge badge-cmd">@project</span></td>
+              <td><span class="badge badge-cmd">@@project</span></td>
               <td><code>&lt;name&gt;</code></td>
               <td>Projekt</td>
-              <td>Wechselt das aktive Projekt (z.&nbsp;B. <code>@project default</code>).</td>
+              <td>Wechselt das aktive Projekt (z.&nbsp;B. <code>@@project netzwerkpunkt</code>).</td>
             </tr>
           </tbody>
         </table>
@@ -424,6 +424,21 @@
           <li><strong>Staggered Dispatching</strong>: Parallele Worker-Aufrufe werden automatisch um 1,5 Sekunden verzögert, um LLM-Verbindungsfehler und API-Rate-Limits (429) zu vermeiden.</li>
           <li><strong>Automatisches Zusammenführen (Synthese)</strong>: Wenn ein über <code>@job</code> gestarteter Team-Workflow aktiv ist, überwacht ein Hintergrund-Koordinator den Arbeitsstatus aller Worker. Sobald alle fertig sind, fasst <code>GeneralAG</code> die Ergebnisse automatisch zusammen und generiert das finale Code- oder Text-Artefakt.</li>
           <li><strong>Dashboard-Überwachung</strong>: Im Dashboard signalisiert ein pulsierendes Banner in Echtzeit, welche Agenten gerade miteinander kommunizieren und welcher übergeordnete Workflow aktiv ist.</li>
+        </ul>
+      </div>
+      <!-- ── Info Block: Zero-Trust, Local Embeddings & Custom Presets ── -->
+      <div style="margin-top: 20px; padding: 15px; background: rgba(168, 85, 247, 0.03); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 8px;">
+        <h3 style="font-family: 'Outfit', sans-serif; font-size: 0.95rem; color: #a855f7; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+          <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#a855f7; box-shadow: 0 0 8px #a855f7;"></span>
+          Zero-Trust, Local Embeddings & Custom Presets (Phase 15)
+        </h3>
+        <p style="font-size: 0.76rem; color: var(--text-dim); line-height: 1.5; margin-bottom: 8px;">
+          Das System wurde um modernste Sicherheits- und Suchkomponenten erweitert, die vollständig offline und mit maximaler Performance arbeiten:
+        </p>
+        <ul style="font-size: 0.72rem; color: var(--text-dim); line-height: 1.5; padding-left: 18px; display: flex; flex-direction: column; gap: 6px;">
+          <li><strong>Zero-Trust-Kapabilitäten (Leases)</strong>: Worker-Agenten fordern Berechtigungen (wie <code>[WRITE]</code>, <code>[SHELL]</code>, <code>[BROWSER]</code>) dynamisch an. Diese erhalten ein 5-Minuten-TTL-Lease, das über einen O(1) In-Memory-Cache extrem schnell überprüft wird.</li>
+          <li><strong>Quantisiertes Offline-Retrieval</strong>: Das SoulAG-Gedächtnis nutzt eine lokale Vektordatenbank (FAISS mit PQ-Quantisierung) für semantische Suchen, wodurch der RAM-Bedarf um <b>75%</b> reduziert wird. Ein TF-IDF-Fallback greift bei fehlenden Vektorbibliotheken.</li>
+          <li><strong>Custom Preset System</strong>: Benutzerdefinierte Presets können als JSON-Dateien in <code>config/presets/</code> abgelegt und zur prompt-basierten Verhaltensanpassung des Schwarms geladen werden.</li>
         </ul>
       </div>
     </div>

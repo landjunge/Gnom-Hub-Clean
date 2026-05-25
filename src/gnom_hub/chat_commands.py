@@ -1,10 +1,16 @@
 import subprocess
 from fastapi import APIRouter
+from fastapi.responses import FileResponse
+from pathlib import Path
 from gnom_hub.infrastructure.database.state_repo import SQLiteStateRepository
 from gnom_hub.infrastructure.database.agent_repo import SQLiteAgentRepository
 from .chat_commands_handlers import handle_clear, handle_status, handle_job, _post_chat
 
 router = APIRouter()
+
+@router.get("/help")
+def get_help():
+    return FileResponse(str(Path(__file__).parent.parent.parent / "frontend" / "help.html"))
 
 @router.get("/api/ideas")
 def get_ideas(): return SQLiteStateRepository().get_value("ideas", [])
