@@ -24,16 +24,23 @@ echo ""
 
 # ── 1. Python prüfen ──
 echo -e "${B}▸ Python prüfen...${N}"
-if ! command -v python3 &>/dev/null; then
+PYTHON_CMD="python3"
+if command -v python3.11 &>/dev/null; then
+    PYTHON_CMD="python3.11"
+elif command -v python3.10 &>/dev/null; then
+    PYTHON_CMD="python3.10"
+elif command -v python3.9 &>/dev/null; then
+    PYTHON_CMD="python3.9"
+elif ! command -v python3 &>/dev/null; then
     echo -e "${R}✗ Python 3 nicht gefunden. brew install python3${N}"; exit 1
 fi
-PY_VER=$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
-echo -e "  Python $PY_VER ${G}✓${N}"
+PY_VER=$($PYTHON_CMD -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
+echo -e "  Python $PY_VER (cmd: $PYTHON_CMD) ${G}✓${N}"
 
 # ── 2. Virtuelle Umgebung ──
 echo -e "${B}▸ Virtuelle Umgebung...${N}"
 if [ ! -d "$VENV_DIR" ]; then
-    python3 -m venv "$VENV_DIR"
+    $PYTHON_CMD -m venv "$VENV_DIR"
     echo -e "  .venv erstellt ${G}✓${N}"
 else
     echo -e "  .venv existiert ${G}✓${N}"
@@ -42,6 +49,7 @@ source "$VENV_DIR/bin/activate"
 
 # ── 3. Core installieren ──
 echo -e "${B}▸ Core-Dependencies installieren...${N}"
+pip install -q --upgrade pip
 pip install -q fastapi uvicorn pydantic requests python-dotenv mcp
 pip install -q -e "$REPO_DIR"
 echo -e "  6 Packages installiert ${G}✓${N}"
