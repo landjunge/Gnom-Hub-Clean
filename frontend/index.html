@@ -1715,6 +1715,59 @@
       align-items: center;
       gap: 4px;
     }
+
+    /* Showbox Responsive & Legibility Overrides */
+    #sb-screen-content, #showbox-text {
+      width: 100% !important;
+      max-width: 100% !important;
+      max-height: 100% !important;
+      overflow-y: auto !important;
+      box-sizing: border-box !important;
+      --scrollbar-thumb: rgba(0, 150, 255, 0.3);
+      --scrollbar-track: rgba(0, 0, 0, 0.2);
+      scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+      scrollbar-width: thin;
+    }
+    @supports not (scrollbar-color: auto) {
+      #sb-screen-content::-webkit-scrollbar,
+      #showbox-text::-webkit-scrollbar {
+        width: 4px;
+      }
+      #sb-screen-content::-webkit-scrollbar-thumb,
+      #showbox-text::-webkit-scrollbar-thumb {
+        background: var(--scrollbar-thumb);
+        border-radius: 2px;
+      }
+      #sb-screen-content::-webkit-scrollbar-track,
+      #showbox-text::-webkit-scrollbar-track {
+        background: var(--scrollbar-track);
+      }
+    }
+    #sb-screen-content *, #showbox-text * {
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+    }
+    /* Ensure standard typography is visible/readable in dark background themes */
+    #sb-screen-content h1, #sb-screen-content h2, #sb-screen-content h3, #sb-screen-content h4, #sb-screen-content h5, #sb-screen-content h6,
+    #showbox-text h1, #showbox-text h2, #showbox-text h3, #showbox-text h4, #showbox-text h5, #showbox-text h6 {
+      color: #fff !important;
+      margin-top: 0.4em;
+      margin-bottom: 0.4em;
+    }
+    #sb-screen-content p, #showbox-text p {
+      color: #e0e8f0 !important;
+      line-height: 1.4;
+    }
+    #sb-screen-content ul, #sb-screen-content ol, #showbox-text ul, #showbox-text ol {
+      text-align: left;
+      display: inline-block;
+      margin: 8px auto;
+      padding-left: 20px;
+    }
+    #sb-screen-content li, #showbox-text li {
+      color: #e0e8f0 !important;
+      margin-bottom: 4px;
+    }
   </style>
 </head>
 
@@ -3810,9 +3863,9 @@
       window.showboxSpeed = window.showboxSpeed || 30000;
 
     function resizeShowboxText(sbText, sbLayer) {
-      let size = 80;
+      let size = 32;
       sbText.style.fontSize = size + 'px';
-      while((sbText.scrollHeight > sbLayer.clientHeight - 6 || sbText.scrollWidth > sbLayer.clientWidth - 6) && size > 8) {
+      while((sbText.scrollHeight > sbLayer.clientHeight - 10 || sbText.scrollWidth > sbLayer.clientWidth - 10) && size > 12) {
         size--;
         sbText.style.fontSize = size + 'px';
       }
@@ -3955,10 +4008,10 @@
       const showTimer = (window.showboxTimerRemaining && window.showboxTimerRemaining > 0) ? 'block' : 'none';
       return `
         <div style="display:flex; flex-direction:column; gap:10px;">
-          <div id="sb-screen" style="flex:1; background:radial-gradient(circle, #101424 0%, #070912 100%); border:1px solid rgba(0, 150, 255, 0.15); border-radius:12px; display:flex; justify-content:center; align-items:center; padding:40px; box-shadow:inset 0 0 40px rgba(0, 150, 255, 0.1); position:relative; overflow:hidden;">
+          <div id="sb-screen" style="flex:1; background:radial-gradient(circle, #101424 0%, #070912 100%); border:1px solid rgba(0, 150, 255, 0.15); border-radius:12px; display:flex; justify-content:center; align-items:center; padding:20px; box-shadow:inset 0 0 40px rgba(0, 150, 255, 0.1); position:relative; overflow:hidden;">
             <div id="sb-panel-clock" style="position: absolute; top: 15px; right: 15px; font-size: 1rem; color: rgba(255,255,255,0.5); font-family: monospace; background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); display: ${showClock}; pointer-events: none; z-index: 20;">00:00:00</div>
             <div id="sb-panel-timer" style="position: absolute; top: 15px; left: 15px; font-size: 1rem; color: #ff3366; font-family: monospace; background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(255,51,102,0.2); display: ${showTimer}; pointer-events: none; z-index: 20;">00:00</div>
-            <div id="sb-screen-content" style="color:white; text-align:center; font-weight:bold; font-size:48px; line-height:1.3; transition: opacity 0.3s ease, transform 0.3s ease; word-break:break-word; max-width:90%;">
+            <div id="sb-screen-content" style="color:white; text-align:center; font-weight:bold; font-size:40px; line-height:1.3; transition: opacity 0.3s ease, transform 0.3s ease; word-break:break-word; max-width:90%;">
               Loading presentation...
             </div>
             <div id="sb-slide-indicator" style="position:absolute; bottom:15px; font-size:0.8rem; color:var(--text-muted); background:rgba(0,0,0,0.4); padding:4px 10px; border-radius:10px; border:1px solid rgba(255,255,255,0.05);">
@@ -4070,9 +4123,9 @@
       setTimeout(() => {
         screenContent.innerHTML = currentSlides[activePanelSlideIndex];
         const screen = document.getElementById('sb-screen');
-        let size = 48;
+        let size = 40;
         screenContent.style.fontSize = size + 'px';
-        while ((screenContent.scrollHeight > screen.clientHeight - 80 || screenContent.scrollWidth > screen.clientWidth - 80) && size > 12) {
+        while ((screenContent.scrollHeight > screen.clientHeight - 40 || screenContent.scrollWidth > screen.clientWidth - 40) && size > 16) {
           size -= 2;
           screenContent.style.fontSize = size + 'px';
         }
@@ -4097,7 +4150,7 @@
       if (!list) return;
       const currentSlides = window.showboxes[activePanelShowboxIndex] || [];
       list.innerHTML = currentSlides.map((slide, i) => `
-        <div class="sb-slide-item" onclick="jumpToPanelSlide(${i})" style="padding:10px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:6px; font-size:0.8rem; cursor:pointer; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; transition:all 0.2s;">
+        <div class="sb-slide-item" onclick="jumpToPanelSlide(${i})" style="padding:6px 10px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:6px; font-size:0.72rem; cursor:pointer; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; transition:all 0.2s;">
           <strong>Folie ${i+1}:</strong> ${esc(slide.replace(/<[^>]*>/g, ''))}
         </div>
       `).join('');
@@ -4229,82 +4282,86 @@
         <div class="panel" id="llm-panel">
           <h2><button class="btn-primary" onclick="showWarRoom()" style="margin-right:15px; padding: 4px 10px; font-size:0.8rem; vertical-align: middle;">◀ Zurück</button>LLM Configuration</h2>
           <div style="display:flex; gap: 20px; flex-wrap: wrap;">
-            <div style="flex:1; min-width: 250px; background:var(--bg-card); padding:15px; border-radius:var(--radius); border:1px solid rgba(255,255,255,0.1); display:flex; flex-direction:column; gap:15px;">
+            <div style="flex:1; min-width: 250px; background:var(--bg-card); padding:12px; border-radius:var(--radius); border:1px solid rgba(255,255,255,0.1); display:flex; flex-direction:column; gap:10px;">
               <div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-                  <h3 style="margin:0;">API Keys</h3>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                  <h3 style="margin:0; font-size:0.95rem;">API Keys</h3>
                   <label style="display:flex; align-items:center; gap:5px; font-size:0.75rem; color:var(--text-muted); cursor:pointer;">
                     <input type="checkbox" id="toggle-show-keys" onchange="toggleKeysVisibility(this.checked)" style="width:12px; height:12px; accent-color:var(--primary);">
                     <span>Keys anzeigen</span>
                   </label>
                 </div>
-                <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:5px;">Füge alle API-Keys ein (ein Key pro Zeile)</p>
-                <textarea id="llm-keys-input" rows="6" style="width:100%; margin-bottom:10px; background:var(--bg); border:1px solid rgba(255,255,255,0.2); color:white; padding:8px; border-radius:4px; font-size:0.85rem;" placeholder="Einfügen per Cmd+V&#10;- sk-... (OpenAI / DeepSeek / Mistral)&#10;- sk-ant-... (Anthropic)&#10;- AIzaSy... (Gemini)&#10;- sk-or-... (OpenRouter)"></textarea>
-                <button class="btn-primary" onclick="saveAndTestKeys()" style="width:100%; font-size:0.85rem; padding:6px;">Save, Test & Assign</button>
-                <div id="llm-keys-status" style="margin-top:10px; font-size:0.85rem; max-height:200px; overflow-y:auto; display:flex; flex-direction:column; gap:4px;"></div>
-                <div id="llm-keys-legend" style="margin-top:12px; font-size:0.7rem; border-top:1px solid rgba(255,255,255,0.1); padding-top:8px; color:var(--text-muted); display:flex; flex-direction:column; gap:4px;">
-                  <div style="font-weight:bold; color:white; margin-bottom:2px;">Fähigkeiten-Legende:</div>
-                  <div style="display:flex; align-items:center; gap:6px;"><span style="width:8px; height:8px; border-radius:50%; background:#39ff14; display:inline-block; box-shadow:0 0 4px #39ff14;"></span><span>Text Chat (Unterhaltung, Brainstorming)</span></div>
-                  <div style="display:flex; align-items:center; gap:6px;"><span style="width:8px; height:8px; border-radius:50%; background:#00e5ff; display:inline-block; box-shadow:0 0 4px #00e5ff;"></span><span>Vision (Bilder analysieren / sehen)</span></div>
-                  <div style="display:flex; align-items:center; gap:6px;"><span style="width:8px; height:8px; border-radius:50%; background:#ff007f; display:inline-block; box-shadow:0 0 4px #ff007f;"></span><span>Bildgenerierung (Text zu Bild)</span></div>
-                  <div style="display:flex; align-items:center; gap:6px;"><span style="width:8px; height:8px; border-radius:50%; background:#ffa500; display:inline-block; box-shadow:0 0 4px #ffa500;"></span><span>Audio (Sprache, Text-to-Speech)</span></div>
-                  <div style="display:flex; align-items:center; gap:6px;"><span style="width:8px; height:8px; border-radius:50%; background:#b026ff; display:inline-block; box-shadow:0 0 4px #b026ff;"></span><span>Tools (Function Calling, Dateizugriff)</span></div>
+                <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">Füge alle API-Keys ein (ein Key pro Zeile)</p>
+                <textarea id="llm-keys-input" rows="3" style="width:100%; margin-bottom:6px; background:var(--bg); border:1px solid rgba(255,255,255,0.2); color:white; padding:6px; border-radius:4px; font-size:0.8rem;" placeholder="Einfügen per Cmd+V&#10;- sk-... (OpenAI / DeepSeek / Mistral)&#10;- sk-ant-... (Anthropic)&#10;- AIzaSy... (Gemini)&#10;- sk-or-... (OpenRouter)"></textarea>
+                <button class="btn-primary" onclick="saveAndTestKeys()" style="width:100%; font-size:0.8rem; padding:4px 6px;">Save, Test & Assign</button>
+                <div id="llm-keys-status" style="margin-top:6px; font-size:0.8rem; max-height:100px; overflow-y:auto; display:flex; flex-direction:column; gap:3px;"></div>
+                
+                <div id="llm-keys-legend" style="margin-top:8px; font-size:0.65rem; border-top:1px solid rgba(255,255,255,0.08); padding-top:6px; color:var(--text-muted);">
+                  <div style="font-weight:bold; color:white; margin-bottom:4px;">Legende:</div>
+                  <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px 8px;">
+                    <div style="display:flex; align-items:center; gap:4px;"><span style="width:6px; height:6px; border-radius:50%; background:#39ff14; display:inline-block; box-shadow:0 0 4px #39ff14;"></span><span>Text Chat</span></div>
+                    <div style="display:flex; align-items:center; gap:4px;"><span style="width:6px; height:6px; border-radius:50%; background:#00e5ff; display:inline-block; box-shadow:0 0 4px #00e5ff;"></span><span>Vision</span></div>
+                    <div style="display:flex; align-items:center; gap:4px;"><span style="width:6px; height:6px; border-radius:50%; background:#ff007f; display:inline-block; box-shadow:0 0 4px #ff007f;"></span><span>Image Gen</span></div>
+                    <div style="display:flex; align-items:center; gap:4px;"><span style="width:6px; height:6px; border-radius:50%; background:#ffa500; display:inline-block; box-shadow:0 0 4px #ffa500;"></span><span>Audio</span></div>
+                    <div style="display:flex; align-items:center; gap:4px; grid-column: span 2;"><span style="width:6px; height:6px; border-radius:50%; background:#b026ff; display:inline-block; box-shadow:0 0 4px #b026ff;"></span><span>Tools (Files, Function Calling)</span></div>
+                  </div>
                 </div>
-                <div id="llm-stages-legend" style="margin-top:10px; font-size:0.68rem; border-top:1px solid rgba(255,255,255,0.1); padding-top:8px; color:var(--text-muted); display:flex; flex-direction:column; gap:3px;">
-                  <div style="font-weight:bold; color:white; margin-bottom:2px;">Auto-Routing Stages:</div>
-                  <div><strong style="color:#39ff14;">St.1 (Local):</strong> Local Ollama. Offline & private fallback.</div>
-                  <div><strong style="color:#00e5ff;">St.2 (Free):</strong> Free OpenRouter / Local fallback.</div>
-                  <div><strong style="color:#ffa500;">St.3 (Balanced):</strong> Cheapest paid (DeepSeek/Gemini Flash).</div>
-                  <div><strong style="color:#ff007f;">St.4 (Premium):</strong> Frontier models (Claude Sonnet/GPT-4o).</div>
+
+                <div id="llm-stages-legend" style="margin-top:6px; font-size:0.65rem; border-top:1px solid rgba(255,255,255,0.08); padding-top:6px; color:var(--text-muted);">
+                  <div style="font-weight:bold; color:white; margin-bottom:4px;">Stages:</div>
+                  <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px 8px;">
+                    <div><strong style="color:#39ff14;">St.1 (Local):</strong> Ollama</div>
+                    <div><strong style="color:#00e5ff;">St.2 (Free):</strong> Free OR</div>
+                    <div><strong style="color:#ffa500;">St.3 (Balanced):</strong> Cheapest Paid</div>
+                    <div><strong style="color:#ff007f;">St.4 (Premium):</strong> Frontier</div>
+                  </div>
                 </div>
               </div>
-              <div>
-                <h3 style="margin-bottom:5px;">System Language</h3>
-                <div style="display:flex; gap:10px; margin-bottom:10px;">
-                  <button class="btn-primary" id="lang-btn-de" onclick="setSystemLanguage('de')" style="flex:1; padding:5px; font-size:0.75rem;">Deutsch</button>
-                  <button class="btn-primary" id="lang-btn-en" onclick="setSystemLanguage('en')" style="flex:1; padding:5px; font-size:0.75rem;">English</button>
+              
+              <div style="display:flex; flex-direction:column; gap:8px; border-top:1px solid rgba(255,255,255,0.1); padding-top:8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <h3 style="margin:0; font-size:0.9rem;">Language</h3>
+                  <div style="display:flex; gap:6px;">
+                    <button class="btn-primary" id="lang-btn-de" onclick="setSystemLanguage('de')" style="padding:3px 8px; font-size:0.75rem;">DE</button>
+                    <button class="btn-primary" id="lang-btn-en" onclick="setSystemLanguage('en')" style="padding:3px 8px; font-size:0.75rem;">EN</button>
+                  </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; margin-top:2px;">
+                  <input type="checkbox" id="auto-deploy-checkbox" onchange="toggleFtpAutoDeploy(this.checked)" style="width:14px; height:14px; cursor:pointer;">
+                  <label for="auto-deploy-checkbox" style="font-size:0.8rem; cursor:pointer;">Auto-Deploy Webseiten</label>
                 </div>
               </div>
-              <div style="border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;">
-                <h3 style="margin-bottom:5px;">FTP Auto-Deploy</h3>
-                <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.85rem; accent-color:var(--primary);">
-                  <input type="checkbox" id="auto-deploy-checkbox" onchange="toggleFtpAutoDeploy(this.checked)" style="width:16px; height:16px;">
-                  <span>Webseiten automatisch hochladen</span>
-                </label>
-              </div>
-              <div id="system-info-panel" style="font-size:0.85rem; padding:12px; border-radius:6px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05);">
+              <div id="system-info-panel" style="font-size:0.75rem; padding:8px 10px; border-radius:6px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); color:var(--text-muted);">
                 Loading System Info...
               </div>
             </div>
-            <div style="flex:2; min-width: 400px; background:var(--bg-card); padding:20px; border-radius:var(--radius); border:1px solid rgba(255,255,255,0.1);">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
-                <h3 style="margin:0;">Agent Assignment</h3>
+            <div style="flex:2; min-width: 400px; background:var(--bg-card); padding:15px; border-radius:var(--radius); border:1px solid rgba(255,255,255,0.1);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+                <h3 style="margin:0; font-size:0.95rem;">Agent Assignment</h3>
                 <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-                  <button onclick="setAllAgentsToStage('stage_1')" onmouseover="this.style.background='rgba(57,255,20,0.1)'" onmouseout="this.style.background='transparent'" style="font-size:0.8rem; padding:4px 10px; background:transparent; border:1px solid #39ff14; color:#39ff14; font-weight:bold; border-radius:4px; cursor:pointer; transition:all 0.2s;">Stage 1</button>
-                  <button onclick="setAllAgentsToStage('stage_2')" onmouseover="this.style.background='rgba(0,229,255,0.1)'" onmouseout="this.style.background='transparent'" style="font-size:0.8rem; padding:4px 10px; background:transparent; border:1px solid #00e5ff; color:#00e5ff; font-weight:bold; border-radius:4px; cursor:pointer; transition:all 0.2s;">Stage 2</button>
-                  <button onclick="setAllAgentsToStage('stage_3')" onmouseover="this.style.background='rgba(255,165,0,0.1)'" onmouseout="this.style.background='transparent'" style="font-size:0.8rem; padding:4px 10px; background:transparent; border:1px solid #ffa500; color:#ffa500; font-weight:bold; border-radius:4px; cursor:pointer; transition:all 0.2s;">Stage 3</button>
-                  <button onclick="setAllAgentsToStage('stage_4')" onmouseover="this.style.background='rgba(255,0,127,0.1)'" onmouseout="this.style.background='transparent'" style="font-size:0.8rem; padding:4px 10px; background:transparent; border:1px solid #ff007f; color:#ff007f; font-weight:bold; border-radius:4px; cursor:pointer; transition:all 0.2s;">Stage 4</button>
+                  <button onclick="setAllAgentsToStage('stage_1')" onmouseover="this.style.background='rgba(57,255,20,0.1)'" onmouseout="this.style.background='transparent'" style="font-size:0.75rem; padding:3px 8px; background:transparent; border:1px solid #39ff14; color:#39ff14; font-weight:bold; border-radius:4px; cursor:pointer; transition:all 0.2s;">Stage 1</button>
+                  <button onclick="setAllAgentsToStage('stage_2')" onmouseover="this.style.background='rgba(0,229,255,0.1)'" onmouseout="this.style.background='transparent'" style="font-size:0.75rem; padding:3px 8px; background:transparent; border:1px solid #00e5ff; color:#00e5ff; font-weight:bold; border-radius:4px; cursor:pointer; transition:all 0.2s;">Stage 2</button>
+                  <button onclick="setAllAgentsToStage('stage_3')" onmouseover="this.style.background='rgba(255,165,0,0.1)'" onmouseout="this.style.background='transparent'" style="font-size:0.75rem; padding:3px 8px; background:transparent; border:1px solid #ffa500; color:#ffa500; font-weight:bold; border-radius:4px; cursor:pointer; transition:all 0.2s;">Stage 3</button>
+                  <button onclick="setAllAgentsToStage('stage_4')" onmouseover="this.style.background='rgba(255,0,127,0.1)'" onmouseout="this.style.background='transparent'" style="font-size:0.75rem; padding:3px 8px; background:transparent; border:1px solid #ff007f; color:#ff007f; font-weight:bold; border-radius:4px; cursor:pointer; transition:all 0.2s;">Stage 4</button>
                   <span style="color:rgba(255,255,255,0.3); font-size:0.8rem; margin:0 4px;">|</span>
                   <button class="btn-primary" onclick="autoRouteAllAgents()" style="font-size:0.75rem; padding:4px 8px; background:#fff; color:#000; font-weight:bold; border-radius:4px; border:none; cursor:pointer; box-shadow:0 0 5px rgba(255,255,255,0.2);">Auto-Route All</button>
+                  <button id="save-agents-btn" class="btn-primary" onclick="saveAgentLLMs()" style="font-size:0.75rem; padding:4px 8px; background:var(--cyan); border-color:var(--cyan); color:#000; font-weight:bold; border-radius:4px; cursor:pointer; box-shadow:0 0 5px rgba(0,255,255,0.2);">Save Assignments</button>
                 </div>
               </div>
               
               <!-- Dynamic Auto-Routing Progress Banner -->
-              <div id="routing-progress-banner" style="display:none; align-items:center; justify-content:space-between; margin-bottom:15px; padding:12px 16px; background:rgba(0,229,255,0.08); border:1px solid rgba(0,229,255,0.2); border-radius:8px; font-size:0.85rem; transition:all 0.3s ease;">
-                <div style="display:flex; align-items:center; gap:10px;">
-                  <div id="routing-banner-spinner" style="width:16px; height:16px; border:2px solid rgba(0,229,255,0.3); border-top-color:#00e5ff; border-radius:50%; animation:spin 1s linear infinite;"></div>
+              <div id="routing-progress-banner" style="display:none; align-items:center; justify-content:space-between; margin-bottom:10px; padding:8px 12px; background:rgba(0,229,255,0.08); border:1px solid rgba(0,229,255,0.2); border-radius:8px; font-size:0.8rem; transition:all 0.3s ease;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div id="routing-banner-spinner" style="width:14px; height:14px; border:2px solid rgba(0,229,255,0.3); border-top-color:#00e5ff; border-radius:50%; animation:spin 1s linear infinite;"></div>
                   <span id="routing-progress-text" style="color:#00e5ff; font-weight:500;">Auto-routing läuft: Mappe Agenten zu optimalen LLMs...</span>
                 </div>
                 <div id="routing-progress-percentage" style="color:rgba(0,229,255,0.7); font-family:monospace; font-weight:bold;">0%</div>
               </div>
               
-              <div id="llm-agents-list" style="margin-bottom:20px; max-height:400px; overflow-y:auto; padding-right:10px;">Loading Agents...</div>
-              <div style="display:flex; gap:10px;">
-                <button id="save-agents-btn" class="btn-primary" onclick="saveAgentLLMs()">Save Agent Settings</button>
-              </div>
+              <div id="llm-agents-list" style="margin-bottom:0; max-height:280px; overflow-y:auto; padding-right:8px; --scrollbar-thumb:rgba(255,255,255,0.1); --scrollbar-track:transparent; scrollbar-color:var(--scrollbar-thumb) var(--scrollbar-track); scrollbar-width:thin;">Loading Agents...</div>
               
               <!-- Intelligent Routing Insights Panel -->
-              <div id="routing-insights-panel" style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:15px; display:none;"></div>
+              <div id="routing-insights-panel" style="margin-top:15px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px; display:none;"></div>
             </div>
           </div>
         </div>
@@ -4525,16 +4582,18 @@
              models[pSel].push(mSel);
            }
            
-           html += `<div style="display:flex; align-items:center; gap:8px; margin-bottom:8px; padding:8px; background:rgba(255,255,255,0.05); border-radius:8px; font-size:0.9rem;">
-             <div style="width:120px; font-weight:bold; overflow:hidden; text-overflow:ellipsis;">${a.name}</div>
-             <select id="prov-${a.name}" onchange="updateModels('${a.name}')" style="background:var(--bg); color:white; border:1px solid rgba(255,255,255,0.2); padding:4px; border-radius:4px; width:120px;">
+           html += `<div style="display:flex; align-items:center; gap:6px; margin-bottom:4px; padding:4px 8px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); border-radius:6px; font-size:0.8rem;">
+             <div style="width:100px; font-weight:bold; overflow:hidden; text-overflow:ellipsis;">${a.name}</div>
+             <select id="prov-${a.name}" onchange="updateModels('${a.name}')" style="background:var(--bg); color:white; border:1px solid rgba(255,255,255,0.15); padding:2px 4px; border-radius:4px; width:100px; font-size:0.75rem;">
                ${providers.map(p => `<option value="${p}" ${p === pSel ? 'selected':''}>${getProviderDisplayName(p)}</option>`).join('')}
              </select>
-             <select id="mod-${a.name}" data-db-model="${mSel}" onchange="updateAgentCaps('${a.name}')" style="background:var(--bg); color:white; border:1px solid rgba(255,255,255,0.2); padding:4px; border-radius:4px; width:140px; flex-shrink:0;">
+             <select id="mod-${a.name}" data-db-model="${mSel}" onchange="updateAgentCaps('${a.name}')" style="background:var(--bg); color:white; border:1px solid rgba(255,255,255,0.15); padding:2px 4px; border-radius:4px; width:130px; flex-shrink:0; font-size:0.75rem;">
                ${(models[pSel]||[]).map(m => `<option value="${m}" ${m === mSel ? 'selected':''}>${getModelDisplayName(pSel, m)}</option>`).join('')}
              </select>
-             <button class="btn-primary" onclick="testAgentLLM('${a.name}')" style="padding:4px 10px; font-size:0.8rem; flex-shrink:0;">Test</button>
-             <div id="lamp-${a.name}" style="width:12px; height:12px; border-radius:50%; background:gray; box-shadow:0 0 5px rgba(0,0,0,0.5); flex-shrink:0;"></div>
+             <button class="btn-primary" onclick="testAgentLLM('${a.name}')" style="padding:2px 6px; font-size:0.72rem; flex-shrink:0; display:flex; align-items:center; gap:4px;">
+               <span id="lamp-${a.name}" style="width:8px; height:8px; border-radius:50%; background:gray; display:inline-block; box-shadow:0 0 3px rgba(0,0,0,0.5); flex-shrink:0;"></span>
+               <span>Test</span>
+             </button>
              <div id="caps-agent-${a.name}" style="display:flex; gap:3px; align-items:center; flex-shrink:0; margin-left:4px;">
                ${getAgentCapsHtml(pSel, mSel)}
              </div>
