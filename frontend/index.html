@@ -79,28 +79,14 @@
     }
 
     .lamp.on {
-      opacity: 0.85;
-      box-shadow: 0 0 8px currentColor;
-      animation: lamp-breathe var(--dur, 3.5s) ease-in-out infinite alternate;
-      animation-delay: var(--delay, 0s);
+      opacity: 0.65;
+      box-shadow: 0 0 6px currentColor;
     }
 
     .lamp.busy {
       opacity: 1;
       box-shadow: 0 0 12px currentColor, 0 0 2px #fff;
       animation: lamp-pulse 0.5s ease-in-out infinite alternate;
-    }
-
-    @keyframes lamp-breathe {
-      0% {
-        opacity: 0.35;
-        box-shadow: 0 0 3px currentColor;
-      }
-
-      100% {
-        opacity: 0.85;
-        box-shadow: 0 0 14px currentColor;
-      }
     }
 
     @keyframes lamp-pulse {
