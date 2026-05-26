@@ -27,6 +27,8 @@ def handle_job(task):
     state_repo.set_value("jobs", jobs); res = distribute_job(task); _post_chat(gen.name, res)
     workers = []
     for a in ags:
+        if a.name.lower() in {"soulag", "generalag", "securityag", "watchdogag"}:
+            continue
         aj = next((m.group(2).strip() for m in re.finditer(r'@(\w+)[\s→>:\-]+(.+)', res) if m.group(1).lower() == a.name.lower()), "")
         agent_repo.update_active_job(a.name, aj)
         if aj:

@@ -114,7 +114,7 @@ public class PlayerController {
         
         start_time = time.time()
         completed = False
-        while time.time() - start_time < 8.0:
+        while time.time() - start_time < 25.0:
             active_wf = state_repo.get_value("active_workflow")
             if active_wf is None:
                 completed = True

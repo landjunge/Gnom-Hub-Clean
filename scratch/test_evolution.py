@@ -10,10 +10,12 @@ from gnom_hub.db import get_db_conn
 def test_evolution():
     print("--- TESTING AGENT EVOLUTION & SELF-IMPROVEMENT ---")
     
-    # 1. Clear previous evolution facts for CoderAG to avoid interference
+    # 1. Clear and seed evolution facts for CoderAG to avoid interference and ensure determinism
+    from gnom_hub.db import save_soul_fact
     with get_db_conn() as conn:
         with conn:
             conn.execute("DELETE FROM soul_memory WHERE key LIKE 'evolution_CoderAG%'")
+    save_soul_fact("evolution_CoderAG_test", "CSS-Styling für Landingpage optimieren.", agent="CoderAG")
     
     # 2. Run run_evolution with simulated landing page job
     task = "Erstelle eine neue Landingpage für ein KI-Tool."

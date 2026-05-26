@@ -10,6 +10,8 @@ def _wait(ar, workers, timeout=40):
 def _dispatch(ar, sr, ans):
     nxt = []
     for a in ar.get_all():
+        if a.name.lower() in {"soulag", "generalag", "securityag", "watchdogag"}:
+            continue
         aj = next((m.group(2).strip() for m in re.finditer(r'@(\w+)[\s→>:\-]+(.+)', ans) if m.group(1).lower() == a.name.lower()), "")
         if aj:
             ar.update_active_job(a.name, aj); nxt.append(a.name)

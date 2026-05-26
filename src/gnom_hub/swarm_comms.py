@@ -11,6 +11,8 @@ def process_swarm_mentions(sender: str, text: str):
     for m in mentions:
         tgt_low = m.lower()
         if tgt_low in ags and tgt_low != sender.lower():
+            if sender.lower() == "generalag" and tgt_low in {"soulag", "generalag", "securityag", "watchdogag"}:
+                continue
             tgt_name = ags[tgt_low]
             if len(comms) < 6 and not any(c.get("from") == sender and c.get("to") == tgt_name for c in comms):
                 comms.append({"from": sender, "to": tgt_name, "ts": time.time()})
