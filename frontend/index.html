@@ -5000,17 +5000,17 @@
           container.style.display = 'block';
           
           let html = `
-            <h3 style="margin-bottom:15px; font-size:1.05rem; color:#00e5ff; display:flex; align-items:center; gap:8px; font-weight:600;">
-              <svg style="width:20px; height:20px; fill:#00e5ff; filter: drop-shadow(0 0 5px rgba(0,229,255,0.6));" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-4h-2V7h2v2z"/></svg>
-              <span>Intelligent Routing Insights & Empfehlungen</span>
+            <h3 style="margin-bottom:8px; font-size:0.85rem; color:#00e5ff; display:flex; align-items:center; gap:6px; font-weight:600;">
+              <svg style="width:14px; height:14px; fill:#00e5ff; filter: drop-shadow(0 0 3px rgba(0,229,255,0.6));" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-4h-2V7h2v2z"/></svg>
+              <span>Routing Insights & Empfehlungen</span>
             </h3>
-            <div style="display:flex; flex-direction:column; gap:10px;">
+            <div style="display:flex; flex-direction:column; gap:6px;">
           `;
           
           insights.forEach(ins => {
             let badgeColor = '#888';
             let badgeBg = 'rgba(255,255,255,0.02)';
-            let borderLeft = '4px solid rgba(255,255,255,0.2)';
+            let borderLeft = '3px solid rgba(255,255,255,0.2)';
             let badgeText = ins.status;
             let actionHtml = '';
             let iconSvg = '';
@@ -5018,34 +5018,34 @@
             if (ins.status === 'optimal') {
               badgeColor = '#39ff14';
               badgeBg = 'rgba(57,255,20,0.02)';
-              borderLeft = '4px solid #39ff14';
+              borderLeft = '3px solid #39ff14';
               badgeText = 'Optimiert';
-              iconSvg = `<svg style="width:16px; height:16px; fill:#39ff14; flex-shrink:0;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`;
+              iconSvg = `<svg style="width:12px; height:12px; fill:#39ff14; flex-shrink:0;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`;
             } else if (ins.status === 'upgrade_available') {
               badgeColor = '#00e5ff';
               badgeBg = 'rgba(0,229,255,0.04)';
-              borderLeft = '4px solid #00e5ff';
+              borderLeft = '3px solid #00e5ff';
               badgeText = 'Upgrade';
-              iconSvg = `<svg style="width:16px; height:16px; fill:#00e5ff; flex-shrink:0; filter: drop-shadow(0 0 3px #00e5ff);" viewBox="0 0 24 24"><path d="M2 13h6v8h8v-8h6L12 3 2 13z"/></svg>`;
-              actionHtml = `<button onclick="applyUpgrade('${ins.agent}', '${ins.optimal_provider}', '${ins.optimal_model}')" class="btn-primary" style="font-size:0.75rem; padding:6px 12px; margin-left:auto; background:#00e5ff; color:#000; border-radius:6px; font-weight:bold; border:none; cursor:pointer; box-shadow:0 0 10px rgba(0,229,255,0.4); transition:all 0.2s; white-space:nowrap; outline:none;" onmouseover="this.style.boxShadow='0 0 15px #00e5ff'" onmouseout="this.style.boxShadow='0 0 10px rgba(0,229,255,0.4)'">Empfehlung anwenden</button>`;
+              iconSvg = `<svg style="width:12px; height:12px; fill:#00e5ff; flex-shrink:0; filter: drop-shadow(0 0 2px #00e5ff);" viewBox="0 0 24 24"><path d="M2 13h6v8h8v-8h6L12 3 2 13z"/></svg>`;
+              actionHtml = `<button onclick="applyUpgrade('${ins.agent}', '${ins.optimal_provider}', '${ins.optimal_model}')" class="btn-primary" style="font-size:0.7rem; padding:2px 6px; margin-left:auto; background:#00e5ff; color:#000; border-radius:4px; font-weight:bold; border:none; cursor:pointer;">Anwenden</button>`;
             } else if (ins.status === 'manual_override') {
               badgeColor = '#ffa500';
               badgeBg = 'rgba(255,165,0,0.02)';
-              borderLeft = '4px solid #ffa500';
+              borderLeft = '3px solid #ffa500';
               badgeText = 'Override';
-              iconSvg = `<svg style="width:16px; height:16px; fill:#ffa500; flex-shrink:0;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>`;
-              actionHtml = `<button onclick="applyUpgrade('${ins.agent}', '${ins.optimal_provider}', '${ins.optimal_model}')" class="btn-primary" style="font-size:0.75rem; padding:5px 10px; margin-left:auto; background:transparent; border:1px solid rgba(255,255,255,0.25); color:rgba(255,255,255,0.85); border-radius:6px; cursor:pointer; transition:all 0.2s; white-space:nowrap;" onmouseover="this.style.borderColor='rgba(255,255,255,0.5)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.25)'">Zurücksetzen</button>`;
+              iconSvg = `<svg style="width:12px; height:12px; fill:#ffa500; flex-shrink:0;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>`;
+              actionHtml = `<button onclick="applyUpgrade('${ins.agent}', '${ins.optimal_provider}', '${ins.optimal_model}')" class="btn-primary" style="font-size:0.7rem; padding:2px 6px; margin-left:auto; background:transparent; border:1px solid rgba(255,255,255,0.2); color:rgba(255,255,255,0.8); border-radius:4px; cursor:pointer;">Reset</button>`;
             }
             
             html += `
-              <div style="display:flex; align-items:center; gap:12px; padding:12px; background:${badgeBg}; border:1px solid rgba(255,255,255,0.05); border-left:${borderLeft}; border-radius:6px; font-size:0.8rem; line-height:1.4; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.08)';" onmouseout="this.style.background='${badgeBg}'; this.style.borderColor='rgba(255,255,255,0.05)';">
-                <div style="display:flex; align-items:center; gap:8px; width:120px; font-weight:bold; overflow:hidden; text-overflow:ellipsis; flex-shrink:0; color:#fff;">
+              <div style="display:flex; align-items:center; gap:8px; padding:4px 8px; background:${badgeBg}; border:1px solid rgba(255,255,255,0.03); border-left:${borderLeft}; border-radius:4px; font-size:0.72rem; line-height:1.3; transition:all 0.2s ease;" onmouseover="this.style.background='rgba(255,255,255,0.04)';" onmouseout="this.style.background='${badgeBg}';">
+                <div style="display:flex; align-items:center; gap:4px; width:80px; font-weight:bold; overflow:hidden; text-overflow:ellipsis; flex-shrink:0; color:#fff;">
                   ${iconSvg}
                   <span>${ins.agent}</span>
                 </div>
-                <div style="flex-grow:1; color:rgba(255,255,255,0.7);">${ins.explanation}</div>
-                <div style="display:flex; align-items:center; gap:10px; flex-shrink:0; margin-left:auto;">
-                  <span style="font-size:0.65rem; font-weight:bold; padding:2px 6px; border-radius:4px; border:1px solid ${badgeColor}44; color:${badgeColor}; font-family:monospace; background:rgba(0,0,0,0.2);">${badgeText.toUpperCase()}</span>
+                <div style="flex-grow:1; color:rgba(255,255,255,0.65);">${ins.explanation}</div>
+                <div style="display:flex; align-items:center; gap:6px; flex-shrink:0; margin-left:auto;">
+                  <span style="font-size:0.6rem; font-weight:bold; padding:1px 4px; border-radius:3px; border:1px solid ${badgeColor}33; color:${badgeColor}; font-family:monospace; background:rgba(0,0,0,0.2);">${badgeText.toUpperCase()}</span>
                   ${actionHtml}
                 </div>
               </div>
