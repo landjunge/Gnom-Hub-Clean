@@ -659,7 +659,77 @@
       padding: 8px;
       gap: 6px;
       position: relative;
-      top: -15px;
+      top: -65px;
+    }
+
+    @keyframes showbox-important-glow {
+      0% {
+        box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.95);
+        border-color: rgba(255, 255, 255, 0.95);
+      }
+      10% {
+        box-shadow: inset 0 0 30px rgba(0, 255, 255, 0.9);
+        border-color: rgba(0, 255, 255, 0.9);
+      }
+      20% {
+        box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.95);
+        border-color: rgba(255, 255, 255, 0.95);
+      }
+      30% {
+        box-shadow: inset 0 0 30px rgba(255, 0, 255, 0.9);
+        border-color: rgba(255, 0, 255, 0.9);
+      }
+      40% {
+        box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.95);
+        border-color: rgba(255, 255, 255, 0.95);
+      }
+      50% {
+        box-shadow: inset 0 0 30px rgba(255, 255, 0, 0.9);
+        border-color: rgba(255, 255, 0, 0.9);
+      }
+      60% {
+        box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.95);
+        border-color: rgba(255, 255, 255, 0.95);
+      }
+      70% {
+        box-shadow: inset 0 0 30px rgba(0, 255, 0, 0.9);
+        border-color: rgba(0, 255, 0, 0.9);
+      }
+      80% {
+        box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.95);
+        border-color: rgba(255, 255, 255, 0.95);
+      }
+      90% {
+        box-shadow: inset 0 0 30px rgba(255, 0, 0, 0.9);
+        border-color: rgba(255, 0, 0, 0.9);
+      }
+      100% {
+        box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.95);
+        border-color: rgba(255, 255, 255, 0.95);
+      }
+    }
+
+    .showbox.glow-important {
+      animation: showbox-important-glow 1.2s linear infinite;
+    }
+
+    @keyframes showbox-agent-glow {
+      0% {
+        box-shadow: inset 0 0 20px var(--showbox-glow-color, rgba(255, 255, 255, 0.5));
+        border-color: var(--showbox-glow-color, rgba(255, 255, 255, 0.8));
+      }
+      50% {
+        box-shadow: inset 0 0 30px var(--showbox-glow-color, rgba(255, 255, 255, 0.8));
+        border-color: rgba(255, 255, 255, 0.95);
+      }
+      100% {
+        box-shadow: inset 0 0 20px var(--showbox-glow-color, rgba(255, 255, 255, 0.5));
+        border-color: var(--showbox-glow-color, rgba(255, 255, 255, 0.8));
+      }
+    }
+
+    .showbox.glow-agent {
+      animation: showbox-agent-glow 1.5s ease-in-out infinite;
     }
 
     #preset-select:hover {
@@ -1739,7 +1809,7 @@
           <div class="showbox-lamp showbox-button info-lamp" id="showbox-button-7" style="--c: #00FFFF;" onclick="triggerShowbox(6)" title="Showbox Button 7" data-showbox-index="6"></div>
         </div>
       </div>
-      <div class="preset-container" style="padding: 0 10px 15px 10px; flex-shrink: 0;">
+      <div class="preset-container" style="padding: 0 10px 15px 10px; flex-shrink: 0; position: relative; top: -30px;">
         <select id="preset-select" onchange="changePreset(this.value)" style="width: 100%; background: rgba(18, 22, 36, 0.85); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-sm); padding: 8px 10px; font-size: 0.82rem; outline: none; cursor: pointer; transition: var(--transition); font-weight: 500;">
           <option value="Web Development">💻 Web Development</option>
           <option value="Graphic Design">🎨 Graphic Design</option>
@@ -2414,6 +2484,7 @@
       if(showboxTimeout) clearTimeout(showboxTimeout);
       window.activeShowboxIndex = 99;
       window.showboxActive = true;
+      document.getElementById('showbox')?.classList.remove('glow-important');
       document.querySelectorAll('[id^="layer-"]').forEach(l => l.classList.remove('active'));
       const sbLayer = document.getElementById('layer-showbox');
       const sbText = document.getElementById('showbox-text');
@@ -3264,7 +3335,7 @@
       return { rawContent, showBoxFound, showData };
     }
 
-    function handleShowboxTrigger(showData) {
+    function handleShowboxTrigger(showData, sender) {
       let slides = showData;
       if (showData && !Array.isArray(showData) && Array.isArray(showData.slides)) {
           slides = showData.slides;
@@ -3278,7 +3349,7 @@
              }
              window.showboxes[targetIdx] = slides;
              if (window.closeShowbox) window.closeShowbox();
-             setTimeout(() => { if (window.triggerShowbox) window.triggerShowbox(targetIdx); }, 100);
+             setTimeout(() => { if (window.triggerShowbox) window.triggerShowbox(targetIdx, sender); }, 100);
          }, 300);
       }
     }
@@ -3298,7 +3369,7 @@
          safe += `<div style="color:var(--cyan);font-size:0.8em;margin-top:8px;">[ 🎬 Showbox Triggered${targetText} ]</div>`;
       }
       
-      handleShowboxTrigger(showData);
+      handleShowboxTrigger(showData, name);
 
       safe = safe.replace(/\[SOUL:\s*([\s\S]*?)\]/g, '<div style="font-size:0.6rem; color:var(--bg-surface); opacity:0.5; margin-top:4px;">[SOUL: $1]</div>');
       safe = safe.replace(/\n/g, '<br>');
@@ -3639,18 +3710,54 @@
         sbText.style.fontSize = size + 'px';
       }
     }
+    function isImportantShowboxContent(content) {
+      if (!content) return false;
+      if (Array.isArray(content)) {
+        return content.some(slide => isImportantShowboxContent(slide));
+      }
+      if (typeof content === 'object') {
+        if (content.important || content.priority === 'high' || content.priority === 'critical') return true;
+        if (content.slides) return isImportantShowboxContent(content.slides);
+        return isImportantShowboxContent(JSON.stringify(content));
+      }
+      const text = String(content).toLowerCase();
+      const importantKeywords = ['error', 'fehler', 'warn', 'wichtig', 'alarm', 'critical', 'achtung', 'fail', 'alert', 'success', 'erfolg', 'priorität', 'urgent', 'dringend', '!', 'warning', 'danger', 'gefahr', 'sicherheits', 'security'];
+      return importantKeywords.some(kw => text.includes(kw));
+    }
     function updateShowboxText(sbText, sbLayer, showboxSteps, step) {
-      sbText.innerHTML = showboxSteps[step];
+      const content = showboxSteps[step];
+      sbText.innerHTML = content;
       resizeShowboxText(sbText, sbLayer);
       sbText.style.opacity = 1;
+
+      const showboxEl = document.getElementById('showbox');
+      if (showboxEl) {
+        showboxEl.style.setProperty('--showbox-glow-color', '');
+        showboxEl.classList.remove('glow-important', 'glow-agent');
+        
+        if (isImportantShowboxContent(content)) {
+          const sender = window.activeShowboxSender || '';
+          const sysNames = ['system', 'generalag', 'soulag', 'securityag', 'watchdogag', ''];
+          const isAgent = sender && !sysNames.includes(sender.toLowerCase());
+          
+          if (isAgent) {
+            const color = agentColor(sender);
+            showboxEl.style.setProperty('--showbox-glow-color', color);
+            showboxEl.classList.add('glow-agent');
+          } else {
+            showboxEl.classList.add('glow-important');
+          }
+        }
+      }
     }
-    window.triggerShowbox = (showboxIndex) => {
+    window.triggerShowbox = (showboxIndex, sender) => {
         if (document.getElementById('showbox-panel')) { selectPanelShowbox(showboxIndex); return; }
         if (window.showboxActive && window.activeShowboxIndex === showboxIndex) { window.closeShowbox(); return; }
         if(showboxInterval) clearInterval(showboxInterval);
         if(showboxTimeout) clearTimeout(showboxTimeout);
         
         window.activeShowboxIndex = showboxIndex;
+        window.activeShowboxSender = sender || '';
         if (!window.showboxes) window.showboxes = [["<span style='color:red;'>Keine themes.js gefunden!</span>"]];
         const showboxSteps = window.showboxes[showboxIndex] || window.showboxes[0];
         window.showboxActive = true;
@@ -3688,6 +3795,11 @@
         }
         window.activeShowboxIndex = -1;
         window.showboxActive = false;
+        const showboxEl = document.getElementById('showbox');
+        if (showboxEl) {
+          showboxEl.classList.remove('glow-important', 'glow-agent');
+          showboxEl.style.setProperty('--showbox-glow-color', '');
+        }
         const sbLayer = document.getElementById('layer-showbox');
         if(sbLayer) sbLayer.classList.remove('active');
         const curr = document.getElementById(`layer-${currentLayer}`);

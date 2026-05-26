@@ -26,10 +26,12 @@ def get_system_stats():
     from gnom_hub.soul_initializer import SOULS
     from gnom_hub.infrastructure.database.chat_repo import SQLiteChatRepository
     from gnom_hub.infrastructure.database.state_repo import SQLiteStateRepository
+    from gnom_hub.smr_stats import get_memory_stats
     sys_set = {k for k, v in SOULS.items() if v.get("role") not in ("writer","coder","researcher","editor")}
     d = json.load(open(str(TOKENS_FILE))) if os.path.exists(str(TOKENS_FILE)) else {}
     ags = list_agents()
     sa = sum(1 for a in ags if a.get("name","").lower() in sys_set)
     cc = SQLiteChatRepository().count_messages()
+    mem = get_memory_stats().get("total_facts", 0)
     tfb = SQLiteStateRepository().get_value("tokens", [{}])[0].get("total", 0) if SQLiteStateRepository().get_value("tokens") else 0
-    return {"agents": len(ags), "sys_agents": sa, "work_agents": len(ags) - sa, "memory": cc, "chat": cc, "tokens": d.get("total", tfb), "tokens_free": d.get("total_free", 0), "tokens_pay": d.get("total_pay", 0)}
+    return {"agents": len(ags), "sys_agents": sa, "work_agents": len(ags) - sa, "memory": mem, "chat": cc, "tokens": d.get("total", tfb), "tokens_free": d.get("total_free", 0), "tokens_pay": d.get("total_pay", 0)}
