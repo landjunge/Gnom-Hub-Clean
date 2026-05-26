@@ -4372,8 +4372,8 @@
                 <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">Füge alle API-Keys ein (ein Key pro Zeile)</p>
                 <textarea id="llm-keys-input" rows="1" style="width:100%; margin-bottom:6px; background:var(--bg); border:1px solid rgba(255,255,255,0.2); color:white; padding:4px 6px; border-radius:4px; font-size:0.8rem; height:28px; line-height:1.4; resize:none; overflow-y:hidden;" placeholder="Einfügen per Cmd+V"></textarea>
                 <div style="display:flex; gap:6px; margin-bottom:6px;">
-                  <button class="btn-primary" id="save-keys-only-btn" onclick="saveKeysOnly()" style="flex:1; font-size:0.85rem; padding:8px 10px; font-weight:bold; background:var(--cyan); border-color:var(--cyan); color:#000; border-radius:6px; box-shadow:0 0 8px rgba(0,255,255,0.2); cursor:pointer;">Speichern</button>
-                  <button class="btn-primary" id="save-keys-btn" onclick="saveAndTestKeys()" style="flex:1.5; font-size:0.85rem; padding:8px 10px; font-weight:bold; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:6px; cursor:pointer;">Testen & Speichern</button>
+                  <button class="btn-primary" id="save-keys-only-btn" onclick="saveKeysOnly()" style="flex:1; font-size:0.75rem; padding:6px 12px; font-weight:bold;">Speichern</button>
+                  <button class="btn-primary" id="save-keys-btn" onclick="saveAndTestKeys()" style="flex:1; font-size:0.75rem; padding:6px 12px; font-weight:bold;">Testen & Speichern</button>
                 </div>
                 <div id="llm-keys-status" style="margin-top:6px; font-size:0.8rem; max-height:65px; overflow-y:auto; display:flex; flex-direction:column; gap:3px;"></div>
               </div>
@@ -4393,8 +4393,8 @@
                 <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed rgba(255,255,255,0.05); padding-top:6px;">
                   <h3 style="margin:0; font-size:0.9rem;">Language</h3>
                   <div style="display:flex; gap:6px;">
-                    <button class="btn-primary" id="lang-btn-de" onclick="setSystemLanguage('de')" style="padding:3px 8px; font-size:0.75rem;">DE</button>
-                    <button class="btn-primary" id="lang-btn-en" onclick="setSystemLanguage('en')" style="padding:3px 8px; font-size:0.75rem;">EN</button>
+                    <button class="btn-primary" id="lang-btn-de" onclick="setSystemLanguage('de')" style="min-width:65px; padding:6px 12px; font-size:0.75rem; font-weight:bold;">DE</button>
+                    <button class="btn-primary" id="lang-btn-en" onclick="setSystemLanguage('en')" style="min-width:65px; padding:6px 12px; font-size:0.75rem; font-weight:bold;">EN</button>
                   </div>
                 </div>
                 <div style="display:flex; align-items:center; gap:8px; margin-top:2px;">
@@ -4411,8 +4411,8 @@
                 <h3 style="margin:0; font-size:0.9rem; flex-shrink:0;">Routing</h3>
                 <div style="display:flex; gap:4px; align-items:center; flex-shrink:0; flex-wrap:wrap;">
 
-                  <button class="btn-primary" onclick="autoRouteAllAgents()" style="font-size:0.75rem; padding:4px 8px; background:#fff; color:#000; font-weight:bold; border-radius:4px; border:none; cursor:pointer; box-shadow:0 0 4px rgba(255,255,255,0.2); white-space:nowrap;">⚡ Auto-Route</button>
-                  <button id="save-agents-btn" class="btn-primary" onclick="saveAgentLLMs()" style="font-size:0.75rem; padding:4px 8px; background:var(--cyan); border-color:var(--cyan); color:#000; font-weight:bold; border-radius:4px; cursor:pointer; box-shadow:0 0 4px rgba(0,255,255,0.2); white-space:nowrap;">Speichern</button>
+                  <button class="btn-primary" onclick="autoRouteAllAgents()" style="font-size:0.75rem; padding:4px 8px; font-weight:bold; border-radius:4px; cursor:pointer; white-space:nowrap;">⚡ Auto-Route</button>
+                  <button id="save-agents-btn" class="btn-primary" onclick="saveAgentLLMs()" style="font-size:0.75rem; padding:4px 8px; font-weight:bold; border-radius:4px; cursor:pointer; white-space:nowrap;">Speichern</button>
                 </div>
               </div>
               
@@ -4428,7 +4428,7 @@
               <div id="llm-agents-list" style="margin-bottom:0; max-height:250px; overflow-y:auto; padding-right:8px; --scrollbar-thumb:rgba(255,255,255,0.1); --scrollbar-track:transparent; scrollbar-color:var(--scrollbar-thumb) var(--scrollbar-track); scrollbar-width:thin;">Loading Agents...</div>
 
               <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
-                <button id="save-agents-btn-bottom" class="btn-primary" onclick="saveAgentLLMs()" style="width: 100%; padding: 8px 12px; font-size: 0.85rem; font-weight: bold; background: var(--cyan); border-color: var(--cyan); color: #000; border-radius: 6px; cursor: pointer; box-shadow: 0 0 8px rgba(0,255,255,0.3); transition: all 0.2s;">Routing Speichern</button>
+                <button id="save-agents-btn-bottom" class="btn-primary" onclick="saveAgentLLMs()" style="width: 100%; padding: 6px 12px; font-size: 0.75rem; font-weight: bold; cursor: pointer; transition: all 0.2s;">Routing Speichern</button>
               </div>
               
 
