@@ -14,8 +14,16 @@ def verify_write(agent, fn, content, wd, perms) -> bool:
     p = _safe(wd, fn, perms)
     approved = [os.path.realpath(os.path.join(wd, a)) for a in (get_state_value("approved_security_writes", []) or [])]
     if p and os.path.realpath(p) in approved: return True
-    w = router.ask_router(f"Prüfe Code '{fn}':\n{content}", sys="Du bist WatchdogAG. Antworte APPROVED oder REJECTED.", agent_name="WatchdogAG")
-    s = router.ask_router(f"Prüfe Code '{fn}':\n{content}", sys="Du bist SecurityAG. Antworte APPROVED oder REJECTED.", agent_name="SecurityAG")
+    try:
+        w = router.ask_router(f"Prüfe Code '{fn}':\n{content}", sys="Du bist WatchdogAG. Antworte APPROVED oder REJECTED.", agent_name="WatchdogAG")
+    except Exception as e:
+        add_chat_message("default", "WatchdogAG", "watchdogag", "chat", f"@user @SoulAG: [KRITISCH] Fehler bei WatchdogAG-Prüfung für '{fn}': {str(e)[:100]}")
+        return False
+    try:
+        s = router.ask_router(f"Prüfe Code '{fn}':\n{content}", sys="Du bist SecurityAG. Antworte APPROVED oder REJECTED.", agent_name="SecurityAG")
+    except Exception as e:
+        add_chat_message("default", "SecurityAG", "securityag", "chat", f"@user @SoulAG: [KRITISCH] Fehler bei SecurityAG-Prüfung für '{fn}': {str(e)[:100]}")
+        return False
     if "APPROVED" in w and "APPROVED" in s:
         request_capability(name, "WRITE", fn, "WatchdogAG+SecurityAG")
         return True
@@ -30,8 +38,16 @@ def verify_cmd(agent, cmd) -> bool:
     if role in ["soul", "general", "watchdog", "security"]: return True
     if any(p in cmd.lower() for p in ["src/gnom_hub", "config/", "scripts/", "run.sh", "index.html", ".env"]): return False
     if cmd in (get_state_value("approved_security_commands", []) or []): return True
-    w = router.ask_router(f"Befehl: {cmd}", sys="Du bist WatchdogAG. Antworte APPROVED oder REJECTED.", agent_name="WatchdogAG")
-    s = router.ask_router(f"Befehl: {cmd}", sys="Du bist SecurityAG. Antworte APPROVED oder REJECTED.", agent_name="SecurityAG")
+    try:
+        w = router.ask_router(f"Befehl: {cmd}", sys="Du bist WatchdogAG. Antworte APPROVED oder REJECTED.", agent_name="WatchdogAG")
+    except Exception as e:
+        add_chat_message("default", "WatchdogAG", "watchdogag", "chat", f"@user @SoulAG: [KRITISCH] Fehler bei WatchdogAG-Prüfung für Befehl '{cmd}': {str(e)[:100]}")
+        return False
+    try:
+        s = router.ask_router(f"Befehl: {cmd}", sys="Du bist SecurityAG. Antworte APPROVED oder REJECTED.", agent_name="SecurityAG")
+    except Exception as e:
+        add_chat_message("default", "SecurityAG", "securityag", "chat", f"@user @SoulAG: [KRITISCH] Fehler bei SecurityAG-Prüfung für Befehl '{cmd}': {str(e)[:100]}")
+        return False
     if "APPROVED" in w and "APPROVED" in s:
         request_capability(name, "SHELL", cmd, "WatchdogAG+SecurityAG")
         return True
