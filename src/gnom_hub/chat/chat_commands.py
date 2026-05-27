@@ -10,7 +10,7 @@ router = APIRouter()
 
 @router.get("/help")
 def get_help():
-    return FileResponse(str(Path(__file__).parent.parent.parent / "frontend" / "help.html"))
+    return FileResponse(str(Path(__file__).parent.parent / "frontend" / "help.html"))
 
 @router.get("/api/ideas")
 def get_ideas(): return SQLiteStateRepository().get_value("ideas", [])
