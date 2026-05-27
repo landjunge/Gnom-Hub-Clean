@@ -1,1 +1,1 @@
-from .brainstorm import BrainstormUseCase
+from .brainstorm_use_case import BrainstormUseCase
