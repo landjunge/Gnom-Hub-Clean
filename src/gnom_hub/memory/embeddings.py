@@ -1,5 +1,5 @@
 # embeddings.py — Local embeddings / semantic retrieval helper (Singleton)
-import gnom_hub.smr_retrieve as sr
+import gnom_hub.memory.smr.smr_retrieve as sr
 import logging
 
 try:
@@ -14,10 +14,10 @@ _logger = logging.getLogger("embeddings")
 
 class SoulEmbedder:
     def __init__(self, model_name: str = "all-MiniLM-L6-v2", db_path: str = None):
-        from gnom_hub.db import DB_PATH
+        from gnom_hub.database.legacy_db import DB_PATH
         self.db_path, self.helper = str(db_path or DB_PATH), None
         if HAS_LIBS:
-            from gnom_hub.emb_faiss import FaissEmbeddingHelper
+            from gnom_hub.memory.emb_faiss import FaissEmbeddingHelper
             self.helper = FaissEmbeddingHelper(model_name, self.db_path)
 
     def add_fact(self, fact_id: str, key: str, value: str):
@@ -37,7 +37,7 @@ class SoulEmbedder:
         if not results: return False
         try:
             import numpy as np
-            from .emb_cache import get_emb
+            from gnom_hub.memory.emb_cache import get_emb
             val_text = text.split(": ", 1)[1] if ": " in text else text
             res_val = results[0].split(": ", 1)[1] if ": " in results[0] else results[0]
             v1 = get_emb(self.helper.model, val_text).flatten()

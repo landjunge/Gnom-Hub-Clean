@@ -1,5 +1,5 @@
 # smr_stats.py
-from gnom_hub.db import get_db_conn
+from gnom_hub.database.legacy_db import get_db_conn
 
 def get_memory_stats() -> dict:
     try:

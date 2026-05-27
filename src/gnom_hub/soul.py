@@ -21,7 +21,7 @@ class SoulAG:
         return 2
     def _is_dup(self, v: str) -> bool:
         try:
-            from .embeddings import get_embedder
+            from gnom_hub.memory.embeddings import get_embedder
             return get_embedder().has_similar(v, threshold=0.92)
         except Exception: return False
     def _ex(self, m: str):

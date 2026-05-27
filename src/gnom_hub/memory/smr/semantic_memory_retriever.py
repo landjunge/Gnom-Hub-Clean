@@ -1,8 +1,8 @@
 # semantic_memory_retriever.py — Semantic similarity retrieval and memory pruning
 from typing import List
-import gnom_hub.smr_retrieve as sr
-import gnom_hub.smr_prune as sp
-import gnom_hub.smr_stats as ss
+import gnom_hub.memory.smr.smr_retrieve as sr
+import gnom_hub.memory.smr.smr_prune as sp
+import gnom_hub.memory.smr.smr_stats as ss
 
 class LocalEmbedder:
     pass

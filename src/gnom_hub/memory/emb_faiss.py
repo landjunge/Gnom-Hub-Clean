@@ -1,5 +1,5 @@
 # emb_faiss.py — FAISS index and sentence embeddings logic helper
-import os, pickle, sqlite3, numpy as np, faiss; from sentence_transformers import SentenceTransformer; from .emb_cache import get_emb
+import os, pickle, sqlite3, numpy as np, faiss; from sentence_transformers import SentenceTransformer; from gnom_hub.memory.emb_cache import get_emb
 class FaissEmbeddingHelper:
     def __init__(self, model_name: str, db_path: str):
         self.db_path, self.model, self.index, self.fact_ids = db_path, SentenceTransformer(model_name), None, []

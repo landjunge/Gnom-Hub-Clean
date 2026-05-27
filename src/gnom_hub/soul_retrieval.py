@@ -1,6 +1,6 @@
 # soul_retrieval.py — Semantic Retrieval via local embeddings / fallbacks
-from .db import get_db_conn
-from .embeddings import get_embedder
+from gnom_hub.database.legacy_db import get_db_conn
+from gnom_hub.memory.embeddings import get_embedder
 
 def retrieve_relevant_facts(query: str, top_k: int = 5) -> list:
     q_clean = query.strip()

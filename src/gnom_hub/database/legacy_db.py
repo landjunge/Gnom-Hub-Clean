@@ -644,7 +644,7 @@ def save_soul_fact(key: str, value: str, agent: str = "System", priority: str = 
                              (key, value, datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"), priority or "medium", ag))
                 row_id = cursor.lastrowid
         try:
-            from gnom_hub.embeddings import get_embedder
+            from gnom_hub.memory.embeddings import get_embedder
             get_embedder().add_fact(str(row_id), key, value)
         except Exception as e:
             logger.warning(f"[DB] Failed to add fact to FAISS index: {e}")
