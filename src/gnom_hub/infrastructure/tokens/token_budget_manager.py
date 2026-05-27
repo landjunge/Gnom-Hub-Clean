@@ -1,11 +1,11 @@
 # token_budget_manager.py — Track operational cost and enforce token limits
 from typing import List
-from gnom_hub.tokens.tbm_pricing import MODEL_PRICING
-from gnom_hub.tokens.tbm_init import init_tables
-import gnom_hub.tokens.tbm_record as tr
-import gnom_hub.tokens.tbm_stats as ts
-import gnom_hub.tokens.tbm_middleware as tm
-from gnom_hub.tokens.tbm_middleware import TokenBudgetMiddleware
+from gnom_hub.infrastructure.tokens.tbm_pricing import MODEL_PRICING
+from gnom_hub.infrastructure.tokens.tbm_init import init_tables
+import gnom_hub.infrastructure.tokens.tbm_record as tr
+import gnom_hub.infrastructure.tokens.tbm_stats as ts
+import gnom_hub.infrastructure.tokens.tbm_middleware as tm
+from gnom_hub.infrastructure.tokens.tbm_middleware import TokenBudgetMiddleware
 
 class TokenBudgetManager:
     def __init__(self, db=None, daily_limit_usd: float = 5.0):
