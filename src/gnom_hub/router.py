@@ -1,6 +1,6 @@
 import time; from gnom_hub.database.legacy_db import get_state_value, set_state_value, get_db_conn
 from gnom_hub.infrastructure.router.router_call import _call, _try_keys
-from gnom_hub.structured_log import AgentLogger; from gnom_hub.monitoring import record_agent_request
+from gnom_hub.structured_log import AgentLogger; from gnom_hub.monitoring.monitoring import record_agent_request
 from gnom_hub.explainability.eo_wrap import wrap_response, wrap_error
 
 def _try(pvd, mdl, key, msgs, n):
@@ -11,7 +11,7 @@ def _build_sys(n, sys, agent_name):
     """Inject preset + evolution rules into system prompt."""
     active_preset = (get_state_value("active_preset") or "Web Development").strip('"\'')
     if n in ["coderag", "researcherag", "writerag", "editorag"]:
-        from .preset_service import get_preset_prompt
+        from gnom_hub.preset.preset_service import get_preset_prompt
         if prs := get_preset_prompt(active_preset, n): sys = prs + "\n\n" + sys
     if not agent_name: return sys
     try:
