@@ -1,5 +1,5 @@
 # soul.py — SoulAG Gedächtnis & Automatische Lerneinheit
-import json, threading, os, re, uuid, logging; from gnom_hub.database.legacy_db import save_soul_fact, add_chat_message
+import json, threading, os, re, uuid, logging; from gnom_hub.db.legacy_db import save_soul_fact, add_chat_message
 from .soul_retrieval import retrieve_relevant_facts; from gnom_hub.router import ask_router; from gnom_hub.core.config import WORKSPACE_DIR
 _log = logging.getLogger("soul")
 class SoulAG:
@@ -114,7 +114,7 @@ def handle_user_feedback(vote: str, comment: str):
     
     try:
         from gnom_hub.evolution.evolution_v2 import update_version_score
-        from gnom_hub.database.legacy_db import get_chat_history
+        from gnom_hub.db.legacy_db import get_chat_history
         
         active_agents = set()
         history = get_chat_history(limit=40)

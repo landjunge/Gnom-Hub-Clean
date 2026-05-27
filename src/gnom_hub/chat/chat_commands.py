@@ -47,7 +47,7 @@ def handle_resume(q):
         _post_chat("System", "Fehler: Bitte gib einen Agenten-Namen an (z.B. @@resume CoderAG)")
         return {"status": "error", "message": "Missing agent name"}
     
-    from gnom_hub.database.legacy_db import set_agent_status, get_all_agents
+    from gnom_hub.db.legacy_db import set_agent_status, get_all_agents
     agents = get_all_agents()
     agent = next((a for a in agents if a["name"].lower() == agent_name.lower()), None)
     if not agent:
@@ -60,7 +60,7 @@ def handle_resume(q):
 
 def handle_approve_decision(q):
     decision_id = q.strip()
-    from gnom_hub.database.legacy_db import get_state_value, set_state_value, set_agent_status
+    from gnom_hub.db.legacy_db import get_state_value, set_state_value, set_agent_status
     pending = get_state_value("pending_decisions", {})
     if decision_id in pending:
         d = pending[decision_id]
@@ -76,7 +76,7 @@ def handle_approve_decision(q):
             set_state_value("approved_security_commands", cmds)
         set_agent_status(d["agent_name"], "busy")
         try:
-            from gnom_hub.database.legacy_db import set_active_showbox, delete_showbox_presentation
+            from gnom_hub.db.legacy_db import set_active_showbox, delete_showbox_presentation
             set_active_showbox("")
             delete_showbox_presentation(f"Blockade: {d['agent_name']}")
         except Exception as e:
@@ -89,7 +89,7 @@ def handle_approve_decision(q):
 
 def handle_reject_decision(q):
     decision_id = q.strip()
-    from gnom_hub.database.legacy_db import get_state_value, set_state_value, set_agent_status
+    from gnom_hub.db.legacy_db import get_state_value, set_state_value, set_agent_status
     pending = get_state_value("pending_decisions", {})
     if decision_id in pending:
         d = pending[decision_id]
@@ -97,7 +97,7 @@ def handle_reject_decision(q):
         set_state_value("pending_decisions", pending)
         set_agent_status(d["agent_name"], "busy")
         try:
-            from gnom_hub.database.legacy_db import set_active_showbox, delete_showbox_presentation
+            from gnom_hub.db.legacy_db import set_active_showbox, delete_showbox_presentation
             set_active_showbox("")
             delete_showbox_presentation(f"Blockade: {d['agent_name']}")
         except Exception as e:

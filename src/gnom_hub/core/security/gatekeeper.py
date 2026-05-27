@@ -3,7 +3,7 @@ import os
 import uuid
 import time
 import json
-from gnom_hub.database.legacy_db import (
+from gnom_hub.db.legacy_db import (
     add_chat_message, 
     get_state_value, 
     set_state_value, 
@@ -144,7 +144,7 @@ def wait_for_decision(agent_name, action_type, detail, content, rule) -> bool:
                 return False
                 
         # Fallback check if agent was resumed externally
-        from gnom_hub.database.legacy_db import get_all_agents
+        from gnom_hub.db.legacy_db import get_all_agents
         agents = get_all_agents()
         current_agent = next((a for a in agents if a["name"].lower() == agent_name.lower()), None)
         if current_agent and current_agent.get("status") not in ["paused", "offline"]:

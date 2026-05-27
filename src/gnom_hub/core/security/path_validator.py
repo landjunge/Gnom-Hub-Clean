@@ -22,7 +22,7 @@ def is_worker_blocked(agent, f, wd, perms):
     check = p or os.path.join(wd, f)
     path_str = os.path.realpath(check).replace("\\", "/").lower()
     if any(part in path_str for part in ["src/gnom_hub", "config/", "scripts/", "run.sh", "index.html", ".env"]):
-        from gnom_hub.database.legacy_db import add_chat_message
+        from gnom_hub.db.legacy_db import add_chat_message
         msg = f"@user @SoulAG: Warnung! Worker {agent.get('name')} versucht auf Systemdatei '{f}' zuzugreifen. Zugriff blockiert."
         add_chat_message("default", "WatchdogAG", "watchdogag", "chat", msg)
         return True
@@ -34,7 +34,7 @@ def is_security_block(agent, f, content, wd, perms):
     if name.lower() == "generalag" or role == "general": return True
     if role in ["soul", "watchdog", "security"]: return False
     if any(p in content for p in ["rm -rf", "eval(", "os.system(", "subprocess.", "exec(", "pickle.load", "chmod 777", "shutil.rmtree"]):
-        from gnom_hub.database.legacy_db import get_state_value, add_chat_message
+        from gnom_hub.db.legacy_db import get_state_value, add_chat_message
         approved = [os.path.realpath(os.path.join(wd, a)) for a in (get_state_value("approved_security_writes", []) or [])]
         p = _safe(wd, f, perms)
         if p and os.path.realpath(p) in approved: return False

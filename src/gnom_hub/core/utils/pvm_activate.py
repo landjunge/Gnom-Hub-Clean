@@ -1,5 +1,5 @@
 # pvm_activate.py
-from gnom_hub.database.legacy_db import get_db_conn, log_audit_event
+from gnom_hub.db.legacy_db import get_db_conn, log_audit_event
 
 def activate_version(agent: str, version_id: str):
     try:

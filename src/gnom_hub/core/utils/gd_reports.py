@@ -1,6 +1,6 @@
 # gd_reports.py
 from datetime import datetime, timezone, timedelta
-from gnom_hub.database.legacy_db import get_db_conn
+from gnom_hub.db.legacy_db import get_db_conn
 
 def get_failure_report(agent=None, days: int = 7) -> list:
     lim = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat().replace("+00:00", "Z")

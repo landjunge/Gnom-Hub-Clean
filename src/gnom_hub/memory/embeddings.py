@@ -14,7 +14,7 @@ _logger = logging.getLogger("embeddings")
 
 class SoulEmbedder:
     def __init__(self, model_name: str = "all-MiniLM-L6-v2", db_path: str = None):
-        from gnom_hub.database.legacy_db import DB_PATH
+        from gnom_hub.db.legacy_db import DB_PATH
         self.db_path, self.helper = str(db_path or DB_PATH), None
         if HAS_LIBS:
             from gnom_hub.memory.emb_faiss import FaissEmbeddingHelper

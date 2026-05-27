@@ -1,5 +1,5 @@
 # gd_init.py
-from gnom_hub.database.legacy_db import get_db_conn
+from gnom_hub.db.legacy_db import get_db_conn
 
 def init_tables():
     try:

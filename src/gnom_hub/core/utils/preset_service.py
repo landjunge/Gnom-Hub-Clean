@@ -1,6 +1,6 @@
 # preset_service.py — Preset management loader and trigger actions
 import os, json
-from gnom_hub.database.legacy_db import get_state_value, set_state_value, save_soul_fact, add_chat_message
+from gnom_hub.db.legacy_db import get_state_value, set_state_value, save_soul_fact, add_chat_message
 from gnom_hub.core.config import CONFIG_DIR
 def load_presets():
     path = os.path.join(os.path.dirname(__file__), "presets.json")
