@@ -75,6 +75,12 @@ def handle_approve_decision(q):
             cmds.append(d["detail"])
             set_state_value("approved_security_commands", cmds)
         set_agent_status(d["agent_name"], "busy")
+        try:
+            from .db import set_active_showbox, delete_showbox_presentation
+            set_active_showbox("")
+            delete_showbox_presentation(f"Blockade: {d['agent_name']}")
+        except Exception as e:
+            print(f"Error clearing blockade presentation: {e}")
         _post_chat("System", f"Entscheidung '{decision_id}': Aktion von **{d['agent_name']}** wurde **erlaubt**.")
         return {"status": "ok"}
     else:
@@ -90,6 +96,12 @@ def handle_reject_decision(q):
         d["status"] = "rejected"
         set_state_value("pending_decisions", pending)
         set_agent_status(d["agent_name"], "busy")
+        try:
+            from .db import set_active_showbox, delete_showbox_presentation
+            set_active_showbox("")
+            delete_showbox_presentation(f"Blockade: {d['agent_name']}")
+        except Exception as e:
+            print(f"Error clearing blockade presentation: {e}")
         _post_chat("System", f"Entscheidung '{decision_id}': Aktion von **{d['agent_name']}** wurde **abgelehnt**.")
         return {"status": "ok"}
     else:

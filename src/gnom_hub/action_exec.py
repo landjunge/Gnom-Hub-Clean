@@ -39,6 +39,17 @@ def handle_showbox(ans, ms):
             else:
                 d.pop("sig", None)
                 slides = d.get("slides", [])
+
+            # Prevent style bleeding by scoping global elements to .sb-layer-body
+            cleaned_slides = []
+            for sld in slides:
+                if isinstance(sld, str):
+                    sld = _re.sub(r'\bbody\b', '.sb-layer-body', sld, flags=_re.I)
+                    sld = _re.sub(r'\bhtml\b', '.sb-layer-body', sld, flags=_re.I)
+                    sld = _re.sub(r'(?<!\w)\*(?!\w)', '.sb-layer-body *', sld)
+                cleaned_slides.append(sld)
+            slides = cleaned_slides
+            d["slides"] = slides
             
             d["sig"] = generate_signature("Gnom", json.dumps(d, separators=(',', ':'), sort_keys=True))
             
