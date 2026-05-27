@@ -1,7 +1,7 @@
 """ResearcherAG Agent."""
 import asyncio
-from gnom_hub.agent_base import BaseAgent
-from gnom_hub.agent_definitions import AGENT_DEFINITIONS
+from gnom_hub.agents.agent_base import BaseAgent
+from gnom_hub.agents.agent_definitions import AGENT_DEFINITIONS
 
 async def main():
     cfg = AGENT_DEFINITIONS["researcherag"]
