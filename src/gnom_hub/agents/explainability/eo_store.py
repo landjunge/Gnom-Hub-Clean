@@ -4,8 +4,8 @@ import uuid
 from datetime import datetime, timezone
 from typing import Optional
 from gnom_hub.db.legacy_db import get_db_conn
-from gnom_hub.explainability.eo_class import ExplainableOutput
-from gnom_hub.explainability.eo_formatter import ExplainableOutputFormatter
+from gnom_hub.agents.explainability.eo_class import ExplainableOutput
+from gnom_hub.agents.explainability.eo_formatter import ExplainableOutputFormatter
 
 class ExplainableOutputStore:
     def __init__(self, db=None):

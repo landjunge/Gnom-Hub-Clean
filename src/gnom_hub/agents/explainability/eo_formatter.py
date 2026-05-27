@@ -1,6 +1,6 @@
 # eo_formatter.py
 import json
-from gnom_hub.explainability.eo_class import ExplainableOutput
+from gnom_hub.agents.explainability.eo_class import ExplainableOutput
 
 class ExplainableOutputFormatter:
     @staticmethod

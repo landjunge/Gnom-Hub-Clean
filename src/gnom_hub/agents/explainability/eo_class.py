@@ -29,7 +29,7 @@ class ExplainableOutput:
 
     def __str__(self) -> str:
         """Formatiertes Markdown mit Reasoning Chain, Confidence, Quellen."""
-        from gnom_hub.explainability.eo_formatter import ExplainableOutputFormatter
+        from gnom_hub.agents.explainability.eo_formatter import ExplainableOutputFormatter
         return ExplainableOutputFormatter.to_markdown(self)
 
     def __repr__(self) -> str:

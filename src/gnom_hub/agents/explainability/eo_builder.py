@@ -1,5 +1,5 @@
 # eo_builder.py
-from gnom_hub.explainability.eo_class import ExplainableOutput
+from gnom_hub.agents.explainability.eo_class import ExplainableOutput
 
 class ExplainableOutputBuilder:
     def __init__(self, agent: str, task: str):
