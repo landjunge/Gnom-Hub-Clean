@@ -1,1 +1,1 @@
-# Gnom-Hub Brainstorm subpackage
+from .brainstorm import BrainstormUseCase
