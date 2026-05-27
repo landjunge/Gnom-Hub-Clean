@@ -101,8 +101,8 @@
       nextSlide();
     });
 
-    // Make container clickable to open full detail modal
-    document.getElementById('sb-layers-container').addEventListener('click', () => {
+    // Make container double-clickable to open full detail modal
+    document.getElementById('sb-layers-container').addEventListener('dblclick', () => {
       if (typeof window.openShowboxOverlay === 'function') {
         window.openShowboxOverlay();
       }

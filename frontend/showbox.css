@@ -27,15 +27,13 @@
   width: 100%;
   aspect-ratio: 1 / 1;
   margin: 0;
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(20, 24, 35, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   position: relative;
   overflow: hidden;
   box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: border-color 0.3s ease, transform 0.3s ease;
 }
 
 .sb-layer {
@@ -159,23 +157,23 @@
   transform: translateY(1px);
 }
 
-/* Frame Flash Keyframes & Classes */
+/* Frame Flash Keyframes & Classes (Optimized for performance) */
 @keyframes sb-flash-system {
-  0% { box-shadow: 0 0 0 rgba(var(--sb-system-rgb), 0); border-color: rgba(255, 255, 255, 0.1); }
-  50% { box-shadow: 0 0 25px rgba(var(--sb-system-rgb), 0.65), inset 0 0 15px rgba(var(--sb-system-rgb), 0.2); border-color: var(--sb-system-color); }
-  100% { box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5); border-color: rgba(255, 255, 255, 0.1); }
+  0% { border-color: rgba(255, 255, 255, 0.1); }
+  50% { border-color: var(--sb-system-color); }
+  100% { border-color: rgba(255, 255, 255, 0.1); }
 }
 
 @keyframes sb-flash-worker {
-  0% { box-shadow: 0 0 0 rgba(var(--sb-worker-rgb), 0); border-color: rgba(255, 255, 255, 0.1); }
-  50% { box-shadow: 0 0 25px rgba(var(--sb-worker-rgb), 0.65), inset 0 0 15px rgba(var(--sb-worker-rgb), 0.2); border-color: var(--sb-worker-color); }
-  100% { box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5); border-color: rgba(255, 255, 255, 0.1); }
+  0% { border-color: rgba(255, 255, 255, 0.1); }
+  50% { border-color: var(--sb-worker-color); }
+  100% { border-color: rgba(255, 255, 255, 0.1); }
 }
 
 @keyframes sb-flash-user {
-  0% { box-shadow: 0 0 0 rgba(var(--sb-user-rgb), 0); border-color: rgba(255, 255, 255, 0.1); }
-  50% { box-shadow: 0 0 25px rgba(var(--sb-user-rgb), 0.65), inset 0 0 15px rgba(var(--sb-user-rgb), 0.2); border-color: var(--sb-user-color); }
-  100% { box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5); border-color: rgba(255, 255, 255, 0.1); }
+  0% { border-color: rgba(255, 255, 255, 0.1); }
+  50% { border-color: var(--sb-user-color); }
+  100% { border-color: rgba(255, 255, 255, 0.1); }
 }
 
 .showbox-layers-container.flash-1 {
