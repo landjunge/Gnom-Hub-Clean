@@ -1,14 +1,14 @@
 from fastapi import Depends
-from ..infrastructure.database.agent_repo import SQLiteAgentRepository as AR
-from ..infrastructure.database.chat_repo import SQLiteChatRepository as CR
-from ..infrastructure.llm.orchestrator import LLMOrchestrator as LO
-from ..infrastructure.process.manager import ProcessManager as PM
-from ..infrastructure.admin.service import AdminService as AS
-from ..application.agent.commands import AgentCommands as AC
-from ..application.agent.queries import AgentQueries as AQ
-from ..application.chat.service import ChatService as CS
-from ..application.chat.send_message import SendMessageUseCase as SM
-from ..application.chat.brainstorm import BrainstormUseCase as BS
+from gnom_hub.db.agent_repo import SQLiteAgentRepository as AR
+from gnom_hub.db.chat_repo import SQLiteChatRepository as CR
+from gnom_hub.infrastructure.llm.orchestrator import LLMOrchestrator as LO
+from gnom_hub.infrastructure.process.manager import ProcessManager as PM
+from gnom_hub.infrastructure.admin.service import AdminService as AS
+from gnom_hub.agents.commands import AgentCommands as AC
+from gnom_hub.agents.queries import AgentQueries as AQ
+from gnom_hub.chat.service import ChatService as CS
+from gnom_hub.chat.send_message import SendMessageUseCase as SM
+from gnom_hub.chat.brainstorm.brainstorm import BrainstormUseCase as BS
 
 # Singletons & Services
 def get_agent_repo(): return AR()

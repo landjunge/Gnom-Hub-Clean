@@ -2,10 +2,10 @@ from datetime import datetime, timezone
 import uuid; from typing import Optional
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
-from gnom_hub.domain.chat.entities import ChatMessage
-from gnom_hub.infrastructure.database.agent_repo import SQLiteAgentRepository
-from gnom_hub.infrastructure.database.chat_repo import SQLiteChatRepository
-from gnom_hub.presentation.api.v1.nudge import nudge
+from gnom_hub.chat.entities import ChatMessage
+from gnom_hub.db.agent_repo import SQLiteAgentRepository
+from gnom_hub.db.chat_repo import SQLiteChatRepository
+from gnom_hub.api.endpoints.nudge import nudge
 
 router = APIRouter()
 class MemoryEntry(BaseModel):

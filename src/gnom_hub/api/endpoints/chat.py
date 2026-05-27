@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from uuid import UUID
 from typing import List
 from pydantic import BaseModel
-from ....presentation.dependencies import get_chat_service
+from gnom_hub.api.dependencies import get_chat_service
 
 class BrainstormRequest(BaseModel):
     agent_ids: List[UUID]

@@ -1,6 +1,6 @@
 def get_agent_soul_path(agent_name: str) -> str:
     import os
-    from gnom_hub.presentation.api.v1.workspace import get_workspace_dir
+    from gnom_hub.api.endpoints.workspace import get_workspace_dir
     wd = get_workspace_dir()
     agents_dir = os.path.join(wd, ".agents", agent_name.lower())
     os.makedirs(agents_dir, exist_ok=True)
@@ -29,7 +29,7 @@ def _commit_soul_git(agent_name: str, path: str):
 
 def get_soul(agent_name: str) -> dict:
     import os, json
-    from gnom_hub.database.legacy_db import get_language
+    from gnom_hub.db import get_language
     from gnom_hub.agents.agent_definitions import AGENT_DEFINITIONS
     
     lang = get_language()
@@ -101,7 +101,7 @@ SOULS = DynamicSouls()
 
 def check_and_wait_breakpoint(agent_name: str, operation: str, detail: str):
     import time
-    from gnom_hub.database.legacy_db import get_active_project, add_chat_message, get_all_agents, set_agent_status
+    from gnom_hub.db import get_active_project, add_chat_message, get_all_agents, set_agent_status
     
     soul = get_soul(agent_name)
     breakpoints = soul.get("breakpoints", [])

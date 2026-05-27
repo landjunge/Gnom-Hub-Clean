@@ -26,7 +26,7 @@ def handle_free(q):
     return {"status": "ok"}
 
 def handle_git(q, rb=False):
-    from gnom_hub.presentation.api.v1.workspace import get_workspace_dir
+    from gnom_hub.api.endpoints.workspace import get_workspace_dir
     wd = get_workspace_dir()
     p = q.split(" ", 1)
     cmd = f"reset --hard {p[1]}" if rb else (p[1] if len(p) > 1 else "status")

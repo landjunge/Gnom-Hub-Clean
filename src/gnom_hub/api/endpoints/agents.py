@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from uuid import UUID
-from ....presentation.dependencies import get_agent_commands, get_agent_queries
+from gnom_hub.api.dependencies import get_agent_commands, get_agent_queries
 
 router = APIRouter(prefix="/agents", tags=["agents"])
 

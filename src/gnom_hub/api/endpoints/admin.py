@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from ....presentation.dependencies import get_admin_service
+from gnom_hub.api.dependencies import get_admin_service
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 

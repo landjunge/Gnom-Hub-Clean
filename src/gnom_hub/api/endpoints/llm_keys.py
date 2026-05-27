@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request
-from gnom_hub.infrastructure.database.state_repo import SQLiteStateRepository
-from gnom_hub.infrastructure.database.agent_repo import SQLiteAgentRepository
+from gnom_hub.db.state_repo import SQLiteStateRepository
+from gnom_hub.db.agent_repo import SQLiteAgentRepository
 from gnom_hub.infrastructure.llm.key_verifier import auto_detect_and_verify, verify_key
 from gnom_hub.infrastructure.llm.desktop_syncer import sync_desktop_keys, write_keys_to_desktop
 
@@ -21,7 +21,7 @@ async def save_keys(req: Request):
     
     # Trigger model verification in background
     import asyncio
-    from gnom_hub.presentation.api.v1.llm_models import check_and_update_models
+    from gnom_hub.api.endpoints.llm_models import check_and_update_models
     asyncio.create_task(check_and_update_models())
     
     return {"status": "ok"}

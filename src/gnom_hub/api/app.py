@@ -5,16 +5,16 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
-from gnom_hub.infrastructure.database.schema import create_tables
+from gnom_hub.db.schema import create_tables
 from gnom_hub.infrastructure.process.psutil_mgr import start_background_agents, kill_background_agents
-from gnom_hub.presentation.api.router import router as api_router
+from gnom_hub.api.router import router as api_router
 from gnom_hub.chat import chat_commands
 
 async def start_openrouter_updater():
     import asyncio
     while True:
         try:
-            from gnom_hub.presentation.api.v1.llm_models import check_and_update_models
+            from gnom_hub.api.endpoints.llm_models import check_and_update_models
             print("Running scheduled OpenRouter free models check...")
             await check_and_update_models()
             print("Scheduled OpenRouter free models check complete.")
@@ -48,7 +48,7 @@ app.add_middleware(
 app.include_router(api_router)
 app.include_router(chat_commands.router)
 
-FRONT = Path(__file__).parent.parent.parent.parent / "frontend"
+FRONT = Path(__file__).parent.parent / "frontend"
 if FRONT.exists(): app.mount("/static", StaticFiles(directory=str(FRONT)), name="static")
 
 @app.get("/api/health")
