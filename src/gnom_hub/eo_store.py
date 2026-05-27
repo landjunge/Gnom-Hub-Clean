@@ -1,1 +1,1 @@
-from gnom_hub.explainability.eo_store import *
+from gnom_hub.agents.explainability.eo_store import *

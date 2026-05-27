@@ -1,5 +1,18 @@
 import json; from uuid import UUID; from datetime import datetime; from typing import List, Optional
-from gnom_hub.domain.agent.entities import Agent; from gnom_hub.domain.agent.repository import AgentRepository
+from abc import ABC, abstractmethod
+from gnom_hub.agents.entities import Agent
+
+class AgentRepository(ABC):
+    @abstractmethod
+    def get_by_id(self, agent_id) -> Optional[Agent]: pass
+    @abstractmethod
+    def get_by_name(self, name: str) -> Optional[Agent]: pass
+    @abstractmethod
+    def list_all(self) -> List[Agent]: pass
+    @abstractmethod
+    def save(self, agent: Agent) -> Agent: pass
+    @abstractmethod
+    def delete(self, agent_id) -> bool: pass
 from .connection import get_db_connection, Await, parse_dt
 def _to_ag(r) -> Optional[Agent]:
     if not r: return None

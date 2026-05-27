@@ -1,7 +1,7 @@
 from typing import List
 from uuid import UUID
-from ...domain.agent.entities import Agent
-from ...domain.agent.repository import AgentRepository
+from gnom_hub.agents.entities import Agent
+from gnom_hub.db.agent_repo import AgentRepository
 
 
 class AgentQueries:

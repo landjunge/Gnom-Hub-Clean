@@ -1,8 +1,8 @@
 from uuid import UUID
-from ...domain.agent.entities import Agent
-from ...domain.agent.repository import AgentRepository
-from ...infrastructure.process.manager import ProcessManager
-from ...common.exceptions import ValidationError
+from gnom_hub.agents.entities import Agent
+from gnom_hub.db.agent_repo import AgentRepository
+from gnom_hub.infrastructure.process.manager import ProcessManager
+from gnom_hub.core.exceptions import ValidationError
 
 class AgentCommands:
     """Commands für Schreiboperationen auf Agenten (Start, Stop, Register)."""

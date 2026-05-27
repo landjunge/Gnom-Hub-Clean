@@ -1,1 +1,1 @@
-from gnom_hub.explainability.explainable_output import *
+from gnom_hub.agents.explainability.explainable_output import *
