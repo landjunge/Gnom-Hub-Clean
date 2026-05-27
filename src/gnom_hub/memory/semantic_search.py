@@ -1,6 +1,6 @@
 import json, re
 from gnom_hub.db.legacy_db import get_active_project, get_db_conn, _row_to_msg
-from gnom_hub.router import ask_router
+from gnom_hub.infrastructure.router.router import ask_router
 
 def semantic_search_memories(q: str) -> list:
     project = get_active_project()

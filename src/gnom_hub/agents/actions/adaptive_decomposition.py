@@ -3,7 +3,7 @@ import asyncio
 import json
 import re
 from typing import List, Dict
-from gnom_hub.router import ask_router
+from gnom_hub.infrastructure.router.router import ask_router
 from gnom_hub.monitoring.monitoring import get_agent_metrics
 
 class Route:

@@ -12,7 +12,7 @@ from gnom_hub.db.legacy_db import (
     get_active_project, 
     set_agent_status
 )
-import gnom_hub.router as router
+import gnom_hub.infrastructure.router.router as router
 from gnom_hub.core.security.path_validator import is_worker_blocked, is_security_block, _safe
 from gnom_hub.agents.capability_manager import check_capability, request_capability
 

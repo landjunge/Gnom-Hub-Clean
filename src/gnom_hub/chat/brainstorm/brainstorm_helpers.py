@@ -1,4 +1,4 @@
-import os, uuid; from datetime import datetime, timezone; from gnom_hub.db.legacy_db import add_chat_message, get_chat_history, get_active_project; from gnom_hub.router import ask_router; from gnom_hub.core.config import WORKSPACE_DIR
+import os, uuid; from datetime import datetime, timezone; from gnom_hub.db.legacy_db import add_chat_message, get_chat_history, get_active_project; from gnom_hub.infrastructure.router.router import ask_router; from gnom_hub.core.config import WORKSPACE_DIR
 def get_workspace_dir():
     d = os.path.join(str(WORKSPACE_DIR), get_active_project()); os.makedirs(d, exist_ok=True); return d
 def post(sender, content):
