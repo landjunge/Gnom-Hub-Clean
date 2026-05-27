@@ -27,7 +27,7 @@ def handle_crawl(ans, ms, ag, perms):
         except Exception as e: ans = ans.replace(o, f"[Crawl-Fehler: {str(e)[:80]}]")
     return ans
 def handle_showbox(ans, ms):
-    from .json_sanitizer import _sanitize_json
+    from gnom_hub.core.json_sanitizer import _sanitize_json
     from agents.securityAG import generate_signature
     from .db import save_showbox_presentation, set_active_showbox
     for full, idx, raw in ms:
