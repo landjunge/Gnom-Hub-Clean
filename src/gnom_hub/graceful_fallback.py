@@ -47,12 +47,12 @@ class FallbackAgent:
         
         # Execute the task
         prompt = f"Führe diese Aufgabe aus: {task}"
-        completion = await asyncio.to_thread(ask_router, prompt, sys=f"Du repräsentierst {self.name}.", agent_name=clean_name)
+        eo = await asyncio.to_thread(ask_router, prompt, sys=f"Du repräsentierst {self.name}.", agent_name=clean_name)
         
-        if completion.startswith("[ROUTER-FEHLER]"):
+        if eo.content.startswith("[ROUTER-FEHLER]"):
             raise AgentUnavailableError(f"Agent {self.name} failed to route request.")
 
-        return FallbackResult(completion)
+        return FallbackResult(eo.content)
 
     def __repr__(self):
         return self.name
@@ -64,7 +64,7 @@ async def estimate_quality(fallback_agent: Union[str, FallbackAgent], task: str)
         f"Schätze die Qualität (0.0 bis 1.0) ein, wenn {agent_name} diese Aufgabe ausführt: {task}\n"
         f"Antworte NUR mit einer Fließkommazahl zwischen 0.0 und 1.0."
     )
-    res = await asyncio.to_thread(ask_router, prompt, sys="Du bist ein präziser Qualitäts-Schätzer.", agent_name="GeneralAG")
+    res = (await asyncio.to_thread(ask_router, prompt, sys="Du bist ein präziser Qualitäts-Schätzer.", agent_name="GeneralAG")).content
     match = re.search(r'\b(0\.\d+|1\.0|0)\b', res)
     if match:
         return float(match.group(1))

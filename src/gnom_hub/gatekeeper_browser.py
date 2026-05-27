@@ -16,8 +16,8 @@ def verify_browser(agent, code, wd, perms) -> bool:
         if not any(lh in u for lh in ["localhost", "127.0.0.1"]) and u not in approved:
             add_chat_message("default", "SecurityAG", "securityag", "chat", f"@user @SoulAG: Warnung! Browser-Aktion versucht externe URL '{u}' aufzurufen. Freigabe erforderlich.")
             return False
-    w = ask_router(f"Prüfe Browser-Code:\n{code}", sys="Du bist WatchdogAG. Antworte APPROVED oder REJECTED.", agent_name="WatchdogAG")
-    s = ask_router(f"Prüfe Browser-Code:\n{code}", sys="Du bist SecurityAG. Antworte APPROVED oder REJECTED.", agent_name="SecurityAG")
+    w = ask_router(f"Prüfe Browser-Code:\n{code}", sys="Du bist WatchdogAG. Antworte APPROVED oder REJECTED.", agent_name="WatchdogAG").content
+    s = ask_router(f"Prüfe Browser-Code:\n{code}", sys="Du bist SecurityAG. Antworte APPROVED oder REJECTED.", agent_name="SecurityAG").content
     if "APPROVED" in w and "APPROVED" in s:
         request_capability(name, "BROWSER", code_hash, "WatchdogAG+SecurityAG")
         return True

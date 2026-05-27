@@ -1,4 +1,4 @@
-# eo_class.py
+# eo_class.py — ExplainableOutput: Einzige Antwort-Struktur der Pipeline
 from typing import List, Dict, Optional
 
 class ExplainableOutput:
@@ -17,3 +17,16 @@ class ExplainableOutput:
         self.alternatives = alternatives or []
         self.execution_time_ms = execution_time_ms
         self.degradation_note = degradation_note
+
+    @property
+    def content(self) -> str:
+        """Roher LLM-Antworttext für interne/machine-parsed Calls."""
+        return self.answer
+
+    def __str__(self) -> str:
+        """Formatiertes Markdown mit Reasoning Chain, Confidence, Quellen."""
+        from gnom_hub.eo_formatter import ExplainableOutputFormatter
+        return ExplainableOutputFormatter.to_markdown(self)
+
+    def __repr__(self) -> str:
+        return f"<EO agent={self.agent} conf={self.confidence:.0%}>"

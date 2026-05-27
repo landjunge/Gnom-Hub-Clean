@@ -85,20 +85,20 @@ Das System wurde in einem strukturierten Prozess um folgende Funktionen erweiter
 *   **Dashboard Feedback-Panel**: Interaktive Buttons (Daumen hoch/runter) und ein Kommentarfeld im Bento-Grid ermöglichen die direkte Eingabe von Feedback.
 *   **Feedback-basiertes Lernen**: SoulAG speichert das Feedback in der Datenbank, lässt es von GeneralAG analysieren, leitet daraus neue Verhaltensregeln ab und aktualisiert die Worker-Prompts dynamisch.
 
-### ⚡ Phase 14: Advanced Swarm Execution & Top 5 Integration Features
-*   **Prompt Version Manager**: System zur vollautomatischen Versionierung von System-Prompts bei Evolution-Iterationen inklusive Score-Tracking und automatischem Rollback auf die Vorgängerversion bei Leistungsdegradation.
-*   **Semantic Memory Retriever**: Intelligentes Relevanz-Retrieval per lokaler TF-IDF Kosinus-Ähnlichkeit aus dem `soul_memory` (top_k=8) mit nahtlosem Fallback auf die neuesten Fakten und regelbasiertem Pruning alter Einträge.
-*   **Explainable Output**: Erklärbarer Output-Wrapper mit strukturierter Begründungskette (Reasoning Chain), Zuversichts-Index (Confidence Score), Alternativen, genutzten Quellen aus dem Gedächtnis und genauer Zeiterfassung.
-*   **Token Budget Manager**: Echtzeit-Budgetüberwachung mit automatischer Preisschätzung vor teuren LLM-Aufrufen, täglichen Limits und Warnmeldungen im Dashboard/Chat bei Erreichen von 80% des Budgets.
-*   **Graceful Fallback & Degradation**: Robuste Ausfallsicherung durch automatisches Routing bei blockierten oder fehlerhaften Agenten (z. B. Fallback von `CoderAG` auf `GeneralAG`), dokumentiert in einem persistenten Ausfall-Log.
-*   **Strikte 40-Zeilen-Kompatibilität**: Alle 5 neuen Integrationsmanager wurden modularisiert und in Hilfsdateien aufgeteilt, um die radikale 40-Zeilen-Regel im Backend zu 100% einzuhalten.
+### ⚡ Phase 14: Advanced Swarm Execution & Integration Features
+*   **Prompt Version Manager**: Vollautomatische Versionierung von System-Prompts bei Evolution-Iterationen mit Score-Tracking und automatischem Rollback auf die Vorgängerversion bei Leistungsdegradation.
+*   **Graceful Fallback & Degradation**: Automatisches Routing bei blockierten oder fehlerhaften Agenten (z. B. Fallback von `CoderAG` auf `GeneralAG`), dokumentiert in einem persistenten Ausfall-Log (`gd_fallback.py`, `graceful_degradation.py`).
+*   **Semantic Memory Retriever (Basis)**: TF-IDF Kosinus-Ähnlichkeit als Retrieval-Grundlage (`smr_math.py`, `smr_retrieve.py`) mit Pruning alter Einträge — wurde in Phase 15 durch FAISS-Vektor-Embeddings als primäres System abgelöst.
+*   **Token Budget Manager (vorbereitet, nicht aktiv)**: Code für Echtzeit-Budgetüberwachung existiert (`token_economy.py`), ist aber noch nicht in den Router integriert. Derzeit kein aktives Budget-Enforcement bei LLM-Aufrufen.
+*   **Strikte 40-Zeilen-Kompatibilität**: Alle neuen Module modularisiert und in Hilfsdateien aufgeteilt.
 
 ### 🛡️ Phase 15: Zero-Trust Capabilities, Local Embeddings & Custom Presets
 *   **Zero-Trust-Autorisierung**: Ein temporäres Freigabesystem (Leases) mit 5-Minuten-Gültigkeit (TTL), das DB-gestützt arbeitet und wiederholte Dateizugriffe, Befehle und Browser-Aktionen ohne erneute LLM-Prüfungen durch WatchdogAG/SecurityAG per In-Memory-TTL-Cache mit O(1)-Lookup umgeht.
-*   **Resilientes Offline-Retrieval**: Lokale semantische Ähnlichkeitssuche per `sentence-transformers` und `faiss` (falls installiert) mit persistentem Embedding-Cache (`data/emb_cache.pkl`) zur Latenzreduktion und nahtlosem Fallback auf TF-IDF-Kosinus-Ähnlichkeit bei fehlenden Bibliotheken.
+*   **Local Embeddings mit FAISS (aktiv)**: Semantische Ähnlichkeitssuche über `sentence-transformers` (`all-MiniLM-L6-v2`, 384-dim) und `faiss-cpu` als primäres Retrieval-System. Persistenter Embedding-Cache (`data/emb_cache.pkl`) und FAISS-Index (`data/soul_embeddings.index`) für sofortige Wiederverwendung. Automatischer Fallback auf TF-IDF-Kosinus-Ähnlichkeit bei fehlenden Bibliotheken.
 *   **Custom Preset System**: Dynamisches Einscannen und Einmischen von benutzerdefinierten Presets als JSON-Dateien aus `/config/presets/` in das bestehende Preset-System.
 *   **Strikte 40-Zeilen-Kompatibilität**: Konsequente Einhaltung der radikalen `40-Zeilen-Regel` im Backend für alle neuen Module (`capability_manager.py`, `embeddings.py`, `emb_faiss.py`, `emb_cache.py`, `preset_service.py`).
-*   **Performance Benchmarking**: Ein dediziertes Testskript [run_benchmarks.py](file:///Users/landjunge/Documents/AG-Flega/scratch/run_benchmarks.py) zur automatischen Messung der Latenzen. Die Benchmarks belegen die massive Beschleunigung durch Caching, die FAISS-Quantisierung (IndexIVFPQ) und den Modellwechsel auf `nli-MiniLM-L6-v2`:
+*   **Explainable Output**: Alle Agenten-Antworten liefern ein strukturiertes `ExplainableOutput`-Objekt mit Reasoning Chain, Confidence Score, Quellen und Ausführungszeit. Interne Calls nutzen `.content` (Rohtext), User-sichtbare Antworten `str()` (formatiertes Markdown).
+*   **Performance Benchmarking**: Ein dediziertes Testskript zur automatischen Messung der Latenzen. Die Benchmarks belegen die massive Beschleunigung durch Caching und FAISS-Quantisierung (IndexIVFPQ):
     
     | Benchmark-Metrik | Kaltstart (Datenbank/FAISS) | Warmstart (In-Memory-Cache) | Speedup-Faktor |
     | :--- | :--- | :--- | :--- |

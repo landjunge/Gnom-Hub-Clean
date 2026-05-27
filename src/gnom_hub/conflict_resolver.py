@@ -5,11 +5,11 @@ from gnom_hub.router import ask_router
 
 async def generalAG(prompt: str) -> str:
     """Helper representing GeneralAG async execution."""
-    return await asyncio.to_thread(ask_router, prompt, sys="Du bist GeneralAG, der oberste Koordinator des Schwarms.", agent_name="GeneralAG")
+    return (await asyncio.to_thread(ask_router, prompt, sys="Du bist GeneralAG, der oberste Koordinator des Schwarms.", agent_name="GeneralAG")).content
 
 async def soulAG(prompt: str) -> str:
     """Helper representing SoulAG async execution."""
-    return await asyncio.to_thread(ask_router, prompt, sys="Du bist SoulAG, das Langzeitgedächtnis und Bewusstsein.", agent_name="SoulAG")
+    return (await asyncio.to_thread(ask_router, prompt, sys="Du bist SoulAG, das Langzeitgedächtnis und Bewusstsein.", agent_name="SoulAG")).content
 
 class ConflictResolution:
     async def resolve_divergence(

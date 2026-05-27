@@ -18,9 +18,9 @@ def ask_llm(ag, q, ctx, bs_mode=False):
     u_msg = f"{q}\n\nBisherige Diskussion:\n{ctx}" if ctx else q
     set_agent_status(ag["name"], "busy")
     try:
-        ans = ask_router(u_msg, sys, agent_name=ag.get("name", ""))
-        if not ans or not isinstance(ans, str): return post(ag["name"], f"[Fehler: Keine Antwort vom LLM]")
-        post(ag["name"], process_actions(ans, ag, soul.get("permissions", []), bs_mode, wd))
+        eo = ask_router(u_msg, sys, agent_name=ag.get("name", ""))
+        if not eo.content: return post(ag["name"], f"[Fehler: Keine Antwort vom LLM]")
+        post(ag["name"], process_actions(eo.content, ag, soul.get("permissions", []), bs_mode, wd))
     except Exception as e: post(ag["name"], f"[Fehler: {str(e)[:80]}]")
     finally:
         set_agent_status(ag["name"], "online"); update_agent_active_job(ag["name"], None)

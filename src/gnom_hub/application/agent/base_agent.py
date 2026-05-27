@@ -31,6 +31,6 @@ class BaseAgent:
                     from gnom_hub.soul import soul_instance
                     sys = soul_instance.inject_context(self.sys, m["content"], agent_name=self.n)
                     r = ask_router(m["content"], sys, agent_name=self.n)
-                    if r and not r.startswith("[ROUTER-FEHLER]"): self._req("post", "/api/chat", {"content": r, "sender": self.n})
+                    if r.content and not r.content.startswith("[ROUTER-FEHLER]"): self._req("post", "/api/chat", {"content": str(r), "sender": self.n})
                 except Exception as e: print(f"[{self.n}] Error: {e}")
             await asyncio.sleep(self.p)

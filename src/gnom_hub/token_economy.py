@@ -39,13 +39,13 @@ class TokenBudgetAgent:
 
     async def execute(self, prompt: str):
         from gnom_hub.router import ask_router
-        completion = await asyncio.to_thread(ask_router, prompt, agent_name=self.name)
+        eo = await asyncio.to_thread(ask_router, prompt, agent_name=self.name)
         
         # Return an object that has a .completion attribute
         class AgentResponse:
             def __init__(self, text: str):
                 self.completion = text
-        return AgentResponse(completion)
+        return AgentResponse(eo.content)
 
 class TokenBudget:
     def __init__(self, daily_limit: float = 100_000):

@@ -22,11 +22,11 @@ async def run_fallback(mgr, agent: str, fail_type: str, task: str) -> tuple:
     for fb in opts:
         if mgr.is_online(fb):
             try:
-                res = await asyncio.to_thread(gnom_hub.router.ask_router, f"Führe als Backup diese Aufgabe aus: {task}", agent_name=fb)
-                if not res.startswith("[ROUTER-FEHLER]"):
+                eo = await asyncio.to_thread(gnom_hub.router.ask_router, f"Führe als Backup diese Aufgabe aus: {task}", agent_name=fb)
+                if not eo.content.startswith("[ROUTER-FEHLER]"):
                     write_fail_log(agent, fail_type, fb, task, ts)
                     log_audit_event(agent=agent, event_type="degradation_fallback", details={"failure_type": fail_type, "fallback_agent": fb})
-                    return res, True, fb
+                    return eo.content, True, fb
             except Exception: pass
     write_fail_log(agent, fail_type, None, task, ts)
     return f"[ROUTER-FEHLER] Alle Backups für {agent} ebenfalls fehlgeschlagen.", False, None

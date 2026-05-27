@@ -17,7 +17,7 @@ def semantic_search_memories(q: str) -> list:
         f"Query: \"{q}\"\n\nMemories:\n{json.dumps(candidates, ensure_ascii=False)}\n\n"
         "Identify memories semantically related to the Query. Return ONLY a valid JSON list of matching IDs."
     )
-    ans = ask_router(prompt, sys="You are a precise semantic search system. Return ONLY a JSON list of IDs, e.g. [\"id1\"].", agent_name="SoulAG")
+    ans = ask_router(prompt, sys="You are a precise semantic search system. Return ONLY a JSON list of IDs, e.g. [\"id1\"].", agent_name="SoulAG").content
     try:
         match = re.search(r"\[.*\]", ans, re.DOTALL)
         ids = json.loads(match.group(0)) if match else json.loads(ans)

@@ -16,7 +16,7 @@ class SoulAG:
         return 2
     def _ex(self, m: str):
         try:
-            res = ask_router(f"Extrahiere Fakten.\nNachricht:\n{m}\nAntworte NUR mit JSON [{{\"key\": \"x\", \"value\": \"y\"}}]", sys="Du bist Lerneffekt-Extraktor.", agent_name="SoulAG")
+            res = ask_router(f"Extrahiere Fakten.\nNachricht:\n{m}\nAntworte NUR mit JSON [{{\"key\": \"x\", \"value\": \"y\"}}]", sys="Du bist Lerneffekt-Extraktor.", agent_name="SoulAG").content
             s, e = res.find("["), res.rfind("]")
             if s != -1 and e != -1: [save_soul_fact(f.get("key",""), f.get("value",""), agent="SoulAG") for f in json.loads(res[s:e+1]) if self._val(f.get("key",""), f.get("value","")) >= 2]
         except Exception: pass
@@ -57,7 +57,7 @@ def _save_rules(res: str, prefix=""):
             logging.getLogger("db").error(f"[Soul] Failed to parse and save rules: {ex}")
 
 def run_evolution(task: str, hist: str):
-    try: _save_rules(ask_router(f"Analysiere '{task}' und den Verlauf:\n{hist}\nSchlage Verbesserungen vor. Antworte NUR im JSON-Format: [{{\"agent\": \"AgentName\", \"rule\": \"Regelinhalt\"}}]", sys="Du bist Optimierer.", agent_name="GeneralAG"))
+    try: _save_rules(ask_router(f"Analysiere '{task}' und den Verlauf:\n{hist}\nSchlage Verbesserungen vor. Antworte NUR im JSON-Format: [{{\"agent\": \"AgentName\", \"rule\": \"Regelinhalt\"}}]", sys="Du bist Optimierer.", agent_name="GeneralAG").content)
     except Exception: pass
 
 def handle_user_feedback(vote: str, comment: str):
@@ -88,5 +88,5 @@ def handle_user_feedback(vote: str, comment: str):
         logging.getLogger("db").error(f"[Soul] Failed to update version scores: {ex}")
 
     if comment.strip():
-        try: _save_rules(ask_router(f"User-Feedback: '{comment}'. Schlage Verbesserungen vor. Antworte NUR im JSON-Format: [{{\"agent\": \"AgentName\", \"rule\": \"Regelinhalt\"}}]", sys="Du bist Optimierer.", agent_name="GeneralAG"), "User-Feedback: ")
+        try: _save_rules(ask_router(f"User-Feedback: '{comment}'. Schlage Verbesserungen vor. Antworte NUR im JSON-Format: [{{\"agent\": \"AgentName\", \"rule\": \"Regelinhalt\"}}]", sys="Du bist Optimierer.", agent_name="GeneralAG").content, "User-Feedback: ")
         except Exception: pass
