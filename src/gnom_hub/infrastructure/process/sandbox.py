@@ -1,7 +1,7 @@
 # sandbox.py — Hybrid Docker & macOS Sandbox Executor
 import subprocess, os
 from gnom_hub.core.config import WORKSPACE_DIR
-from gnom_hub.process.sandbox_exec import run_sandboxed
+from gnom_hub.infrastructure.process.sandbox_exec import run_sandboxed
 
 def is_docker_running():
     try: return subprocess.run(["docker", "ps"], capture_output=True, timeout=2).returncode == 0
