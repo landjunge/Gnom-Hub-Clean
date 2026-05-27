@@ -7,18 +7,18 @@ from gnom_hub.infrastructure.database.chat_repo import SQLiteChatRepository
 from gnom_hub.domain.chat.entities import ChatMessage
 
 def _post_chat(s, c):
-    from gnom_hub.db import add_chat_message, get_active_project
+    from gnom_hub.database.legacy_db import add_chat_message, get_active_project
     add_chat_message(get_active_project(), s, "war-room", "role_response", c)
 
 def handle_clear(q=""):
-    from .chat_clear import handle_clear as _hc
+    from gnom_hub.chat.chat_clear import handle_clear as _hc
     return _hc(q)
 
 def handle_status():
     return {"agents": [{"name": a.name, "role": a.role, "st": a.status} for a in SQLiteAgentRepository().get_all()]}
 
 def handle_job(task):
-    from .role_tools import distribute_job; from .brainstorm import dispatch
+    from gnom_hub.agents.role_tools import distribute_job; from gnom_hub.chat.brainstorm.brainstorm import dispatch
     agent_repo, state_repo = SQLiteAgentRepository(), SQLiteStateRepository()
     ags = agent_repo.get_all()
     gen = next((a for a in ags if a.role == "general" or a.name.lower() == "generalag"), None)
@@ -33,6 +33,6 @@ def handle_job(task):
         agent_repo.update_active_job(a.name, aj)
         if aj:
             import time; time.sleep(1.5); workers.append(a.name); dispatch(aj, target=a.name)
-    from .swarm_coordinator import start_coordinator
+    from gnom_hub.swarm_coordinator import start_coordinator
     start_coordinator(task, workers)
     return {"status": "job_created"}

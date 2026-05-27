@@ -1,6 +1,6 @@
 # swarm_comms.py — Detects agent-to-agent mentions and dispatches tasks
 import re, time, threading
-from .db import get_all_agents, get_state_value, set_state_value
+from gnom_hub.database.legacy_db import get_all_agents, get_state_value, set_state_value
 
 def process_swarm_mentions(sender: str, text: str):
     ags = {a["name"].lower(): a["name"] for a in get_all_agents() if a.get("status") == "online"}
@@ -18,7 +18,7 @@ def process_swarm_mentions(sender: str, text: str):
                 comms.append({"from": sender, "to": tgt_name, "ts": time.time()})
                 updated = True
                 try:
-                    from .brainstorm import dispatch
+                    from gnom_hub.chat.brainstorm.brainstorm import dispatch
                     threading.Thread(target=dispatch, args=(text, tgt_name), daemon=True).start()
                 except: pass
     if updated: set_state_value("active_swarm_comms", comms)

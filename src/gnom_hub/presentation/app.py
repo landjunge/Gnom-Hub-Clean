@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from gnom_hub.infrastructure.database.schema import create_tables
 from gnom_hub.infrastructure.process.psutil_mgr import start_background_agents, kill_background_agents
 from gnom_hub.presentation.api.router import router as api_router
-from gnom_hub import chat_commands
+from gnom_hub.chat import chat_commands
 
 async def start_openrouter_updater():
     import asyncio
