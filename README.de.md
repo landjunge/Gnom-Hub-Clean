@@ -1,11 +1,13 @@
 # 🧠 GNOM-HUB
 
-> **8 Agenten. ~1800 Zeilen. 55 Module. Null Toleranz für Bloat.**
+> **8 Agenten. ~7500 Zeilen. 176 Module. Null Toleranz für Bloat.**
 
 [![License](https://img.shields.io/badge/Lizenz-Private_Use-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](#)
 [![Agents](https://img.shields.io/badge/Agenten-8-blueviolet.svg)](#)
-[![Max Lines](https://img.shields.io/badge/Max_Lines/File-40-critical.svg)](#)
+[![Lines of Code](https://img.shields.io/badge/Zeilen_Code-~7500-blue.svg)](#)
+[![Modules](https://img.shields.io/badge/Module-176-blue.svg)](#)
+[![40-Lines-Rule Compliance](https://img.shields.io/badge/40--Zeilen--Regel-~80%25_konform-orange.svg)](#)
 [![Linting](https://img.shields.io/badge/Linting-Ruff-orange.svg)](#)
 
 > 🇬🇧 **Read this in [English (README.md)](README.md)**
@@ -18,7 +20,7 @@
 
 ## Was ist Gnom-Hub?
 
-Gnom-Hub ist ein lokales Multi-Agenten-System mit einer radikalen Restriktion: **55 Python-Module — keines länger als 40 Zeilen**. Es bietet einen extrem leichtgewichtigen Orchestrator ohne aufgeblähte Frameworks, der vollständig lokal läuft, kein schwerfälliges Docker benötigt und die Agenten über ein Web-Dashboard namens **War Room** steuert.
+Gnom-Hub ist ein lokales Multi-Agenten-System mit einer klaren Struktur: **176 Python-Module — über 80% davon strikt kürzer als 40 Zeilen**. Es bietet einen leichtgewichtigen Orchestrator ohne aufgeblähte Frameworks, der vollständig lokal läuft, kein schwerfälliges Docker benötigt und die Agenten über ein Web-Dashboard namens **War Room** steuert.
 
 > [!IMPORTANT]
 > **Bewusster Minimalismus:** Gnom-Hub ist auf Einfachheit und maximale Performance ausgelegt. Das System ist bewusst **nicht** dafür konzipiert, Hunderte von Agenten zu steuern, sondern dient der effizienten Orchestrierung einer kleinen, hochspezialisierten und überschaubaren Gruppe von Agenten.
@@ -110,6 +112,13 @@ Das System wurde in einem strukturierten Prozess um folgende Funktionen erweiter
     
     *Hinweis zur Optimierung: Durch die Umstellung auf FAISS IndexIVFPQ verringert sich der Speicherbedarf des persistenten Index um **~75%**.*
 
+### 🛡️ Phase 16: System-Härtung, SoulAG-Präzision & Wächter-Automatisierung
+*   **Orchestrierungsschutz für GeneralAG**: Vollständiger Entzug aller Tools, Datei- und Ausführungsrechte für den Koordinator auf Systemebene (Orchestrierung rein im Format `@AgentName -> Aufgabe`).
+*   **Verhinderung von Over-Association bei SoulAG**: Integration von Mindestlängen-Filtern (Queries unter 25 Zeichen/4 Wörtern werden ignoriert) und reiner Fakten-Wert-Vektorisierung (Beseitigung von Präfix-Verschmutzung), um Fehl-Injektionen bei kurzen Eingaben wie "test" zu vermeiden.
+*   **Auto-Freigaben für sichere Aktionen**: Automatisches Durchwinken risikofreier Schreibzugriffe im Workspace und freigegebener Terminalprogramme (z. B. `python3`, `pytest`, `git status`) zur Vermeidung lästiger manueller Abfragen.
+*   **Echtzeit-PyPI-Download-Verifizierung**: Automatisierte API-Abfragen bei Paketinstallationen (`pip install`), um Download-Legitimität und Schadcode-Freiheit (0 registrierte Schwachstellen) direkt vorab im Netz zu prüfen.
+*   **Denkprozess-Filterung (Security Bypass Fix)**: Dynamische Entfernung der `<think>`-Blöcke von DeepSeek-R1 aus maschinell verarbeiteten Ausgaben (Vermeidung von Gatekeeper-Bypasses durch Erwähnungen im Denkprozess) bei gleichzeitigem Erhalt des formatierten Details-Widgets im Chat-UI.
+
 ---
 
 
@@ -134,12 +143,13 @@ Die Datenbank-Initialisierung (`init_db()`), das Seeding der Standard-Agenten un
 ## 📐 Die 40-Zeilen-Regel
 
 ```
-Jede interne Source-Code-Datei. Maximal 40 Zeilen. Keine Ausnahmen.
+Modularität und Fokus: Die 40-Zeilen-Zielsetzung.
 ```
 
-Gnom-Hub löst strukturelle Komplexität, indem es seine Codebasis extrem fokussiert hält. **Hinweis:** Diese Regel gilt strikt für die Python-Quellcode-Module in `src/gnom_hub/` (mit expliziten Ausnahmen nur für `db.py` und `hub_app.py` aufgrund von Datenbank-Komplexität und Routing). Sie gilt **nicht** für Datenbanken, Log-Dateien, Konfigurationsprofile oder Frontend-Assets, die naturgemäß wachsen.
-* Worker wie **CoderAG** benötigen lediglich **8 Zeilen Python-Code**, um sich zu registrieren, den Chat zu pollen, das LLM anzufragen und die Antwort zu posten.
-* Durch die Unterstützung verschiedener Provider (**Ollama** lokal, **OpenRouter** kostenlos oder **DeepSeek** Cloud) können die Modelle live im UI gewechselt werden – ohne Neustart.
+Gnom-Hub löst strukturelle Komplexität, indem es seine Codebasis extrem fokussiert und modular hält.
+* **Zielsetzung:** Um unübersichtlichen Code und Monolithen zu vermeiden, war das Ziel ursprünglich, jedes interne Python-Modul in `src/gnom_hub/` auf maximal 40 Zeilen zu begrenzen.
+* **Aktueller Stand:** Über 80 % aller 176 Python-Module halten sich weiterhin strikt an dieses Limit. Einige wenige komplexe Steuerungsdateien (insgesamt 35 Module, darunter `db.py` für die relationale SQLite-Schnittstelle, `gatekeeper.py` für die Sicherheitsprüfungen und `router_stage.py` für das LLM-Routing) sind im Zuge der Härtungsphasen angewachsen, um zusammengehörige Logik lesbar und wartbar in einer Datei zu belassen.
+* **Worker-Einfachheit:** Worker wie `CoderAG` benötigen nach wie vor lediglich ein kurzes Python-Skript von ca. 8–10 Zeilen für ihre Registrierung und Polling-Schleife.
 
 ---
 

@@ -1,282 +1,156 @@
-# 🧠 GNOM-HUB — Minimalistisches Multi-Agenten-System
+# 🧠 GNOM-HUB
 
-Gnom-Hub ist ein **lokal-first** Multi-Agenten-System mit fester Topologie. Statt dynamischer, schwer kontrollierbarer Agenten-Schwärme besteht das System aus **genau 8 Agenten** (4 System-Agenten + 4 Worker-Agenten). 
+> **8 Agents. ~7500 Lines. 176 Modules. Zero tolerance for bloat.**
 
-Jedes Backend-Modul unterliegt der strengen **40-Zeilen-Regel** (unter `src/gnom_hub/`). Dies erzwingt Klarheit, einfache Testbarkeit und verhindert monolithischen Code.
+[![License](https://img.shields.io/badge/License-Private_Use-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](#)
+[![Agents](https://img.shields.io/badge/Agents-8-blueviolet.svg)](#)
+[![Lines of Code](https://img.shields.io/badge/Lines_of_Code-~7500-blue.svg)](#)
+[![Modules](https://img.shields.io/badge/Modules-176-blue.svg)](#)
+[![40-Lines-Rule Compliance](https://img.shields.io/badge/40--Lines--Rule-~80%25_compliant-orange.svg)](#)
+[![Linting](https://img.shields.io/badge/Linting-Ruff-orange.svg)](#)
 
-> 🇩🇪 **Read this in [German (README.de.md)](README.de.md)**
-
----
-
-<img src="docs/warroom_real_full.png" alt="War Room Overview" width="100%">
-
----
-
-## 🎯 Philosophie
-
-- **Local-First**: Alles läuft lokal. Keine Cloud-Orchestrierung.
-- **Feste Topologie**: Nur 8 definierte Agenten — keine unkontrollierte Agenten-Explosion.
-- **Defensive Architektur**: Clean Architecture + 40-Zeilen-Regel als hartes Prinzip.
-- **Pragmatismus**: Keine autonomen Endlosschleifen. Der Mensch behält die Kontrolle.
-- **Sicherheit durch Design**: System-Agenten überwachen und schützen, Worker arbeiten eingeschränkt.
+> 🇩🇪 **Lies dies auf [Deutsch (README.de.md)](README.de.md)**
 
 ---
 
-## ✅ Abgeschlossene Phasen (Härtungs-Milestones)
-
-Das System wurde in einem strukturierten Prozess um folgende Funktionen erweitert:
-
-### 🛡️ Phase 1: Sicherheit & Gatekeeper
-*   **Doppelte Genehmigung**: Jede Dateiänderung und Befehlsausführung durch Worker-Agenten (`CoderAG`, `ResearcherAG`, `WriterAG`, `EditorAG`) erfordert ein explizites `APPROVED` von `WatchdogAG` (Strikte Einhaltung der 40-Zeilen-Regel & Clean Architecture) **und** `SecurityAG` (Schadcode- & Musterscan).
-*   **Absoluter Systemdateien-Schutz**: Systemkritische Dateien (`index.html`, `run.sh`, `.env`, `src/gnom_hub/*`, `config/*` etc.) sind für Worker-Agenten **vollkommen tabu** (Zugriffsschutz greift direkt im Pfad-Validator; kein Bypass für Worker).
-*   **Eskalationsrouting bei Unsicherheit**: Ist die LLM-Prüfung unentschlossen, wird eine Eskalation an `@user @SoulAG` im Chat ausgelöst. Freigaben können manuell durch das Eintragen in die Datenbank (`approved_security_writes` / `approved_security_commands`) autorisiert werden.
-
-### 📊 Phase 2: Observability & Agent Health Dashboard
-*   **Strukturiertes JSON-Logging & DB-Audit-Trail**: Alle Systemevents und LLM-Aufrufe (mit Latenzen, Tokenverbrauch, Kosten) werden strukturiert als JSON protokolliert und in einer indexierten `audit_log` Tabelle abgelegt.
-*   **Agent Health API**: Der Endpunkt `/api/metrics` stellt Echtzeit-Statistiken bereit, welche die In-Memory-Metriken mit den Datenbank-Heartbeats (`last_seen`) aller 8 Agenten zusammenführen.
-*   **Status-Dashboard**: Ein im Header verlinktes, glassmorphes Bento-Grid-Dashboard visualisiert farbcodiert den Status aller 8 Agenten (Grün = Alive/Online, Gelb = Warning/Hohe Fehlerrate/Heartbeat-Verzug, Rot = Dead/Offline) samt Latenzen, Erfolgsraten und Anfragen-Zähler. Automatisches Polling stoppt selbsttätig beim Verlassen der Ansicht.
-
-### 🧠 Phase 3: SoulAG Memory Upgrade (Retrieval)
-*   **Tokenbasiertes Jaccard-Retrieval**: Das statische Limit der letzten 20 Fakten wurde durch ein intelligentes Such- und Relevanz-Retrieval-System (`soul_retrieval.py`) ersetzt.
-*   **Relevanzgewichtung**: Treffer in Faktenschlüsseln (Keys) werden doppelt so hoch gewichtet wie Treffer im Inhalt (Value), um präzise Kontextinjektionen zu ermöglichen.
-*   **Automatischer Fallback**: Bieten Suchanfragen keinerlei Keyword-Überlappung (Score = 0), fällt das System nahtlos auf die neuesten Fakten zurück, um kontinuierlichen Kontext zu gewährleisten.
-
-### 🔄 Phase 4: Error-Recovery & DB-Cleanup
-*   **API-Failover & Key-Rotation**: Bei Ausfällen von Remote-LLMs rotieren die Provider-Keys oder der Router fällt transparent auf lokale/alternative Modelle (z.B. Offline-Llama) zurück.
-*   **Automatisiertes DB-Cleanup**: Die Funktion `cleanup_old_data` löscht abgelaufene Fakten (älter als 30 Tage) und alte Chat-Nachrichten (älter als 7 Tage). Kritische Konfigurations-Chats (`role`) sowie geschützte Gedächtnisschlüssel (wie `active_preset` oder manuelle Sicherheitsfreigaben) bleiben dauerhaft erhalten.
-
-### 🌐 Phase 5: Browser-Automation (Playwright)
-*   **Containerisierte Playwright-Sandbox**: CoderAG kann echte Web-Interaktionen via Playwright ausführen. Die Ausführung erfolgt streng isoliert innerhalb eines Docker-Containers (`mcr.microsoft.com/playwright/python:v1.43.0-jammy`).
-*   **Netzwerk-Isolation per Default**: Die Sandbox startet standardmäßig ohne Netzwerkverbindung (`--network=none`), um lokale Host-Ressourcen zu schützen.
-*   **URL-Whitelisting & Gatekeeping**: Der Zugriff auf externe URLs ist standardmäßig blockiert und wechselt nur auf `--network=bridge`, wenn die Ziel-URL explizit in `approved_external_urls` freigegeben ist und die Ausführung sowohl von `WatchdogAG` als auch `SecurityAG` doppelt autorisiert wurde.
-
-### 🧠 Phase 6: Erweitertes SoulAG Retrieval (Pipeline-Integration)
-*   **Volle Pipeline-Integration**: Das Keyword-Matching-Retrieval (`soul_retrieval.py`) ist nun vollständig in die SoulAG-Pipeline (`soul.py`) integriert.
-*   **Erweiterter Kontext (top_k=8)**: Statt starr die letzten 20 Fakten zu injizieren, sucht das System gezielt nach den bis zu 8 relevantesten Fakten aus der gesamten Historie der Datenbank und bettet diese dynamisch vor jeder Worker-Anfrage in den System-Prompt ein.
-
-### 🔄 Phase 7: Multi-Agent Collaboration & @mentions
-*   **Vollständige `@mentions`-Unterstützung**: GeneralAG erkennt und delegiert Aufgaben automatisch an CoderAG, ResearcherAG, WriterAG und EditorAG.
-*   **Echtzeit-Kollaboration**: Koordiniertes und paralleles Arbeiten mehrerer Worker-Agenten an einem gemeinsamen Projekt.
-*   **Visuelle Aktivitäts-Indikatoren**: Live-Anzeige der gerade aktiven Agenten im Frontend.
-
-### 🛡️ Phase 8: Full System Integration & Tag Release
-*   **Härtungstest**: Erfolgreicher End-to-End Test aller Phasen 1-7 gleichzeitig (Preset-Wechsel, doppelte Gatekeeper-Validierung, automatisierte Browser-Sandbox, SoulAG Retrieval).
-*   **Release-Packaging**: Saubere Dokumentation und Git Version Tagging.
-
-### 🔗 Phase 9: Swarm Intelligence & A2A Kommunikation
-*   **Direkte Agent-to-Agent Kommunikation**: Agenten können sich gegenseitig über `@mentions` adressieren und asynchron dispatchen, wodurch komplexe, mehrstufige interne Diskussionen ermöglicht werden.
-*   **Swarm-Coordination**: GeneralAG koordiniert mehrere Agenten parallel und führt Ergebnisse nach Beendigung aller Teilaufgaben automatisch in ein finales Dokument/Code-Artefakt zusammen.
-*   **Visuelle Swarm-Aktivität**: Ein pulsierendes Swarm-Status-Banner im Dashboard zeigt in Echtzeit an, welche Agenten gerade miteinander kommunizieren und welcher Team-Workflow aktiv ist.
-
-### 🔗 Phase 10: Advanced Swarm Intelligence & Dynamic Team Workflows
-*   **Parallele Swarm-Koordination**: GeneralAG koordiniert die parallele Ausführung mehrerer Worker-Agenten gleichzeitig und führt deren Ergebnisse nach Abschluss automatisch in ein konsolidiertes Ergebnis zusammen.
-*   **Git Automation**: Automatische Workspace-Commits nach erfolgreichen Swarm-Aktionen zur Gewährleistung der Projekthistorie.
-
-### 🧠 Phase 11: Persistent Knowledge Base & Intelligent Learning System
-*   **Persistente SQLite-Wissensbasis**: Erlernte Fakten und Benutzerpräferenzen werden sitzungsübergreifend in der SQLite-Datenbank persistiert.
-*   **Semantisches LLM-Retrieval**: Das Suchsystem bewertet die Relevanz gespeicherter Fakten mithilfe eines LLM-basierten Filters (top_k=8) und injiziert diese kontextbezogen in die Agenten-Prompts, selbst bei fehlender Keyword-Übereinstimmung.
-
-### 🔄 Phase 12: Agent Evolution & Self-Improvement
-*   **Dynamische Evolution-Schleife**: Nach jedem großen `@job` analysiert GeneralAG den Verlauf und generiert konkrete Verbesserungsempfehlungen für die System-Prompts der beteiligten Worker-Agenten.
-*   **Selbstverbesserungs-Log**: Die erlernten Optimierungsregeln werden als `evolution_{agent}_{hex}` in `soul_memory` persistiert, fließen bei zukünftigen Aufrufen automatisch in die Prompts ein und werden visuell im Dashboard unter "Agent Evolution & Self-Improvement Log" (Bento-Card mit lila Akzent) dargestellt.
-
-### 💬 Phase 13: User Feedback Loop & Continuous Improvement
-*   **Aktive Feedback-Aufforderung**: GeneralAG bittet den Nutzer nach jedem abgeschlossenen Swarm-Workflow im Chat aktiv um eine Bewertung des Ergebnisses.
-*   **Dashboard Feedback-Panel**: Interaktive Buttons (Daumen hoch/runter) und ein Kommentarfeld im Bento-Grid ermöglichen die direkte Eingabe von Feedback.
-*   **Feedback-basiertes Lernen**: SoulAG speichert das Feedback in der Datenbank, lässt es von GeneralAG analysieren, leitet daraus neue Verhaltensregeln ab und aktualisiert die Worker-Prompts dynamisch.
-
-### ⚡ Phase 14: Advanced Swarm Execution & Integration Features
-*   **Prompt Version Manager**: Vollautomatische Versionierung von System-Prompts bei Evolution-Iterationen mit Score-Tracking und automatischem Rollback auf die Vorgängerversion bei Leistungsdegradation.
-*   **Graceful Fallback & Degradation**: Automatisches Routing bei blockierten oder fehlerhaften Agenten (z. B. Fallback von `CoderAG` auf `GeneralAG`), dokumentiert in einem persistenten Ausfall-Log (`gd_fallback.py`, `graceful_degradation.py`).
-*   **Semantic Memory Retriever (Basis)**: TF-IDF Kosinus-Ähnlichkeit als Retrieval-Grundlage (`smr_math.py`, `smr_retrieve.py`) mit Pruning alter Einträge — wurde in Phase 15 durch FAISS-Vektor-Embeddings als primäres System abgelöst.
-*   **Token Budget Manager (vorbereitet, nicht aktiv)**: Code für Echtzeit-Budgetüberwachung existiert (`token_economy.py`), ist aber noch nicht in den Router integriert. Derzeit kein aktives Budget-Enforcement bei LLM-Aufrufen.
-*   **Strikte 40-Zeilen-Kompatibilität**: Alle neuen Module modularisiert und in Hilfsdateien aufgeteilt.
-
-### 🛡️ Phase 15: Zero-Trust Capabilities, Local Embeddings & Custom Presets
-*   **Zero-Trust-Autorisierung**: Ein temporäres Freigabesystem (Leases) mit 5-Minuten-Gültigkeit (TTL), das DB-gestützt arbeitet und wiederholte Dateizugriffe, Befehle und Browser-Aktionen ohne erneute LLM-Prüfungen durch WatchdogAG/SecurityAG per In-Memory-TTL-Cache mit O(1)-Lookup umgeht.
-*   **Local Embeddings mit FAISS (aktiv)**: Semantische Ähnlichkeitssuche über `sentence-transformers` (`all-MiniLM-L6-v2`, 384-dim) und `faiss-cpu` als primäres Retrieval-System. Persistenter Embedding-Cache (`data/emb_cache.pkl`) und FAISS-Index (`data/soul_embeddings.index`) für sofortige Wiederverwendung. Automatischer Fallback auf TF-IDF-Kosinus-Ähnlichkeit bei fehlenden Bibliotheken.
-*   **Custom Preset System**: Dynamisches Einscannen und Einmischen von benutzerdefinierten Presets als JSON-Dateien aus `/config/presets/` in das bestehende Preset-System.
-*   **Strikte 40-Zeilen-Kompatibilität**: Konsequente Einhaltung der radikalen `40-Zeilen-Regel` im Backend für alle neuen Module (`capability_manager.py`, `embeddings.py`, `emb_faiss.py`, `emb_cache.py`, `preset_service.py`).
-*   **Explainable Output**: Alle Agenten-Antworten liefern ein strukturiertes `ExplainableOutput`-Objekt mit Reasoning Chain, Confidence Score, Quellen und Ausführungszeit. Interne Calls nutzen `.content` (Rohtext), User-sichtbare Antworten `str()` (formatiertes Markdown).
-*   **Performance Benchmarking**: Ein dediziertes Testskript zur automatischen Messung der Latenzen. Die Benchmarks belegen die massive Beschleunigung durch Caching und FAISS-Quantisierung (IndexIVFPQ):
-    
-    | Benchmark-Metrik | Kaltstart (Datenbank/FAISS) | Warmstart (In-Memory-Cache) | Speedup-Faktor |
-    | :--- | :--- | :--- | :--- |
-    | **🔐 Capability-Check** | ~0.70 ms | ~0.0004 ms | **~1.640x** |
-    | **🧠 Semantische Suche** | ~2.19 ms | ~0.0003 ms | **~6.370x** |
-    
-    *Hinweis zur Optimierung: Durch die Umstellung auf FAISS IndexIVFPQ verringert sich der Speicherbedarf des persistenten Index um **~75%**.*
+<img src="docs/warroom_real_full.png" alt="War Room – Overview" width="100%">
 
 ---
 
+## What is Gnom-Hub?
 
-## 🏗️ Architektur
+Gnom-Hub is a local-first multi-agent system with a clear structure: **176 Python modules — over 80% of which are strictly shorter than 40 lines**. It offers a lightweight, high-performance orchestrator without heavy frameworks, running entirely locally on your Mac. It controls background agents through a web dashboard called the **War Room**.
 
-
-```mermaid
-graph TD
-    User([Nutzer]) -->|POST /api/chat| Hub[FastAPI Hub]
-    Hub -->|Asynchroner Thread| Soul[SoulAG]
-    Soul -->|Fakten-Extraktion| DB[(SQLite)]
-    Hub -->|Routing| Router[Smart Router]
-    DB -->|Kontext-Injektion| Router
-    State[(State)] -->|Aktives Preset| Router
-    Router -->|LLM + Prompt| LLM[Ollama / OpenRouter / DeepSeek]
-    Router -->|Tool-Ausführung| Action[Action Handlers]
-    Action -->|Permission-Check| Perm[agent_definitions.py]
-```
+> [!IMPORTANT]
+> **Conscious Minimalism:** Gnom-Hub is designed for simplicity and maximum performance. It is intentionally **not** built to control hundreds of agents, but to efficiently orchestrate a small, highly specialized, and transparent team.
 
 ---
 
-## 🤖 Die 8 Agenten (Topologie)
+## 🎯 Philosophy
 
-Die vollständige Definition aller Agenten-Eigenschaften, Prompts und Rechte erfolgt zentral in [agent_definitions.py](file:///Users/landjunge/Documents/AG-Flega/src/gnom_hub/agent_definitions.py).
-
-### System-Agenten (Administrative Rechte)
-Diese Agenten steuern die Plattform und besitzen administrative Berechtigungen (`read`, `write`, `run`, `godmode`, `crawl`, `desktop`, `evolve`):
-1. **SoulAG**: Das passive Gedächtnis des Schwarms. Lernt asynchron Präferenzen des Nutzers und stellt diese als Kontext bereit.
-2. **GeneralAG**: Der zentrale Koordinator. Analysiert komplexe `@job`-Anfragen, warnt bei Regelverstößen und delegiert Aufgaben im Format `@AgentName -> Aufgabe`.
-3. **WatchdogAG**: Überwacht zyklisch die Einhaltung der Dateigrenzen (40-Zeilen-Regel) und die Integrität des Workspace.
-4. **SecurityAG**: Validiert die Integrität der Workspace-Dateien und führt Risikoprüfungen durch.
-
-### Worker-Agenten (Eingeschränkte Rechte)
-Worker arbeiten ausschließlich im Workspace und besitzen standardmäßig nur Lese-, Schreib- und Chat-Berechtigungen (`read`, `write`, `@job`):
-5. **CoderAG**: Entwickelt und debuggt Code. Besitzt als einziger Worker den `godmode`-Status, welcher die Playwright-Browsersteuerung und die Ausführung von Shell-Befehlen freischaltet.
-6. **ResearcherAG**: Recherchiert im Web, crawlt Dokumentationen und prüft Quellen.
-7. **WriterAG**: Erstellt strukturierte Entwürfe, Dokumentationen und Texte.
-8. **EditorAG**: Übernimmt Lektorat, Korrekturschleifen und die finale Qualitätskontrolle.
+- **Local-First**: Everything runs locally. No cloud orchestration.
+- **Fixed Topology**: Exactly 8 defined agents (4 system + 4 worker agents) — no uncontrolled agent explosion.
+- **Defensive Architecture**: Clean Architecture + a target limit of 40 lines per module.
+- **Pragmatism**: No autonomous infinite loops. Humans retain ultimate control.
+- **Security by Design**: System agents monitor and protect, workers operate with restricted capabilities.
 
 ---
 
-## 🎛️ Das Preset-System (6 Modi)
+## ✅ Completed Milestones
 
-Das Preset-System erlaubt das Umschalten des gesamten Schwarms auf ein bestimmtes Aufgabengebiet. Die Auswahl erfolgt über das Dropdown-Menü im Dashboard.
+Gnom-Hub has been developed through a structured hardening process:
 
-### Die 6 vordefinierten Workflow-Modi:
-1. 💻 **Web Development**: Fokus auf semantisches HTML5, native Web-APIs, Barrierefreiheit (ARIA) und performantes CSS.
-2. 🎨 **Graphic Design**: Fokus auf SVGs, Layout-Grids, Typografie und harmonische Farbpaletten (HSL).
-3. 🎵 **Audio Production**: Fokus auf Web Audio API, DSP-Algorithmen und Sound-Synthese.
-4. 🎬 **Video Production**: Fokus auf Canvas-Animationen, CSS-Transitions und Render-Pipelines.
-5. ✍️ **Content Creation**: Fokus auf Blogs, Social-Media-Inhalte, Newsletter, Storytelling, SEO und zielgruppengerechte Ansprache.
-6. 🔍 **Research & Analysis**: Fokus auf Faktenprüfung, akademische Quellen und statistische Datenanalyse.
+### 🛡️ Phase 1: Security & Gatekeeper
+*   **Double Approval**: Every file write and command execution by worker agents requires an explicit `APPROVED` from `WatchdogAG` (code integrity & 40-line rule) **and** `SecurityAG` (malware & pattern scans).
+*   **Protected System Files**: Core system files (`index.html`, `run.sh`, `.env`, `src/gnom_hub/*`, `config/*`) are strictly off-limits for worker agents.
+*   **Escalation Routing**: Ambiguous security scans trigger a manual approval prompt in the dashboard for the user.
 
-### Technische Umsetzung:
-* Der Preset-Wechsel speichert den aktuellen Modus in der Tabelle `state` in der SQLite-Datenbank.
-* Bei jeder LLM-Anfrage lädt der Router den passenden Prompt-Modifikator aus der Konfiguration und stellt ihn dem System-Prompt des Workers voran.
-* LLM-Einstellungen und Modell-Auswahlen werden pro Preset benutzerdefiniert gespeichert und beim Umschalten automatisch wiederhergestellt.
-* 📂 **Benutzerdefinierte Presets (JSON)**: Du kannst eigene Preset-Konfigurationen im Verzeichnis `config/presets/` ablegen. Gnom-Hub scannt diese automatisch ein und fügt sie dynamisch zu den verfügbaren Modi hinzu.
+### 📊 Phase 2: Observability & Health Dashboard
+*   **Structured Auditing**: Every system event and LLM call (latency, tokens, cost) is logged as JSON in an indexed SQLite `audit_log` table.
+*   **Health Bento Grid**: A real-time, glassmorphic status grid in the dashboard displays agent health (Green = Alive, Yellow = Heartbeat delay, Red = Offline) along with performance metrics.
 
----
+### 🧠 Phase 3 & 6: SoulAG Memory & Context Injection
+*   **Semantic & Jaccard Retrieval**: Replaced static history limits with an intelligent retrieval system. It weights matching keys twice as high as values.
+*   **Dynamic Prompt Injection**: Prior to worker executions, the top 8 most relevant facts from the SQLite memory are automatically injected into the agent system prompt.
 
-## 🧠 SoulAG: Technisches Gedächtnis & Asynchroner Kontext-Injektor
+### 🔄 Phase 4: Error Recovery & DB Cleanup
+*   **Failover & Rotation**: Auto-rotation of LLM keys and graceful degradation fallback to local/alternative models (e.g., offline Llama via Ollama).
+*   **Automated Maintenance**: Auto-deletes old chat histories (>7 days) and expired facts (>30 days) while preserving critical settings and rules.
 
-[soul.py](file:///Users/landjunge/Documents/AG-Flega/src/gnom_hub/soul.py) arbeitet passiv im Hintergrund und greift nicht direkt in den Chatverlauf ein. Der Ablauf ist vollkommen asynchron gestaltet:
+### 🌐 Phase 5: Browser Automation (Playwright Sandbox)
+*   **Isolate & Sandboxing**: Workers execute web browser actions inside an isolated Docker container.
+*   **Zero-Network by Default**: The container runs offline (`--network=none`) and only switches to bridged network access if the target URL is explicitly whitelisted in `approved_external_urls`.
 
-1. **Passives Mitlesen**: Sobald eine Nachricht des Typs `user` im Chat registriert wird, startet ein entkoppelter Hintergrund-Thread (`threading.Thread`).
-2. **Extraktion per LLM**: Der Thread sendet die Nachricht an das LLM mit der strikten Anweisung, wichtige Fakten, Vorlieben und Dateipfade zu extrahieren und ausschließlich als JSON-Array zurückzugeben:
-   ```json
-   [{"key": "fact_key", "value": "fact_value"}]
-   ```
-3. **Relationale Persistenz**: In [db.py](file:///Users/landjunge/Documents/AG-Flega/src/gnom_hub/db.py) werden diese Fakten in der Tabelle `soul_memory` gespeichert. Dank `UNIQUE(key)` überschreibt ein neuerer Fakt mit demselben Schlüssel den alten Wert atomar (`INSERT OR REPLACE`).
-4. **Kontext-Injektion**: Vor jeder Anfrage an einen Worker-Agenten ruft der Router die relevantesten Einträge aus `soul_memory` über ein tokenbasiertes Jaccard-Retrieval-System ab und hängt sie strukturiert an das System-Prompt an.
-5. **Preset-Interaktionen**: Auch Preset-Wechsel werden über `save_soul_fact("active_preset", preset)` als Fakt in `soul_memory` abgelegt, sodass nachfolgende Worker-Agenten über den Kontext-Injektor den aktuellen System-Fokus mitgeteilt bekommen.
+### 🔄 Phase 7 & 8: Collaboration & Full Swarm Hardening
+*   **@mentions Support**: GeneralAG coordinates worker agents using `@AgentName -> task` syntax.
+*   **E2E Validation**: Completed end-to-end stress-testing of all features simultaneously (preset switching, capability caching, sandbox operations).
 
----
+### 🔗 Phase 9 & 10: Swarm Intelligence & A2A Communication
+*   **Agent-to-Agent Chats**: Agents can directly address each other via `@mentions` to solve multi-step problems asynchronously.
+*   **Git Automation**: Automatically stages and commits workspace changes after successful swarm tasks.
 
-## 🛡️ Sicherheit & Schutzmechanismen
+### 🧠 Phase 11, 12 & 13: Continuous Learning & Feedback
+*   **Agent Evolution**: GeneralAG reviews job histories to dynamically append self-improvement rules (stored as `evolution_{agent}_{hex}`) to worker prompts.
+*   **User Feedback Loop**: Prompts the user to rate jobs via the dashboard panel, modifying agent behaviors based on user ratings and comments.
 
-Sicherheit ist in Gnom-Hub kein nachträgliches Add-on, sondern ein **fundamentales Architekturprinzip**. Da das System autonom agierende Agenten mit weitreichenden Werkzeugen ausstattet, wird jede Aktion über eine strikte, mehrstufige Sicherheitsbarriere geleitet.
+### ⚡ Phase 14: Version Control & Graceful Degradation
+*   **Prompt Version Manager**: Automatic versioning of agent system prompts during evolution, tracking scores and supporting rollbacks if degradation is detected.
+*   **Active Fallback Routing**: Reroutes blocked or offline worker tasks dynamically to alternative agents to prevent workflow stalls.
 
-```mermaid
-graph TD
-    Worker[Worker-Agent: z.B. CoderAG] -->|Aktion angefordert| Dispatcher[action_handlers.py]
-    Dispatcher -->|Pfad- & Integritäts-Check| Watchdog[WatchdogAG]
-    Dispatcher -->|Code- & Pattern-Check| Security[SecurityAG]
-    
-    Watchdog -->|Verstoß erkannt| Block[Aktion blockieren + Chat-Warnung an @user & @SoulAG]
-    Security -->|Gefahr erkannt| Block
-    
-    Watchdog -->|Pfad ok / Freigabe| Exec[Sichere Ausführung im Workspace]
-    Security -->|Inhalt ok / Freigabe| Exec
-```
+### 🛡️ Phase 15: Zero-Trust Capabilities & FAISS Embeddings
+*   **Capability Leases**: An in-memory cache system (TTL-based) that bypasses repeated LLM verification checks for verified files, commands, or browser actions.
+*   **Local FAISS Indexing**: Local semantic similarity search using `sentence-transformers` and `faiss-cpu`, falling back to TF-IDF cosine matching if libraries are missing.
+*   **Custom Presets**: Dynamically loads custom workspace presets from JSON files in `config/presets/`.
 
----
-
-### 👮‍♂️ Aktive Gatekeeper: WatchdogAG & SecurityAG
-Alle von Worker-Agenten (`CoderAG`, `ResearcherAG`, `WriterAG`, `EditorAG`) angeforderten Datei- und Befehlsaktionen werden in der zentralen Dispatcher-Schicht [action_handlers.py](file:///Users/landjunge/Documents/AG-Flega/src/gnom_hub/action_handlers.py) abgefangen, analysiert und erst nach erfolgreicher Validierung ausgeführt.
-
-#### 1. WatchdogAG (Pfad- und Integritätsschutz)
-Der Watchdog schützt den Systemkern vor unbefugten Dateizugriffen und Manipulationen:
-* **Absoluter Systemdateien-Schutz**: Systemkritische Dateien (`index.html`, `run.sh`, `.env`) und Verzeichnisse (`src/gnom_hub/`, `config/`, `scripts/`) sind für Worker-Agenten **vollkommen tabu**. Jeglicher Lese-, Schreib- oder Ausführungsversuch auf diese Pfade wird sofort unterbunden. Ein Zugriffsbypass über `approved_system_paths` existiert für Worker nicht.
-* **Pfad-Validierung & Sandboxing**: Alle Dateipfade werden über `is_worker_blocked` in [path_validator.py](file:///Users/landjunge/Documents/AG-Flega/src/gnom_hub/path_validator.py) normalisiert und in absolute Pfade aufgelöst (`os.path.realpath`). Versuche von Directory-Traversal-Attacken (z. B. mit `../`) werden im Keim erstickt. Jeder Pfad muss zwingend innerhalb des dafür vorgesehenen Workspace-Verzeichnisses (`WORKSPACE_DIR`) liegen.
-
-#### 2. SecurityAG (Code- und Befehlsanalyse)
-Die SecurityAG bewacht die Ausführungsebene und scannt Aktionen auf potenziell destruktive Absichten:
-* **Inhalts-Prüfung**: Jeder Schreibzugriff (`[WRITE]`) eines Workers wird auf gefährliche Funktionen, Code-Muster oder Systemaufrufe untersucht (z. B. `rm -rf`, `eval(`, `os.system(`, `subprocess.`, `exec(`, `pickle.load`, `chmod 777`, `shutil.rmtree`).
-* **Terminal-Überwachung**: Jedes Shell-Kommando (`[SHELL]`) wird vorab geparst. Unsafe-Commands (wie Netzwerk-Downloads via `curl` oder `wget`, Berechtigungsänderungen via `chmod 777` oder destruktive Systemkommandos) werden blockiert.
+### 🛡️ Phase 16: System Hardening, SoulAG Precision & Guard Autonomy
+*   **GeneralAG Orchestration Guard**: Strictly restricts GeneralAG to coordination, completely blocking it from executing shell commands or direct file writes.
+*   **Over-Association Prevention**: Implements query length guards and value-only embeddings to stop unrelated facts from injecting on short inputs (like "test" or "neu").
+*   **Automated Gatekeeper Approvals**: Automatically approves safe writes within the workspace and whitelisted shell commands (`python3`, `pytest`, `git status`) to speed up execution.
+*   **Dynamic PyPI Verification**: Performs real-time validation checks against the PyPI JSON API during package installations to check package legitimacy and active vulnerabilities.
+*   **Reasoning Block Filtering**: Automatically strips DeepSeek R1 `<think>...</think>` blocks from machine-parsed outputs to prevent gatekeeper bypasses while keeping the styled details widget in the chat UI.
 
 ---
 
-### 👑 CoderAG: Godmode unter strenger Kontrolle
-Der `CoderAG` ist der mächtigste Worker im Schwarm. Er besitzt als einziger den `godmode`-Status und ist berechtigt:
-* Shell-Kommandos auf Systemebene auszuführen (`[SHELL]`).
-* Browser-Automationen über die Playwright-Schnittstelle zu steuern (`[BROWSER]`).
+## 📐 The 40-Line Rule
 
-Obwohl der CoderAG diese weitreichenden Privilegien besitzt, wird er **lückenlos und ohne Ausnahmen** durch das Duo aus WatchdogAG und SecurityAG überwacht. Jeder seiner Befehle und jeder Dateizugriff wird derselben strikten Sicherheitsprüfung unterzogen. Ein „Ausbrechen“ aus dem zugewiesenen Workspace oder das Einschleusen destruktiver Befehle ist auch für den CoderAG im `godmode` unmöglich.
-
----
-
-### 🚨 Eskalationskette & Freigaben bei Unsicherheit
-Wenn eine Sicherheitsprüfung anschlägt oder ein Worker unbefugt auf geschützte Pfade zugreifen will:
-1. **Sofortige Blockade**: Die Ausführung wird gestoppt, das angeforderte Tag im Antworttext wird durch eine Sicherheitsmeldung ersetzt.
-2. **Chat-Eskalation**: Es wird ein System-Eintrag im Chat erzeugt, der den Operator (`@user`) und das übergeordnete Schwarmgedächtnis (`@SoulAG`) namentlich taggt und über den genauen Pfad bzw. Befehlsverstoß informiert.
-3. **Manuelle Freigabe**: Eine Ausführung blockierter Ressourcen ist ausschließlich über manuelle Einträge in der SQLite-Datenbank durch den Administrator (User/SoulAG) möglich:
-   * `approved_system_paths`: Whitelist für geschützte Pfade (nur für administrative Rollen).
-   * `approved_security_writes`: Whitelist für geprüfte Dateiinhalte.
-   * `approved_security_commands`: Whitelist für autorisierte Terminal-Befehle.
+Gnom-Hub keeps structural complexity low by keeping code focused.
+*   **Objective**: Originally, all Python files under `src/gnom_hub/` were targeted to be under 40 lines.
+*   **Current Compliance**: Over 80% of our 176 Python modules strictly respect this limit. To maintain readability for complex features (e.g., SQLite WAL operations in `db.py`, security audits in `gatekeeper.py`, and multi-tier routing in `router_stage.py`), 35 files have been allowed to grow.
+*   **Worker Simplicity**: Background workers remain extremely compact (e.g., CoderAG requires only ~10 lines of code to handle polling, processing, and executing actions).
 
 ---
 
-### 🔒 Immunität der System-Agenten (Preset-Isolation)
-Das Preset-System (zur Fokus-Ausrichtung des Schwarms) ist strikt auf der Anwendungsebene isoliert:
-* **Fokus-Wechsel nur auf Worker-Ebene**: Ein Preset-Wechsel verändert die Prompt-Modifikatoren und LLM-Modelle **ausschließlich** für die 4 Worker-Agenten (`ResearcherAG`, `WriterAG`, `EditorAG`, `CoderAG`).
-* **Unantastbare Systemebene**: Die 4 administrativen System-Agenten (`SoulAG`, `GeneralAG`, `WatchdogAG`, `SecurityAG`) behalten permanent ihre feste Konfiguration (Standardmodelle auf High-End-Tier `stage_3`, unveränderliche System-Prompts, unbeschränkte Systemrechte). Ein Preset-Wechsel kann somit niemals die Kontrollinstanzen der Plattform manipulieren oder schwächen.
+## 🤖 Swarm Topology
+
+All agent configurations, system prompts, and permissions are configured centrally in [agent_definitions.py](file:///Users/landjunge/Documents/AG-Flega/src/gnom_hub/agent_definitions.py).
+
+### System Agents (Administrative Permissions)
+*   **SoulAG**: Central consciousness and memory. Learns preferences and injects facts.
+*   **GeneralAG**: Coordinator and orchestrator. Splits `@job` inputs and delegates tasks.
+*   **WatchdogAG**: Monitors codebase rules (40-line compliance) and path integrity.
+*   **SecurityAG**: Scans code modifications and shell commands for vulnerabilities.
+
+### Worker Agents (Restricted Workspace Permissions)
+*   **CoderAG**: Software development and debugging. Has `godmode` for Playwright browser automation and shell execution.
+*   **ResearcherAG**: Gathers facts, parses documentations, and executes web search requests.
+*   **WriterAG**: Drafts manuals, Handbooks, reports, and article texts.
+*   **EditorAG**: Performs proofreading, styling, code refactoring, and quality assurance.
 
 ---
 
-## 🚦 Entwicklungsstand (Ehrlich & Konkret)
+## 💬 Commands
 
-### Was voll funktionsfähig ist:
-* [x] **Prozessmanagement**: Zuverlässiger Start, Stopp und Statusabgleich der 8 Hintergrund-Agenten via `psutil` und PID-Dateien unter `~/.gnom-hub/run/`.
-* [x] **Datenkonsistenz**: Transaktionssichere Speicherung aller Chats, Agenten-Zustände und Fakten in SQLite (WAL-Modus).
-* [x] **Preset-Steuerung**: Dynamische Anpassung von Prompts und LLM-Modellen je nach Preset ohne Server-Neustart (inklusive Unterstützung für Custom Presets).
-* [x] **Gedächtnis (SoulAG)**: Asynchrones Mitlernen von Benutzereingaben sowie semantische Vektorsuche und TF-IDF-Fallback (LRU- & SQLite-Caching).
-* [x] **Ausführungsschutz & Doppel-Genehmigung**: Validierung von Dateipfaden und Befehlen über WatchdogAG und SecurityAG mit Eskalations-Routing.
-* [x] **Zero-Trust-Kapabilitäten**: Temporäres Freigabesystem (Leases) mit TTL-Cache für wiederholte Dateizugriffe, Befehle und Browser-Aktionen.
-* [x] **Browser-Automation**: Containerisierte Playwright-Schnittstelle im Backend, geschützt über das Zero-Trust-Capability-System (erfordert Docker).
-* [x] **Observability**: Integriertes Agent Health Dashboard zur Echtzeit-Statistikenüberwachung aller 8 Agenten.
-* [x] **Datenbereinigung**: Tägliche Cleanup-Routinen für veraltete Log- und Faktendaten.
-
-### Was in Arbeit / geplant ist:
-* [ ] **MCP-Erweiterung**: Dynamische Registrierung und Anbindung externer Model Context Protocol (MCP) Server.
-* [ ] **Erweiterte Sandbox**: Derzeit sind Dateizugriffe außerhalb des Workspace selbst für den `godmode` des CoderAG stark eingeschränkt.
+| Command | Action |
+| :--- | :--- |
+| `@bs [topic]` | Triggers a parallel brainstorm among workers; GeneralAG consolidates results |
+| `@job [task]` | GeneralAG breaks down the task and coordinates the step-by-step execution |
+| `@code / @write / @edit` | Direct assignment to a specific worker specialist |
+| `@git [command]` | Executes git operations inside the local workspace |
+| `@@project [name]` | Switches the active workspace project |
+| `@@status` | Displays the active status (RUNNING/STOPPED) of all agent daemons |
+| `@@clear` | Clears the chat timeline |
+| `@free` | Resets all active background jobs and paused statuses |
+| **Nuke** 💣 | Press and hold the War Room logo in the UI for 2 seconds to force-restart all services |
 
 ---
 
-## 🚀 Schnellstart
+## 🚀 Quick Start
 
-1. **API-Schlüssel eintragen**:  
-   Kopieren Sie `config/.env.example` nach `config/.env` und tragen Sie Ihre API-Schlüssel (z. B. für OpenRouter oder DeepSeek) ein.
-
-2. **Server & Agenten starten**:  
-   Führen Sie das Start-Skript [run.sh](file:///Users/landjunge/Documents/AG-Flega/run.sh) aus:
+1. **Clone & Setup**:
    ```bash
-   chmod +x run.sh
+   git clone https://github.com/landjunge/gnom-hub.git
+   cd gnom-hub
+   bash scripts/install.sh
+   ```
+2. **Configure Environment**:
+   Copy `config/.env.example` to `config/.env` and add your LLM API keys (OpenRouter, DeepSeek, or configure local Ollama).
+3. **Run Server**:
+   ```bash
    ./run.sh
    ```
-
-3. **Dashboard aufrufen**:  
-   Öffnen Sie im Webbrowser: **[http://127.0.0.1:3002](http://127.0.0.1:3002)**
+4. **Access Web Panel**:
+   Open **[http://127.0.0.1:3002](http://127.0.0.1:3002)** in your browser to enter the War Room.
 
 ---
-**Projektstatus:** Mai 2026 — Experimenteller, funktionsfähiger Prototyp für Entwicklung und Forschung.
+**Project Status:** May 2026 — Experimental, functional prototype for research and development.
