@@ -1,5 +1,5 @@
 import httpx; import asyncio; from typing import Optional
-from ...core.config import Config; from ...common.exceptions import LLMProviderError
+from gnom_hub.core.config import Config; from gnom_hub.core.exceptions import LLMProviderError
 
 class OpenRouterClient:
     """Einfacher und stabiler OpenRouter Client."""
@@ -29,7 +29,7 @@ class OpenRouterClient:
         return None
 
     async def ask(self, prompt: str, model: Optional[str] = None) -> str:
-        from gnom_hub.infrastructure.database.state_repo import SQLiteStateRepository
+        from gnom_hub.db.state_repo import SQLiteStateRepository
         repo = SQLiteStateRepository()
 
         # Load remembered working models

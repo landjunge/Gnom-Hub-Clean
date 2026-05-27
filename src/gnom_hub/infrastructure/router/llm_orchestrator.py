@@ -1,4 +1,4 @@
-from gnom_hub.infrastructure.database.state_repo import SQLiteStateRepository
+from gnom_hub.db.state_repo import SQLiteStateRepository
 from .router_call import _try_keys, _call
 from gnom_hub.explainability.eo_wrap import wrap_response, wrap_error
 

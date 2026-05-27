@@ -1,7 +1,7 @@
 import asyncio
 from fastapi import APIRouter
 import httpx
-from gnom_hub.infrastructure.database.state_repo import SQLiteStateRepository
+from gnom_hub.db.state_repo import SQLiteStateRepository
 
 router = APIRouter()
 
@@ -10,7 +10,7 @@ async def check_and_update_models():
     import asyncio
     import httpx
     from gnom_hub.core.config import Config
-    from gnom_hub.infrastructure.database.state_repo import SQLiteStateRepository
+    from gnom_hub.db.state_repo import SQLiteStateRepository
     from gnom_hub.infrastructure.llm.openrouter import OpenRouterClient
     
     repo = SQLiteStateRepository()

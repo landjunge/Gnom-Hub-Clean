@@ -1,7 +1,7 @@
 import httpx
 from typing import Optional
-from ...core.config import Config
-from ...common.exceptions import LLMProviderError
+from gnom_hub.core.config import Config
+from gnom_hub.core.exceptions import LLMProviderError
 
 
 class OllamaClient:

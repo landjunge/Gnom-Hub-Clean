@@ -2,8 +2,8 @@ import subprocess
 from fastapi import APIRouter
 from fastapi.responses import FileResponse
 from pathlib import Path
-from gnom_hub.infrastructure.database.state_repo import SQLiteStateRepository
-from gnom_hub.infrastructure.database.agent_repo import SQLiteAgentRepository
+from gnom_hub.db.state_repo import SQLiteStateRepository
+from gnom_hub.db.agent_repo import SQLiteAgentRepository
 from gnom_hub.chat.chat_commands_handlers import handle_clear, handle_status, handle_job, _post_chat
 
 router = APIRouter()

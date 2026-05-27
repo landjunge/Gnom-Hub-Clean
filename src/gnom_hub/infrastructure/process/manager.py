@@ -1,8 +1,8 @@
 import psutil
 import asyncio
 from pathlib import Path
-from ...core.config import Config
-from ...common.exceptions import AgentNotRunningError
+from gnom_hub.core.config import Config
+from gnom_hub.core.exceptions import AgentNotRunningError
 
 
 class ProcessManager:

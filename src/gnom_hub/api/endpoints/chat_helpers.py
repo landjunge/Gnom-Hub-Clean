@@ -1,5 +1,5 @@
 import re
-from gnom_hub.infrastructure.database.state_repo import SQLiteStateRepository
+from gnom_hub.db.state_repo import SQLiteStateRepository
 from gnom_hub.chat.chat_commands import _post_chat
 
 def _parse(t):

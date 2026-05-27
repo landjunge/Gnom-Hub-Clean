@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
 import os, subprocess
 from gnom_hub.core.config import WORKSPACE_DIR
-from gnom_hub.infrastructure.database.state_repo import SQLiteStateRepository
+from gnom_hub.db.state_repo import SQLiteStateRepository
 
 router = APIRouter()
 def get_workspace_dir():

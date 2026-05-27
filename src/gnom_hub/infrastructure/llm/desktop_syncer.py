@@ -1,4 +1,4 @@
-import asyncio, time, re, gnom_hub.infrastructure.database.state_repo as sr
+import asyncio, time, re, gnom_hub.db.state_repo as sr
 from pathlib import Path
 from gnom_hub.infrastructure.llm.key_verifier import auto_detect_and_verify, clean_key
 DESKTOP_TXT = Path.home() / "Desktop" / "api_keys.txt"

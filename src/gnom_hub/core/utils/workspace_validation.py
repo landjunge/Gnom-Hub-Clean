@@ -1,7 +1,6 @@
 from pathlib import Path
-from ...core.config import Config
-from ...common.exceptions import ValidationError
-from ...domain.workspace.entities import WorkspacePath
+from gnom_hub.core.config import Config
+from gnom_hub.core.exceptions import ValidationError
 
 
 def validate_workspace_path(path: str | Path) -> Path:

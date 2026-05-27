@@ -1,6 +1,6 @@
 import asyncio
 from fastapi import APIRouter, Request
-from gnom_hub.infrastructure.database.state_repo import SQLiteStateRepository
+from gnom_hub.db.state_repo import SQLiteStateRepository
 from gnom_hub.infrastructure.router.router_config import DS_KEY, OR_KEY
 from gnom_hub.infrastructure.router.router_call import _call
 

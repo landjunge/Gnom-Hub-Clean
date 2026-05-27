@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request
 from pydantic import BaseModel
-from gnom_hub.infrastructure.database.state_repo import SQLiteStateRepository as SR
-from gnom_hub.infrastructure.database.agent_role import set_agent_role, update_agent_role_memory
+from gnom_hub.db.state_repo import SQLiteStateRepository as SR
+from gnom_hub.db.agent_role import set_agent_role, update_agent_role_memory
 
 router = APIRouter(prefix="/api/admin")
 ROLES = {

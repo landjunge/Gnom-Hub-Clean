@@ -24,7 +24,7 @@ class SmartRouter:
     @staticmethod
     def get_best_openrouter_model(role: str) -> str:
         try:
-            from gnom_hub.infrastructure.database.state_repo import SQLiteStateRepository
+            from gnom_hub.db.state_repo import SQLiteStateRepository
             repo = SQLiteStateRepository()
             working = repo.get_value("openrouter_working_models") or []
         except Exception:
@@ -108,7 +108,7 @@ class SmartRouter:
     def get_best_specific_assignment(role: str, kdb: dict) -> tuple:
         """Determines the best specific provider and model for a role based on valid keys."""
         try:
-            from gnom_hub.infrastructure.database.state_repo import SQLiteStateRepository
+            from gnom_hub.db.state_repo import SQLiteStateRepository
             repo = SQLiteStateRepository()
             working_models = repo.get_value("openrouter_working_models") or []
         except Exception:
@@ -284,10 +284,10 @@ class SmartRouter:
         insights = []
         # Get active agents from database if not supplied
         if not current_agents:
-            from gnom_hub.infrastructure.database.state_repo import SQLiteStateRepository
+            from gnom_hub.db.state_repo import SQLiteStateRepository
             current_agents = SQLiteStateRepository().get_value("llm_agents", {})
             
-        from gnom_hub.infrastructure.database.agent_repo import SQLiteAgentRepository
+        from gnom_hub.db.agent_repo import SQLiteAgentRepository
         db_agents = SQLiteAgentRepository().get_all()
         
         for a in db_agents:

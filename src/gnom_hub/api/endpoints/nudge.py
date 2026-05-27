@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 import requests
-from gnom_hub.infrastructure.database.agent_repo import SQLiteAgentRepository
+from gnom_hub.db.agent_repo import SQLiteAgentRepository
 from gnom_hub.core.logger import get_logger
 
 router = APIRouter()
