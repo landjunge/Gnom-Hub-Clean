@@ -1,14 +1,1 @@
-from datetime import datetime, timezone
-from typing import List
-from gnom_hub.domain.soul.repository import SoulRepository
-from .connection import get_db_conn
-
-class SQLiteSoulRepository(SoulRepository):
-    def save_fact(self, key: str, value: str) -> None:
-        with get_db_conn() as c, c:
-            c.execute("INSERT OR REPLACE INTO soul_memory (key, value, timestamp) VALUES (?, ?, ?)",
-                      (key, value, datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")))
-    def get_relevant_facts(self, query: str) -> List[str]:
-        with get_db_conn() as c:
-            rows = c.execute("SELECT key, value FROM soul_memory ORDER BY timestamp DESC LIMIT 20").fetchall()
-            return [f"{r['key']}: {r['value']}" for r in rows]
+from gnom_hub.db.soul_repo import *
