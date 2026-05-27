@@ -1,6 +1,6 @@
 """TTS Engine — ElevenLabs mit Web-Speech-Fallback."""
 import os
-from .config import DATA_DIR
+from gnom_hub.core.config import DATA_DIR
 AUDIO_DIR = DATA_DIR / "audio"
 AUDIO_DIR.mkdir(exist_ok=True)
 ELEVEN_KEY = os.environ.get("ELEVENLABS_API_KEY", "")

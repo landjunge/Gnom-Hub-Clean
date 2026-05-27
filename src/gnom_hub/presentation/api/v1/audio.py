@@ -1,8 +1,8 @@
 from fastapi import APIRouter, UploadFile, File
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
-from gnom_hub.audio_tts import tts
-from gnom_hub.audio_stt import transcribe
+from gnom_hub.audio.audio_tts import tts
+from gnom_hub.audio.audio_stt import transcribe
 from gnom_hub.infrastructure.database.agent_repo import SQLiteAgentRepository
 
 router = APIRouter()
