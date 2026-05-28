@@ -30,12 +30,18 @@ const KNOWN_COLORS = {
 
 // ── Toast ──
 function toast(msg, type = 'info') {
-  const c = document.getElementById('toasts');
-  const t = document.createElement('div');
-  t.className = `toast ${type}`;
-  t.textContent = msg;
-  c.appendChild(t);
-  setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; setTimeout(() => t.remove(), 300); }, 10500);
+  if (typeof window.showboxToast === 'function') {
+    window.showboxToast(msg, type);
+  } else {
+    const c = document.getElementById('toasts');
+    if (c) {
+      const t = document.createElement('div');
+      t.className = `toast ${type}`;
+      t.textContent = msg;
+      c.appendChild(t);
+      setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; setTimeout(() => t.remove(), 300); }, 10500);
+    }
+  }
 }
 
 // ── NUKE (G-Button Long Press & Retro TV Effect) ──

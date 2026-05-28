@@ -209,6 +209,7 @@ async function saveMem(id) {
 
 async function deleteMem(id) {
   await api('DELETE', `/memory/${id}`);
+  toast('Erinnerung gelöscht', 'info');
   selectAgent(selectedId);
   if (typeof updateStats === 'function') updateStats();
 }
@@ -216,6 +217,7 @@ async function deleteMem(id) {
 async function clearMemory(agentId) {
   if (!confirm('Clear all memories?')) return;
   await api('DELETE', `/agents/${agentId}/memory`);
+  toast('Alle Erinnerungen gelöscht', 'warning');
   selectAgent(selectedId);
   if (typeof updateStats === 'function') updateStats();
 }
@@ -227,6 +229,8 @@ async function toggleStatus(id, current) {
   const isOff = curr === 'offline' || curr === 'sleeping';
   const next = isOff ? 'online' : 'offline';
   await fetch(API + `/agents/${id}/status?status=${next}`, { method: 'PUT' });
+  const agentName = agent ? agent.name : id;
+  toast(`${agentName} ist jetzt ${next === 'online' ? 'Online 🟢' : 'Offline 🔴'}`, 'info');
   await loadAgents();
   if (selectedId === id) {
     selectAgent(id);
@@ -235,13 +239,19 @@ async function toggleStatus(id, current) {
 
 async function resumeAgent(id) {
   await fetch(API + `/agents/${id}/status?status=busy`, { method: 'PUT' });
+  const agent = agents.find(a => a.id === id);
+  const agentName = agent ? agent.name : id;
+  toast(`${agentName} arbeitet wieder (Busy) 🟡`, 'info');
   await loadAgents();
   selectAgent(id);
 }
 
 async function deleteAgent(id) {
   if (!confirm('Delete agent and all memories?')) return;
+  const agent = agents.find(a => a.id === id);
+  const agentName = agent ? agent.name : id;
   await api('DELETE', `/agents/${id}`);
+  toast(`${agentName} wurde gelöscht ❌`, 'warning');
   selectedId = null;
   if (typeof showWarRoom === 'function') showWarRoom();
   await loadAgents();

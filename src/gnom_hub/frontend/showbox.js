@@ -37,6 +37,15 @@
   window.showboxActive = false;
   window.showboxManualNavigation = false;
 
+  let toastRevertTimeout = null;
+
+  function cancelToastRevert() {
+    if (toastRevertTimeout) {
+      clearTimeout(toastRevertTimeout);
+      toastRevertTimeout = null;
+    }
+  }
+
   // Initialize modular Showbox DOM structure
   function init() {
     const container = document.getElementById('modular-showbox-container');
@@ -118,6 +127,7 @@
         layerEl.addEventListener('click', (e) => {
           // If the user clicks on links or buttons inside the body, don't switch layer
           if (e.target.closest('button') || e.target.closest('a') || e.target.closest('.showbox-controls')) return;
+          cancelToastRevert();
           switchLayer(i);
         });
       }
@@ -206,6 +216,7 @@
 
   // Cycle through the layers (1 -> 2 -> 3 -> 1)
   function cycleLayer() {
+    cancelToastRevert();
     let next = state.activeLayer + 1;
     if (next > 3) next = 1;
     switchLayer(next);
@@ -248,6 +259,7 @@
 
   // Navigate backward
   function prevSlide() {
+    cancelToastRevert();
     const layer = state.layers[state.activeLayer];
     if (layer.currentHistoryIdx === -1) return;
 
@@ -270,6 +282,7 @@
 
   // Navigate forward
   function nextSlide() {
+    cancelToastRevert();
     const layer = state.layers[state.activeLayer];
     if (layer.currentHistoryIdx === -1) return;
 
@@ -292,6 +305,7 @@
 
   // Clear history of the active layer and reset to standby
   function clearActiveLayer() {
+    cancelToastRevert();
     const layer = state.layers[state.activeLayer];
     layer.history = [];
     layer.currentHistoryIdx = -1;
@@ -339,6 +353,7 @@
 
   // 1. window.triggerShowbox
   window.triggerShowbox = function (showboxIndex, sender) {
+    cancelToastRevert();
     if (!window.showboxPresentations || showboxIndex < 0 || showboxIndex >= window.showboxPresentations.length) {
       return;
     }
@@ -398,6 +413,7 @@
 
   // 2. window.closeShowbox
   window.closeShowbox = function () {
+    cancelToastRevert();
     window.activeShowboxIndex = -1;
     window.showboxActive = false;
     
@@ -407,6 +423,90 @@
       renderLayerContent(i);
     }
     updateButtonStates();
+  };
+
+  // 3. window.showboxToast
+  window.showboxToast = function (msg, type = 'info') {
+    const targetLayer = LAYERS.SYSTEM;
+    const layer = state.layers[targetLayer];
+
+    // Clear any existing toast revert timer
+    cancelToastRevert();
+
+    // Save previous state to revert to it later
+    const prevHistoryIdx = layer.currentHistoryIdx;
+    const prevSlideIdx = (prevHistoryIdx !== -1 && layer.history[prevHistoryIdx]) 
+      ? layer.history[prevHistoryIdx].currentSlideIdx 
+      : 0;
+    const prevActiveLayer = state.activeLayer;
+
+    // Define colors and icons based on message type
+    let color = '#00e5ff'; // info (cyan)
+    let icon = 'ℹ️';
+    let rgb = '0, 229, 255';
+    if (type === 'success') {
+      color = 'var(--green)';
+      icon = '✅';
+      rgb = '57, 255, 20';
+    } else if (type === 'error') {
+      color = 'var(--red)';
+      icon = '❌';
+      rgb = '255, 0, 127';
+    } else if (type === 'warning') {
+      color = '#ffa500'; // orange
+      icon = '⚠️';
+      rgb = '255, 165, 0';
+    }
+
+    // Build styled card HTML for the Showbox
+    const htmlContent = `
+      <div class="sb-toast sb-toast-${type}" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 8px; width: 100%; height: 100%; box-sizing: border-box; padding: 12px;">
+        <div style="font-size: 2.2rem; filter: drop-shadow(0 0 8px rgba(${rgb}, 0.6));">${icon}</div>
+        <div style="color: ${color}; font-weight: 700; font-size: 0.95rem; text-shadow: 0 0 10px rgba(${rgb}, 0.5); line-height: 1.4; word-break: break-word;">
+          ${msg}
+        </div>
+      </div>
+    `;
+
+    const presName = "System Status";
+    let existingIdx = layer.history.findIndex(h => h.name === presName);
+
+    if (existingIdx !== -1) {
+      layer.history[existingIdx].slides = [htmlContent];
+      layer.history[existingIdx].currentSlideIdx = 0;
+      layer.currentHistoryIdx = existingIdx;
+    } else {
+      layer.history.push({
+        name: presName,
+        slides: [htmlContent],
+        sender: "System",
+        currentSlideIdx: 0
+      });
+      if (layer.history.length > 30) {
+        layer.history.shift();
+      }
+      layer.currentHistoryIdx = layer.history.length - 1;
+    }
+
+    // Switch view to System layer and render content
+    switchLayer(targetLayer);
+    renderLayerContent(targetLayer);
+    updateButtonStates();
+
+    // Auto-revert timer to return to previous presentation and active layer after 6 seconds
+    toastRevertTimeout = setTimeout(() => {
+      // Revert only if we are still displaying the "System Status" presentation
+      const currentPres = layer.history[layer.currentHistoryIdx];
+      if (currentPres && currentPres.name === presName) {
+        layer.currentHistoryIdx = prevHistoryIdx;
+        if (prevHistoryIdx !== -1 && layer.history[prevHistoryIdx]) {
+          layer.history[prevHistoryIdx].currentSlideIdx = prevSlideIdx;
+        }
+        renderLayerContent(targetLayer);
+        switchLayer(prevActiveLayer, true); // skip flash/glow on revert
+        updateButtonStates();
+      }
+    }, 6000);
   };
 
   // 3. window.loadShowboxList (replaces index.html polling parser)
