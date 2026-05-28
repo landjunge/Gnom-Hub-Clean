@@ -18,7 +18,9 @@ tests = [
     "test_integration_top5.py",
     "test_prompt_versioning.py",
     "test_soul_warnings.py",
-    "test_swarm_e2e.py"
+    "test_swarm_e2e.py",
+    "test_agent_optimizer.py",
+    "test_swarm_stability.py"
 ]
 
 def main():

@@ -68,7 +68,7 @@ def test_swarm_e2e():
         def __str__(self):
             return self.content_str
 
-    def mock_ask_router(p, sys="Du bist ein Assistent.", agent_name=None):
+    def mock_ask_router(p, sys="Du bist ein Assistent.", agent_name=None, **kwargs):
         name = (agent_name or "").lower()
         print(f"🤖 [Mock LLM] Call for '{name}' with prompt: {p[:120]}... (sys: {sys[:80]}...)")
         router_calls.append({"agent": name, "prompt": p, "sys": sys})

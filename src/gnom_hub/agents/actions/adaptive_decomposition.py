@@ -105,7 +105,13 @@ async def estimate_complexity(task: str) -> int:
         f"Aufgabe: {task}\n"
         f"Antworte NUR mit einer einzigen Zahl zwischen 1 und 10."
     )
-    res = (await asyncio.to_thread(ask_router, prompt, sys="Du bist ein präziser Komplexitäts-Bewerter.", agent_name="GeneralAG")).content
+    import functools
+    loop = asyncio.get_running_loop()
+    res_obj = await loop.run_in_executor(
+        None,
+        functools.partial(ask_router, prompt, sys="Du bist ein präziser Komplexitäts-Bewerter.", agent_name="GeneralAG")
+    )
+    res = res_obj.content
     
     # Extract number
     match = re.search(r'\b([1-9]|10)\b', res)

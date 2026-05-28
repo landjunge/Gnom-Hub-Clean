@@ -22,7 +22,12 @@ async def run_fallback(mgr, agent: str, fail_type: str, task: str) -> tuple:
     for fb in opts:
         if mgr.is_online(fb):
             try:
-                eo = await asyncio.to_thread(ask_router, f"Führe als Backup diese Aufgabe aus: {task}", agent_name=fb)
+                import functools
+                loop = asyncio.get_running_loop()
+                eo = await loop.run_in_executor(
+                    None,
+                    functools.partial(ask_router, f"Führe als Backup diese Aufgabe aus: {task}", agent_name=fb)
+                )
                 if not eo.content.startswith("[ROUTER-FEHLER]"):
                     write_fail_log(agent, fail_type, fb, task, ts)
                     log_audit_event(agent=agent, event_type="degradation_fallback", details={"failure_type": fail_type, "fallback_agent": fb})

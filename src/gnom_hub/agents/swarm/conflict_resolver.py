@@ -1,15 +1,26 @@
 # conflict_resolver.py — Multi-agent divergence resolution
 import json
 import asyncio
+import functools
 from gnom_hub.infrastructure.router.router import ask_router
 
 async def generalAG(prompt: str) -> str:
     """Helper representing GeneralAG async execution."""
-    return (await asyncio.to_thread(ask_router, prompt, sys="Du bist GeneralAG, der oberste Koordinator des Schwarms.", agent_name="GeneralAG")).content
+    loop = asyncio.get_running_loop()
+    res = await loop.run_in_executor(
+        None,
+        functools.partial(ask_router, prompt, sys="Du bist GeneralAG, der oberste Koordinator des Schwarms.", agent_name="GeneralAG")
+    )
+    return res.content
 
 async def soulAG(prompt: str) -> str:
     """Helper representing SoulAG async execution."""
-    return (await asyncio.to_thread(ask_router, prompt, sys="Du bist SoulAG, das Langzeitgedächtnis und Bewusstsein.", agent_name="SoulAG")).content
+    loop = asyncio.get_running_loop()
+    res = await loop.run_in_executor(
+        None,
+        functools.partial(ask_router, prompt, sys="Du bist SoulAG, das Langzeitgedächtnis und Bewusstsein.", agent_name="SoulAG")
+    )
+    return res.content
 
 class ConflictResolution:
     async def resolve_divergence(

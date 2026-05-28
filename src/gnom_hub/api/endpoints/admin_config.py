@@ -35,3 +35,21 @@ def set_preset(p: PresetPayload):
     from gnom_hub.core.utils.preset_service import handle_preset_change
     handle_preset_change(p.preset)
     return {"status": "ok", "preset": p.preset}
+
+@router.get("/presets")
+def get_all_presets():
+    from gnom_hub.core.utils.preset_service import load_presets
+    presets = load_presets()
+    return {"presets": list(presets.get("prompts", {}).keys())}
+
+class BrowserDockerPayload(BaseModel):
+    use_docker: bool
+
+@router.get("/browser_docker")
+def get_browser_docker():
+    return {"use_docker": SR().get_value("browser_use_docker", True)}
+
+@router.post("/browser_docker")
+def set_browser_docker(p: BrowserDockerPayload):
+    SR().set_value("browser_use_docker", p.use_docker)
+    return {"status": "ok", "use_docker": p.use_docker}

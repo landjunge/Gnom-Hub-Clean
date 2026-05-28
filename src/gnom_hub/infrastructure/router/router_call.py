@@ -10,23 +10,34 @@ def _track(pvd, mdl, n, r_json, msgs, ans):
             c_t = int(len((ans or "").split()) * 1.3) or 1
         track_tokens(n or "?", mdl, {"prompt_tokens": p_t, "completion_tokens": c_t})
     except Exception: pass
+
 def _call(pvd, mdl, key, msgs, n):
     h, urls = {"Content-Type": "application/json"}, {"openai": "https://api.openai.com/v1/chat/completions", "mistral": "https://api.mistral.ai/v1/chat/completions", "gemini": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", "deepseek": "https://api.deepseek.com/chat/completions", "openrouter": "https://openrouter.ai/api/v1/chat/completions", "lokal": "http://127.0.0.1:11434/api/chat", "anthropic": "https://api.anthropic.com/v1/messages"}
     url = urls.get(pvd, urls["openrouter"])
     limit = 1500 if n and n.lower() == "generalag" else (1000 if n and n.lower() == "soulag" else None)
+    temp = None
+    if n:
+        try:
+            from gnom_hub.db.legacy_db import get_state_value
+            creativity = get_state_value("agent_settings", {}).get(n.lower(), {}).get("creativity", 3)
+            temp = {1: 0.1, 2: 0.4, 3: 0.7, 4: 0.9, 5: 1.2}.get(creativity, 0.7)
+        except Exception: pass
     if pvd == "anthropic":
         h.update({"x-api-key": key, "anthropic-version": "2023-06-01"})
         sys = next((m["content"] for m in msgs if m["role"] == "system"), "")
         pyld = {"model": mdl, "max_tokens": limit or 1024, "messages": [m for m in msgs if m["role"] != "system"]}
         if sys: pyld["system"] = sys
+        if temp is not None: pyld["temperature"] = temp
     else:
         if pvd != "lokal": h["Authorization"] = f"Bearer {key}"
         pyld = {"model": mdl, "messages": msgs, "stream": False} if pvd == "lokal" else {"model": mdl, "messages": msgs}
         if limit:
-            if pvd == "lokal":
-                pyld.setdefault("options", {})["num_predict"] = limit
-            else:
-                pyld["max_tokens"] = limit
+            if pvd == "lokal": pyld.setdefault("options", {})["num_predict"] = limit
+            else: pyld["max_tokens"] = limit
+        if temp is not None:
+            if pvd == "lokal": pyld.setdefault("options", {})["temperature"] = temp
+            else: pyld["temperature"] = temp
+
     r = requests.post(url, headers=h, json=pyld, timeout=120)
     if r.status_code == 200:
         try: res_json = r.json()

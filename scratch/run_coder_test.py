@@ -23,9 +23,11 @@ def get_chat():
         return []
 
 def run_coder_test():
+    from datetime import datetime, timezone
+    start_time = datetime.now(timezone.utc).isoformat()
     # Clear chat
     requests.post(f"{API_URL}/chat", json={"content": "@@clear chat", "sender": "user"})
-    time.sleep(1)
+    time.sleep(2)
     
     # Clean workspace test files if exists
     test_file = WORKSPACE_DIR / "test_coder.txt"
@@ -61,8 +63,14 @@ def run_coder_test():
         msgs = get_chat()
         for m in msgs:
             mid = m.get("id")
+            ts = m.get("timestamp")
+            # Convert Z suffix to +00:00 to parse properly if needed, or lexicographical compare
+            if ts and ts.endswith("Z"):
+                ts = ts[:-1] + "+00:00"
             if mid not in seen_ids:
                 seen_ids.add(mid)
+                if ts and ts < start_time:
+                    continue  # Ignore messages from before this test started
                 sender = m.get("sender")
                 content = m.get("content")
                 if sender != "System" and "cleared" not in content:

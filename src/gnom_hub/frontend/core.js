@@ -661,6 +661,22 @@ async function changePreset(preset) {
 
 async function loadActivePreset() {
   try {
+    const presetsRes = await api('GET', '/admin/presets');
+    if (presetsRes && presetsRes.presets) {
+      const el = document.getElementById('preset-select');
+      if (el) {
+        el.innerHTML = presetsRes.presets.map(name => {
+          let emoji = '⚙️';
+          if (name.includes('Web')) emoji = '💻';
+          else if (name.includes('Design') || name.includes('Graphic')) emoji = '🎨';
+          else if (name.includes('Audio')) emoji = '🎵';
+          else if (name.includes('Video')) emoji = '🎬';
+          else if (name.includes('Content') || name.includes('Marketing') || name.includes('Creation')) emoji = '✍️';
+          else if (name.includes('Research')) emoji = '🔍';
+          return `<option value="${name}">${emoji} ${name}</option>`;
+        }).join('');
+      }
+    }
     const res = await api('GET', '/admin/preset');
     if (res && res.preset) {
       const el = document.getElementById('preset-select');

@@ -9,7 +9,7 @@ def _collect_worker_responses(worker_names):
         resp = next((m for m in msgs if m.get("sender", "").lower() == n.lower()), None)
         if resp: out.append(f"[{n}] {strip_zwc(resp['content'])[:800]}")
     return "\n\n".join(out)
-def dispatch(q, target=None):
+def dispatch(q, target=None, depth=0):
     from gnom_hub.db.legacy_db import get_all_agents; ao = [a for a in get_all_agents() if a.get("status") == "online"]
     if target:
         t_low = target.lower()
@@ -22,7 +22,7 @@ def dispatch(q, target=None):
             s = ao
         else:
             s = [a for a in ao if a["name"].lower() == t_low]
-        for a in s: threading.Thread(target=ask_llm, args=(a, q, get_ctx(), False), daemon=True).start()
+        for a in s: threading.Thread(target=ask_llm, args=(a, q, get_ctx(), False, depth), daemon=True).start()
         return [a["name"] for a in s]
     w = [a for a in ao if a["name"].lower() not in ("soulag", "generalag", "securityag", "watchdogag")]
     g = [a for a in ao if a["name"] == "GeneralAG"]

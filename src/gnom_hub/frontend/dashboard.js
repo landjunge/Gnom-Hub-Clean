@@ -204,83 +204,114 @@ async function loadDashboardData() {
 async function showLLMConfig() {
   selectedId = null;
   document.getElementById('content').innerHTML = `
-    <div class="panel" id="llm-panel" style="padding:12px 15px;">
-      <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:8px;">
-        <button class="btn-primary" onclick="showWarRoom()">◀ Zurück</button>
-        <h2 style="margin:0; font-size:0.95rem; font-weight:600; border:none; letter-spacing:0.5px;">LLM Configuration</h2>
+    <div class="panel" id="llm-panel" style="padding:15px 20px; background:rgba(10, 15, 30, 0.4); border:1px solid var(--glass-border);">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:10px;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button class="btn-primary" onclick="showWarRoom()">◀ Zurück</button>
+          <h2 style="margin:0; font-size:1.1rem; font-weight:700; border:none; letter-spacing:0.5px; color:#fff; display:flex; align-items:center; gap:8px;">
+            <span>🤖 Swarm Intelligence & LLM Console</span>
+          </h2>
+        </div>
       </div>
-      <div style="display:flex; gap: 15px; flex-wrap: wrap;">
-        <div style="flex:1; min-width: 250px; background:var(--bg-card); padding:12px; border-radius:var(--radius); border:1px solid rgba(255,255,255,0.1); display:flex; flex-direction:column; gap:10px;">
-          <div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-              <h3 style="margin:0; font-size:0.9rem;">API Keys</h3>
-              <label style="display:flex; align-items:center; gap:5px; font-size:0.75rem; color:var(--text-muted); cursor:pointer;">
-                <input type="checkbox" id="toggle-show-keys" onchange="toggleKeysVisibility(this.checked)" style="width:12px; height:12px; accent-color:var(--primary);">
-                <span>Keys anzeigen</span>
+      
+      <div class="llm-container">
+        <!-- Left Column: Settings Modules -->
+        <div style="display:flex; flex-direction:column; gap:20px;">
+          <!-- Module 1: API Keys -->
+          <div class="llm-card">
+            <div class="llm-card-header">
+              <h3 class="llm-card-title">🔑 API Keys & Authentication</h3>
+              <label style="display:flex; align-items:center; gap:5px; font-size:0.75rem; color:var(--text-dim); cursor:pointer;">
+                <input type="checkbox" id="toggle-show-keys" onchange="toggleKeysVisibility(this.checked)" class="llm-toggle-input">
+                <span>Anzeigen</span>
               </label>
             </div>
-            <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">Füge alle API-Keys ein (ein Key pro Zeile)</p>
-            <textarea id="llm-keys-input" rows="1" style="width:100%; margin-bottom:6px; background:var(--bg); border:1px solid rgba(255,255,255,0.2); color:white; padding:4px 6px; border-radius:4px; font-size:0.8rem; height:28px; line-height:1.4; resize:none; overflow-y:hidden;" placeholder="Einfügen per Cmd+V"></textarea>
-            <div style="display:flex; gap:6px; margin-bottom:6px;">
+            <span class="llm-card-description">Füge deine API-Schlüssel ein (ein Schlüssel pro Zeile, z.B. <code>OPENAI_API_KEY=sk-...</code>).</span>
+            <textarea id="llm-keys-input" rows="2" class="llm-input-area" placeholder="Einfügen per Cmd+V oder manuell eingeben..."></textarea>
+            <div class="llm-btn-group">
               <button class="btn-primary" id="save-keys-only-btn" onclick="saveKeysOnly()" style="flex:1;">Speichern</button>
-              <button class="btn-primary" id="save-keys-btn" onclick="saveAndTestKeys()" style="flex:1;">Testen & Speichern</button>
+              <button class="btn-primary" id="save-keys-btn" onclick="saveAndTestKeys()" style="flex:1;">Verifizieren & Speichern</button>
             </div>
-            <div id="llm-keys-status" style="margin-top:6px; font-size:0.8rem; max-height:65px; overflow-y:auto; display:flex; flex-direction:column; gap:3px;"></div>
+            <div id="llm-keys-status" style="font-size:0.78rem; max-height:85px; overflow-y:auto; display:flex; flex-direction:column; gap:4px; padding:6px; border-radius:8px; background:rgba(0,0,0,0.18); scrollbar-width:thin;"></div>
           </div>
           
-          <div style="display:flex; flex-direction:column; gap:8px; border-top:1px solid rgba(255,255,255,0.1); padding-top:8px;">
-            <div style="display:flex; flex-direction:column; gap:4px; margin-bottom:4px;">
-              <h3 style="margin:0; font-size:0.9rem;">Agent Gang (Preset)</h3>
-              <select id="preset-select" onchange="changePreset(this.value)" style="width:100%; background:rgba(0,0,0,0.3); color:var(--text); border:1px solid rgba(255,255,255,0.15); border-radius:6px; padding:6px 8px; font-size:0.8rem; outline:none; cursor:pointer;">
-                <option value="Web Development">💻 Web Development</option>
-                <option value="Graphic Design">🎨 Graphic Design</option>
-                <option value="Audio Production">🎵 Audio Production</option>
-                <option value="Video Production">🎬 Video Production</option>
-                <option value="Content Creation">✍️ Content Creation</option>
-                <option value="Research & Analysis">🔍 Research & Analysis</option>
-              </select>
+          <!-- Module 2: Agenten-Gangs -->
+          <div class="llm-card">
+            <div class="llm-card-header">
+              <h3 class="llm-card-title">👥 Agenten-Gangs</h3>
             </div>
-            <div style="display:flex; flex-direction:column; gap:6px; border-top:1px dashed rgba(255,255,255,0.05); padding-top:6px;">
-              <h3 style="margin:0; font-size:0.9rem;">Language</h3>
-              <div style="display:flex; gap:6px;">
-                <button class="btn-primary" id="lang-btn-de" onclick="setSystemLanguage('de')" style="flex:1;">DE</button>
-                <button class="btn-primary" id="lang-btn-en" onclick="setSystemLanguage('en')" style="flex:1;">EN</button>
+            <span class="llm-card-description">Wähle eine vordefinierte Team-Spezialisierung aus, um die Rollenverteilung und Prompts im Schwarm anzupassen.</span>
+            <select id="preset-select" onchange="changePreset(this.value)" class="llm-input-area" style="cursor:pointer;"></select>
+          </div>
+          
+          <!-- Module 3: Global Options -->
+          <div class="llm-card">
+            <div class="llm-card-header">
+              <h3 class="llm-card-title">⚙️ Globale Optionen</h3>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                <span style="font-size:0.8rem; color:var(--text-dim);">Systemsprache</span>
+                <div style="display:flex; gap:6px; width:120px;">
+                  <button class="btn-primary" id="lang-btn-de" onclick="setSystemLanguage('de')" style="flex:1; padding:4px 0; font-size:0.75rem;">DE</button>
+                  <button class="btn-primary" id="lang-btn-en" onclick="setSystemLanguage('en')" style="flex:1; padding:4px 0; font-size:0.75rem;">EN</button>
+                </div>
+              </div>
+              <div class="llm-toggle-row">
+                <label for="auto-deploy-checkbox" class="llm-toggle-label">
+                  <span>🌐 Auto-Deploy Webseiten</span>
+                </label>
+                <input type="checkbox" id="auto-deploy-checkbox" onchange="toggleFtpAutoDeploy(this.checked)" class="llm-toggle-input">
+              </div>
+              <div class="llm-toggle-row">
+                <label for="browser-docker-checkbox" class="llm-toggle-label">
+                  <span>🐳 Browser in Docker ausführen</span>
+                </label>
+                <input type="checkbox" id="browser-docker-checkbox" onchange="toggleBrowserDocker(this.checked)" class="llm-toggle-input">
               </div>
             </div>
-            <div style="display:flex; align-items:center; gap:8px; margin-top:2px;">
-              <input type="checkbox" id="auto-deploy-checkbox" onchange="toggleFtpAutoDeploy(this.checked)" style="width:14px; height:14px; cursor:pointer;">
-              <label for="auto-deploy-checkbox" style="font-size:0.8rem; cursor:pointer;">Auto-Deploy Webseiten</label>
-            </div>
-          </div>
-          <div id="system-info-panel" style="font-size:0.75rem; padding:8px 10px; border-radius:6px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); color:var(--text-muted);">
-            Loading System Info...
-          </div>
-        </div>
-        <div style="flex:2; min-width: 400px; background:var(--bg-card); padding:15px; border-radius:var(--radius); border:1px solid rgba(255,255,255,0.1);">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:8px; flex-wrap:wrap;">
-            <h3 style="margin:0; font-size:0.9rem; flex-shrink:0;">Routing</h3>
-            <div style="display:flex; gap:4px; align-items:center; flex-shrink:0; flex-wrap:wrap;">
-              <button class="btn-primary" onclick="autoRouteAllAgents()" style="white-space:nowrap;">⚡ Auto-Route</button>
-              <button id="save-agents-btn" class="btn-primary" onclick="saveAgentLLMs()" style="white-space:nowrap;">Speichern</button>
-            </div>
           </div>
           
-          <div id="routing-progress-banner" style="display:none; align-items:center; justify-content:space-between; margin-bottom:10px; padding:8px 12px; background:rgba(0,229,255,0.08); border:1px solid rgba(0,229,255,0.2); border-radius:8px; font-size:0.8rem; transition:all 0.3s ease;">
-            <div style="display:flex; align-items:center; gap:8px;">
+          <!-- Module 4: System Information -->
+          <div class="llm-card">
+            <div class="llm-card-header">
+              <h3 class="llm-card-title">📊 Systemumgebung</h3>
+            </div>
+            <div id="system-info-panel" class="llm-system-info">
+              Lade System-Informationen...
+            </div>
+          </div>
+        </div>
+        
+        <!-- Right Column: Agent LLM Routing -->
+        <div class="llm-card" style="height:100%; display:flex; flex-direction:column;">
+          <div class="llm-card-header">
+            <h3 class="llm-card-title">⚡ Agenten-Routing & LLM-Zuweisung</h3>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <button class="btn-primary" onclick="autoRouteAllAgents()" style="font-size:0.75rem; padding:4px 10px;">⚡ Auto-Route</button>
+              <button id="save-agents-btn" class="btn-primary" onclick="saveAgentLLMs()" style="font-size:0.75rem; padding:4px 10px;">Speichern</button>
+            </div>
+          </div>
+          <span class="llm-card-description">Mappe jeden Agenten im System auf einen spezifischen Provider und ein LLM-Modell. Nutze Auto-Routing für eine kosteneffiziente, ausgewogene Zuweisung basierend auf deinen hinterlegten Keys.</span>
+          
+          <div id="routing-progress-banner" style="display:none; align-items:center; justify-content:space-between; padding:10px 14px; background:rgba(0,229,255,0.08); border:1px solid rgba(0,229,255,0.22); border-radius:10px; font-size:0.8rem; margin-bottom:10px;">
+            <div style="display:flex; align-items:center; gap:10px;">
               <div id="routing-banner-spinner" style="width:14px; height:14px; border:2px solid rgba(0,229,255,0.3); border-top-color:#00e5ff; border-radius:50%; animation:spin 1s linear infinite;"></div>
-              <span id="routing-progress-text" style="color:rgba(255,255,255,0.95); font-weight:500;">Auto-routing läuft: Mappe Agenten zu optimalen LLMs...</span>
+              <span id="routing-progress-text" style="color:white; font-weight:500;">Auto-routing läuft...</span>
             </div>
-            <div id="routing-progress-percentage" style="color:rgba(255,255,255,0.7); font-family:monospace; font-weight:bold;">0%</div>
+            <div id="routing-progress-percentage" style="color:#00e5ff; font-family:monospace; font-weight:bold;">0%</div>
           </div>
           
-          <div id="llm-agents-list" style="margin-bottom:0; max-height:250px; overflow-y:auto; padding-right:8px; scrollbar-width:thin;">Loading Agents...</div>
-
-          <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
-            <button id="save-agents-btn-bottom" class="btn-primary" onclick="saveAgentLLMs()" style="width: 100%;">Routing Speichern</button>
+          <div id="llm-agents-list" style="flex:1; overflow-y:auto; padding-right:5px; max-height:480px; scrollbar-width:thin;">
+            Lade Agenten-Zuweisungen...
           </div>
           
-          <div id="routing-insights-panel" style="margin-top:15px; display:none;"></div>
-        </div>
+          <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:12px; display:flex; gap:10px;">
+            <button id="save-agents-btn-bottom" class="btn-primary" onclick="saveAgentLLMs()" style="flex:1; padding:8px; font-weight:600; font-size:0.82rem; letter-spacing:0.5px;">Routing Speichern</button>
+          </div>
+          
+          <div id="routing-insights-panel" style="margin-top:10px; display:none;"></div>
+    </div>
       </div>
     </div>
   `;
@@ -341,6 +372,25 @@ async function loadFtpAutoDeployState() {
     if (cb) cb.checked = active;
   } catch (e) {
     console.error("FTP auto-deploy load error", e);
+  }
+}
+
+async function toggleBrowserDocker(val) {
+  try {
+    await api('POST', '/admin/browser_docker', { use_docker: val });
+  } catch (e) {
+    console.error("Failed to toggle Browser Docker", e);
+  }
+}
+
+async function loadBrowserDockerState() {
+  try {
+    const res = await api('GET', '/admin/browser_docker');
+    const active = res?.use_docker !== false;
+    const cb = document.getElementById('browser-docker-checkbox');
+    if (cb) cb.checked = active;
+  } catch (e) {
+    console.error("Browser Docker state load error", e);
   }
 }
 
@@ -530,6 +580,7 @@ async function loadLLMConfig() {
   await loadLanguageState();
   await loadSystemInfoState();
   await loadFtpAutoDeployState();
+  await loadBrowserDockerState();
   await loadActivePreset();
 
   const keysRes = await api('GET', '/llm/keys');

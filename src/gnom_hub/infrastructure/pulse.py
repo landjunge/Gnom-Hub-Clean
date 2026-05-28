@@ -4,6 +4,22 @@ from gnom_hub.infrastructure.process.psutil_mgr import AGENTS, _get_proc
 
 def pulse_janitor():
     repo = SQLiteAgentRepository()
+    from datetime import datetime, timezone
+    import json
+    now = datetime.now(timezone.utc)
+    for agent in repo.list_all():
+        if agent.status == "busy" and agent.last_seen:
+            diff = (now - agent.last_seen).total_seconds()
+            if diff > 300:
+                agent.status = "online"
+                agent.active_job = None
+                repo.save(agent)
+                try:
+                    from gnom_hub.db.legacy_db import add_chat_message, get_active_project
+                    add_chat_message(get_active_project(), "System", "war-room", "chat",
+                                     f"⚠️ [System] Agent **{agent.name}** wurde nach 5 Minuten Inaktivität automatisch freigegeben (@free).",
+                                     json.dumps({"type": "chat"}))
+                except Exception: pass
     for name in AGENTS:
         proc = _get_proc(name)
         status = "running" if proc else "stopped"

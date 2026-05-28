@@ -34,7 +34,9 @@ function renderAgentList(filter = '') {
       const role = a.role && a.role !== 'normal' && !isCore ? a.role : '';
       const roleIcon = role === 'general' ? ' 👑' : role === 'summarizer' ? ' 📋' : '';
       const c = agentColor(a.name);
-      return `<div class="agent-card ${stClass} ${a.id === selectedId ? 'active' : ''}" id="card-${a.id}" onclick="handleWorkerClick('${a.id}')" ondblclick="handleWorkerDblClick('${a.id}', '${a.status}')" style="--agent-color:${c};">
+      const dur = (2.5 + Math.random() * 2.0).toFixed(2);
+      const dly = (-(Math.random() * 6.0)).toFixed(2);
+      return `<div class="agent-card ${stClass} ${a.id === selectedId ? 'active' : ''}" id="card-${a.id}" onclick="handleWorkerClick('${a.id}')" ondblclick="handleWorkerDblClick('${a.id}', '${a.status}')" style="--agent-color:${c}; --dur:${dur}s; --delay:${dly}s;">
         <h3><span>${a.name}</span>${roleIcon}</h3>
         <div class="desc">${a.description || '–'}</div>
         <div class="meta">${a.port ? `<span class="badge port">:${a.port}</span>` : ''}${role ? `<span class="badge role ${role}">${role}</span>` : ''}</div>

@@ -2,7 +2,14 @@
 import re, time, threading
 from gnom_hub.db.legacy_db import get_all_agents, get_state_value, set_state_value
 
-def process_swarm_mentions(sender: str, text: str):
+def process_swarm_mentions(sender: str, text: str, depth: int = 0):
+    new_depth = depth + 1
+    if new_depth > 3:
+        try:
+            from gnom_hub.db.legacy_db import add_chat_message, get_active_project
+            add_chat_message(get_active_project(), "System", "war-room", "chat", f"⚠️ [System] Swarm-Mention-Limit überschritten ({new_depth} > 3). Kaskade gestoppt.")
+        except Exception: pass
+        return
     ags = {a["name"].lower(): a["name"] for a in get_all_agents() if a.get("status") == "online"}
     mentions = re.findall(r'@(\w+)', text)
     comms = get_state_value("active_swarm_comms", []) or []
@@ -19,6 +26,6 @@ def process_swarm_mentions(sender: str, text: str):
                 updated = True
                 try:
                     from gnom_hub.chat.brainstorm.brainstorm import dispatch
-                    threading.Thread(target=dispatch, args=(text, tgt_name), daemon=True).start()
+                    threading.Thread(target=dispatch, args=(text, tgt_name, new_depth), daemon=True).start()
                 except: pass
     if updated: set_state_value("active_swarm_comms", comms)

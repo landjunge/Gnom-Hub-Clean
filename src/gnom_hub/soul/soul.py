@@ -69,7 +69,14 @@ class SoulAG:
         except json.JSONDecodeError as e: _log.warning("[Soul] JSON parse error in fact extraction: %s", e)
         except Exception as e: _log.error("[Soul] Fact extraction failed: %s", e, exc_info=True)
     def inject_context(self, sys: str, msg: str, agent_name: str = None) -> str:
-        facts = retrieve_relevant_facts(msg, top_k=8)
+        top_k = 8
+        if agent_name:
+            try:
+                from gnom_hub.db.legacy_db import get_state_value
+                settings = get_state_value("agent_settings", {}).get(agent_name.lower(), {})
+                top_k = {1: 2, 2: 4, 3: 8, 4: 12, 5: 16}.get(settings.get("memory_strength", 3), 8)
+            except Exception: pass
+        facts = retrieve_relevant_facts(msg, top_k=top_k)
         if agent_name and facts:
             for f in facts:
                 key = (agent_name.lower(), f)
