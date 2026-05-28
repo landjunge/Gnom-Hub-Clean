@@ -166,25 +166,9 @@
       filter: grayscale(100%);
     }
 
-    .sys-agent-card.on {
-      animation: sys-card-online-pulse var(--dur, 3.2s) ease-in-out infinite alternate;
-      animation-delay: var(--delay, 0s);
-    }
-
     .sys-agent-card.busy {
       animation: sys-card-busy-pulse var(--dur, 0.8s) ease-in-out infinite alternate;
       animation-delay: var(--delay, 0s);
-    }
-
-    @keyframes sys-card-online-pulse {
-      0% {
-        box-shadow: 0 0 2px rgba(0, 229, 255, 0.05);
-        opacity: 0.65;
-      }
-      100% {
-        box-shadow: 0 0 12px var(--agent-color, #00e5ff);
-        opacity: 0.95;
-      }
     }
 
     @keyframes sys-card-busy-pulse {
@@ -889,11 +873,6 @@
       border-bottom-color: var(--glass-border);
     }
 
-    .agent-card.on {
-      animation: card-online-pulse var(--dur, 3.2s) ease-in-out infinite alternate;
-      animation-delay: var(--delay, 0s);
-    }
-
     .agent-card.busy {
       animation: card-busy-pulse var(--dur, 0.8s) ease-in-out infinite alternate;
       animation-delay: var(--delay, 0s);
@@ -909,17 +888,6 @@
       border-right-color: transparent !important;
       opacity: 0.15;
       filter: grayscale(100%);
-    }
-
-    @keyframes card-online-pulse {
-      0% {
-        box-shadow: 0 0 2px rgba(255, 255, 255, 0.02);
-        opacity: 0.65;
-      }
-      100% {
-        box-shadow: 0 0 10px var(--agent-color, #ffaa00);
-        opacity: 0.95;
-      }
     }
 
     @keyframes card-paused-pulse {
