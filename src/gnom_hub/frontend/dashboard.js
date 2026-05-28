@@ -22,6 +22,7 @@ function runDashboardPolling() {
 }
 
 async function showDashboard() {
+  if (typeof trackView === 'function') trackView('dashboard');
   selectedId = null;
   document.getElementById('content').innerHTML = `
     <div class="panel" id="dashboard-panel">
@@ -202,6 +203,7 @@ async function loadDashboardData() {
 }
 
 async function showLLMConfig() {
+  if (typeof trackView === 'function') trackView('llm');
   selectedId = null;
   document.getElementById('content').innerHTML = `
     <div class="panel" id="llm-panel" style="height:calc(100vh - 91px); box-sizing:border-box; display:flex; flex-direction:column; padding:15px 20px; background:rgba(10, 15, 30, 0.4); border:1px solid var(--glass-border); margin-bottom:0; overflow:hidden;">
@@ -229,7 +231,6 @@ async function showLLMConfig() {
             <span class="llm-card-description">Füge deine API-Schlüssel ein (ein Schlüssel pro Zeile, z.B. <code>OPENAI_API_KEY=sk-...</code>).</span>
             <textarea id="llm-keys-input" rows="2" class="llm-input-area" placeholder="Einfügen per Cmd+V oder manuell eingeben..."></textarea>
             <div class="llm-btn-group">
-              <button class="btn-primary" id="save-keys-only-btn" onclick="saveKeysOnly()" style="flex:1;">Speichern</button>
               <button class="btn-primary" id="save-keys-btn" onclick="saveAndTestKeys()" style="flex:1;">Verifizieren & Speichern</button>
             </div>
             <div id="llm-keys-status" style="font-size:0.78rem; max-height:85px; overflow-y:auto; display:flex; flex-direction:column; gap:4px; padding:6px; border-radius:8px; background:rgba(0,0,0,0.18); scrollbar-width:thin;"></div>
@@ -289,7 +290,6 @@ async function showLLMConfig() {
             <h3 class="llm-card-title">⚡ Agenten-Routing & LLM-Zuweisung</h3>
             <div style="display:flex; gap:6px; align-items:center;">
               <button class="btn-primary" onclick="autoRouteAllAgents()" style="font-size:0.75rem; padding:4px 10px;">⚡ Auto-Route</button>
-              <button id="save-agents-btn" class="btn-primary" onclick="saveAgentLLMs()" style="font-size:0.75rem; padding:4px 10px;">Speichern</button>
             </div>
           </div>
           <span class="llm-card-description" style="flex-shrink:0;">Mappe jeden Agenten im System auf einen spezifischen Provider und ein LLM-Modell. Nutze Auto-Routing für eine kosteneffiziente, ausgewogene Zuweisung basierend auf deinen hinterlegten Keys.</span>
@@ -315,6 +315,7 @@ async function showLLMConfig() {
 }
 
 async function showHelpPage() {
+  if (typeof trackView === 'function') trackView('help');
   selectedId = null;
   document.getElementById('content').innerHTML = `
     <div class="panel" id="help-panel" style="display:flex; flex-direction:column; gap:12px; height:100%; box-sizing:border-box; padding:12px 15px;">

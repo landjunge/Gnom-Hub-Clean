@@ -3,6 +3,7 @@
    ═══════════════════════════════════════════ */
 
 async function showWorkspace() {
+  if (typeof trackView === 'function') trackView('workspace');
   selectedId = null;
   document.getElementById('content').innerHTML = `
     <div class="panel" id="workspace-panel" style="padding:12px 15px;">

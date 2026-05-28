@@ -101,7 +101,6 @@ async function selectAgent(id) {
           </div>
 
           <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px;">
-            <button class="btn-primary" onclick="saveAgentOptimizerSettings('${agent.id}')">Apply & Save</button>
             <button onclick="exportAgentConfig('${agent.id}')">📥 Export</button>
             <button onclick="document.getElementById('import-file-input').click()">📤 Import</button>
             <button onclick="saveActivePresetModal()">💾 Save Preset</button>

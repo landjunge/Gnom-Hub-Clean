@@ -78,6 +78,7 @@ function buildWarRoomHTML() {
 }
 
 function showWarRoom() {
+  if (typeof trackView === 'function') trackView('war-room');
   selectedId = null;
   window._lastChatData = '';
   const searchInput = document.getElementById('agent-search');

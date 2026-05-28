@@ -304,6 +304,19 @@
       padding: 5px 0 !important;
     }
 
+    .header-right button.btn-half {
+      width: 43px !important;
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.75rem;
+    }
+
+    button:disabled {
+      opacity: 0.4 !important;
+      cursor: not-allowed !important;
+      pointer-events: none !important;
+    }
+
     .header-stats {
       display: flex;
       gap: 8px;
@@ -2018,6 +2031,10 @@
     </div>
     <div class="status-lamps" id="status-lamps"></div>
     <div class="header-right">
+      <div style="display: flex; gap: 4px; align-items: center; margin-right: 4px;">
+        <button class="btn-primary btn-half" id="btn-back" onclick="goBackView()" title="Zurück (1 Position)" style="opacity: 0.4; pointer-events: none;" disabled>↩</button>
+        <button class="btn-primary btn-half" id="btn-save" onclick="globalSave()" title="Global Speichern">💾</button>
+      </div>
       <button class="btn-primary" onclick="showWorkspace()">Workspace</button>
       <button class="btn-primary" onclick="showDashboard()">Dashboard</button>
       <button class="btn-primary" onclick="showLLMConfig()">LLM</button>

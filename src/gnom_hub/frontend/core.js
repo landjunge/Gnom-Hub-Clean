@@ -8,6 +8,10 @@ var agents = [];
 var selectedId = null;
 var _intervalIds = [];
 
+// Navigation History
+window.viewHistory = [];
+window.currentView = 'war-room';
+
 var _nukeTimer = null;
 var _nukeArmed = false;
 var _nukeAudioCtx = null;
@@ -782,6 +786,69 @@ window.showGhost = () => {
     o.parentNode.replaceChild(newGhost, o);
     newGhost.style.display = 'flex';
     setTimeout(() => { newGhost.style.display = 'none'; }, 120000);
+  }
+};
+
+window.trackView = (viewName) => {
+  if (window.currentView !== viewName) {
+    window.viewHistory.push(window.currentView);
+    window.currentView = viewName;
+  }
+  window.updateBackButtonState();
+};
+
+window.updateBackButtonState = () => {
+  const btn = document.getElementById('btn-back');
+  if (btn) {
+    const hasHistory = window.viewHistory.length > 0;
+    btn.disabled = !hasHistory;
+    btn.style.opacity = hasHistory ? '1' : '0.4';
+    btn.style.pointerEvents = hasHistory ? 'auto' : 'none';
+  }
+};
+
+window.goBackView = () => {
+  if (window.viewHistory.length > 0) {
+    const prev = window.viewHistory.pop();
+    window.currentView = prev;
+    if (prev === 'war-room') {
+      if (typeof showWarRoom === 'function') showWarRoom();
+    } else if (prev === 'workspace') {
+      if (typeof showWorkspace === 'function') showWorkspace();
+    } else if (prev === 'dashboard') {
+      if (typeof showDashboard === 'function') showDashboard();
+    } else if (prev === 'llm') {
+      if (typeof showLLMConfig === 'function') showLLMConfig();
+    } else if (prev === 'help') {
+      if (typeof showHelpPage === 'function') showHelpPage();
+    }
+    window.updateBackButtonState();
+  }
+};
+
+window.globalSave = async () => {
+  let savedSomething = false;
+  
+  const llmPanel = document.getElementById('llm-panel');
+  if (llmPanel && window.getComputedStyle(llmPanel).display !== 'none') {
+    if (typeof saveKeysOnly === 'function') {
+      await saveKeysOnly();
+    }
+    if (typeof saveAgentLLMs === 'function') {
+      await saveAgentLLMs();
+    }
+    savedSomething = true;
+  }
+  
+  if (window.selectedId) {
+    if (typeof saveAgentOptimizerSettings === 'function') {
+      await saveAgentOptimizerSettings(window.selectedId);
+    }
+    savedSomething = true;
+  }
+  
+  if (!savedSomething) {
+    toast('Nichts zu speichern.', 'info');
   }
 };
 
