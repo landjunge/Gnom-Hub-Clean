@@ -204,8 +204,8 @@ async function loadDashboardData() {
 async function showLLMConfig() {
   selectedId = null;
   document.getElementById('content').innerHTML = `
-    <div class="panel" id="llm-panel" style="padding:15px 20px; background:rgba(10, 15, 30, 0.4); border:1px solid var(--glass-border);">
-      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:10px;">
+    <div class="panel" id="llm-panel" style="height:calc(100vh - 91px); box-sizing:border-box; display:flex; flex-direction:column; padding:15px 20px; background:rgba(10, 15, 30, 0.4); border:1px solid var(--glass-border); margin-bottom:0; overflow:hidden;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:10px; flex-shrink:0;">
         <div style="display:flex; align-items:center; gap:12px;">
           <button class="btn-primary" onclick="showWarRoom()">◀ Zurück</button>
           <h2 style="margin:0; font-size:1.1rem; font-weight:700; border:none; letter-spacing:0.5px; color:#fff; display:flex; align-items:center; gap:8px;">
@@ -214,11 +214,11 @@ async function showLLMConfig() {
         </div>
       </div>
       
-      <div class="llm-container">
+      <div class="llm-container" style="flex:1; min-height:0; display:grid; grid-template-columns:1fr 1.5fr; gap:20px; overflow:hidden;">
         <!-- Left Column: Settings Modules -->
-        <div style="display:flex; flex-direction:column; gap:20px;">
+        <div style="display:flex; flex-direction:column; gap:15px; overflow-y:auto; padding-right:5px; height:100%; scrollbar-width:thin;">
           <!-- Module 1: API Keys -->
-          <div class="llm-card">
+          <div class="llm-card" style="flex-shrink:0;">
             <div class="llm-card-header">
               <h3 class="llm-card-title">🔑 API Keys & Authentication</h3>
               <label style="display:flex; align-items:center; gap:5px; font-size:0.75rem; color:var(--text-dim); cursor:pointer;">
@@ -236,7 +236,7 @@ async function showLLMConfig() {
           </div>
           
           <!-- Module 2: Agenten-Gangs -->
-          <div class="llm-card">
+          <div class="llm-card" style="flex-shrink:0;">
             <div class="llm-card-header">
               <h3 class="llm-card-title">👥 Agenten-Gangs</h3>
             </div>
@@ -245,7 +245,7 @@ async function showLLMConfig() {
           </div>
           
           <!-- Module 3: Global Options -->
-          <div class="llm-card">
+          <div class="llm-card" style="flex-shrink:0;">
             <div class="llm-card-header">
               <h3 class="llm-card-title">⚙️ Globale Optionen</h3>
             </div>
@@ -273,7 +273,7 @@ async function showLLMConfig() {
           </div>
           
           <!-- Module 4: System Information -->
-          <div class="llm-card">
+          <div class="llm-card" style="flex-shrink:0;">
             <div class="llm-card-header">
               <h3 class="llm-card-title">📊 Systemumgebung</h3>
             </div>
@@ -284,17 +284,17 @@ async function showLLMConfig() {
         </div>
         
         <!-- Right Column: Agent LLM Routing -->
-        <div class="llm-card" style="height:100%; display:flex; flex-direction:column;">
-          <div class="llm-card-header">
+        <div class="llm-card" style="height:100%; display:flex; flex-direction:column; overflow:hidden;">
+          <div class="llm-card-header" style="flex-shrink:0;">
             <h3 class="llm-card-title">⚡ Agenten-Routing & LLM-Zuweisung</h3>
             <div style="display:flex; gap:6px; align-items:center;">
               <button class="btn-primary" onclick="autoRouteAllAgents()" style="font-size:0.75rem; padding:4px 10px;">⚡ Auto-Route</button>
               <button id="save-agents-btn" class="btn-primary" onclick="saveAgentLLMs()" style="font-size:0.75rem; padding:4px 10px;">Speichern</button>
             </div>
           </div>
-          <span class="llm-card-description">Mappe jeden Agenten im System auf einen spezifischen Provider und ein LLM-Modell. Nutze Auto-Routing für eine kosteneffiziente, ausgewogene Zuweisung basierend auf deinen hinterlegten Keys.</span>
+          <span class="llm-card-description" style="flex-shrink:0;">Mappe jeden Agenten im System auf einen spezifischen Provider und ein LLM-Modell. Nutze Auto-Routing für eine kosteneffiziente, ausgewogene Zuweisung basierend auf deinen hinterlegten Keys.</span>
           
-          <div id="routing-progress-banner" style="display:none; align-items:center; justify-content:space-between; padding:10px 14px; background:rgba(0,229,255,0.08); border:1px solid rgba(0,229,255,0.22); border-radius:10px; font-size:0.8rem; margin-bottom:10px;">
+          <div id="routing-progress-banner" style="display:none; align-items:center; justify-content:space-between; padding:10px 14px; background:rgba(0,229,255,0.08); border:1px solid rgba(0,229,255,0.22); border-radius:10px; font-size:0.8rem; margin-bottom:10px; flex-shrink:0;">
             <div style="display:flex; align-items:center; gap:10px;">
               <div id="routing-banner-spinner" style="width:14px; height:14px; border:2px solid rgba(0,229,255,0.3); border-top-color:#00e5ff; border-radius:50%; animation:spin 1s linear infinite;"></div>
               <span id="routing-progress-text" style="color:white; font-weight:500;">Auto-routing läuft...</span>
@@ -302,16 +302,12 @@ async function showLLMConfig() {
             <div id="routing-progress-percentage" style="color:#00e5ff; font-family:monospace; font-weight:bold;">0%</div>
           </div>
           
-          <div id="llm-agents-list" style="flex:1; overflow-y:auto; padding-right:5px; max-height:480px; scrollbar-width:thin;">
+          <div id="llm-agents-list" style="flex:1; overflow-y:auto; padding-right:5px; scrollbar-width:thin;">
             Lade Agenten-Zuweisungen...
           </div>
           
-          <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:12px; display:flex; gap:10px;">
-            <button id="save-agents-btn-bottom" class="btn-primary" onclick="saveAgentLLMs()" style="flex:1; padding:8px; font-weight:600; font-size:0.82rem; letter-spacing:0.5px;">Routing Speichern</button>
-          </div>
-          
-          <div id="routing-insights-panel" style="margin-top:10px; display:none;"></div>
-    </div>
+          <div id="routing-insights-panel" style="margin-top:10px; display:none; flex-shrink:0;"></div>
+        </div>
       </div>
     </div>
   `;
