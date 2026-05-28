@@ -80,6 +80,20 @@
 #sb-layer-2 .sb-layer-label { color: var(--sb-worker-color); }
 #sb-layer-3 .sb-layer-label { color: var(--sb-user-color); }
 
+.sb-layer-description {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  font-size: 0.52rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 10;
+  color: var(--text-dim, #94a3b8);
+}
+
 .sb-layer-body {
   width: 100%;
   height: 100%;
