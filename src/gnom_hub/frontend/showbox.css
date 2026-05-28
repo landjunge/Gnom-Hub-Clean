@@ -199,10 +199,9 @@
 }
 
 .sb-btn-long {
-  height: 14px !important;
+  height: 21px !important;
   font-size: 0.52rem !important;
   font-weight: 700 !important;
-  line-height: 12px !important;
   border-radius: 4px !important;
   padding: 0 !important;
 }

@@ -74,32 +74,31 @@
   }
 
   function initHTML(container) {
+    container.classList.add('modular-showbox');
     container.innerHTML = `
-      <div class="modular-showbox">
-        <div class="showbox-layers-container" id="sb-layers-container">
-          <div class="sb-layer active" id="sb-layer-1" data-layer="1">
-            <span class="sb-layer-label">System-Agenten</span>
-            <div class="sb-layer-body" id="sb-layer-body-1">STANDBY</div>
-          </div>
-          <div class="sb-layer" id="sb-layer-2" data-layer="2">
-            <span class="sb-layer-label">Worker</span>
-            <div class="sb-layer-body" id="sb-layer-body-2">STANDBY</div>
-          </div>
-          <div class="sb-layer" id="sb-layer-3" data-layer="3">
-            <span class="sb-layer-label">User / Entscheidung</span>
-            <div class="sb-layer-body" id="sb-layer-body-3">STANDBY</div>
-          </div>
+      <div class="showbox-layers-container" id="sb-layers-container">
+        <div class="sb-layer active" id="sb-layer-1" data-layer="1">
+          <span class="sb-layer-label">System-Agenten</span>
+          <div class="sb-layer-body" id="sb-layer-body-1">STANDBY</div>
         </div>
-        <div class="showbox-controls">
-          <button class="sb-btn" id="sb-btn-prev" title="Zurück"></button>
-          <button class="sb-btn" id="sb-btn-delete" title="Löschen"></button>
-          <button class="sb-btn" id="sb-btn-switch" title="Layer wechseln"></button>
-          <button class="sb-btn" id="sb-btn-next" title="Vor"></button>
+        <div class="sb-layer" id="sb-layer-2" data-layer="2">
+          <span class="sb-layer-label">Worker</span>
+          <div class="sb-layer-body" id="sb-layer-body-2">STANDBY</div>
         </div>
-        <div class="showbox-extra-controls">
-          <button class="sb-btn sb-btn-long sb-btn-red" id="sb-btn-cancel">Abbrechen</button>
-          <button class="sb-btn sb-btn-long sb-btn-green" id="sb-btn-ok">Okay</button>
+        <div class="sb-layer" id="sb-layer-3" data-layer="3">
+          <span class="sb-layer-label">User / Entscheidung</span>
+          <div class="sb-layer-body" id="sb-layer-body-3">STANDBY</div>
         </div>
+      </div>
+      <div class="showbox-controls">
+        <button class="sb-btn" id="sb-btn-prev" title="Zurück"></button>
+        <button class="sb-btn" id="sb-btn-delete" title="Löschen"></button>
+        <button class="sb-btn" id="sb-btn-switch" title="Layer wechseln"></button>
+        <button class="sb-btn" id="sb-btn-next" title="Vor"></button>
+      </div>
+      <div class="showbox-extra-controls">
+        <button class="sb-btn sb-btn-long" id="sb-btn-cancel"></button>
+        <button class="sb-btn sb-btn-long" id="sb-btn-ok"></button>
       </div>
     `;
   }
@@ -127,12 +126,32 @@
 
   function initButtons() {
     if (window.ShowboxButtons) {
-      window.ShowboxButtons.configure('prev', { onClick: () => prevSlide() });
-      window.ShowboxButtons.configure('delete', { onClick: () => clearActiveLayer() });
-      window.ShowboxButtons.configure('switch', { onClick: () => cycleLayer() });
-      window.ShowboxButtons.configure('next', { onClick: () => nextSlide() });
-      window.ShowboxButtons.configure('cancel', { onClick: () => handleCancelAction() });
-      window.ShowboxButtons.configure('ok', { onClick: () => handleOkAction() });
+      window.ShowboxButtons.configure('prev', {
+        icon: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>`,
+        onClick: () => prevSlide()
+      });
+      window.ShowboxButtons.configure('delete', {
+        icon: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`,
+        onClick: () => clearActiveLayer()
+      });
+      window.ShowboxButtons.configure('switch', {
+        icon: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>`,
+        onClick: () => cycleLayer()
+      });
+      window.ShowboxButtons.configure('next', {
+        icon: `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`,
+        onClick: () => nextSlide()
+      });
+      window.ShowboxButtons.configure('cancel', {
+        text: 'Abbrechen',
+        color: 'red',
+        onClick: () => handleCancelAction()
+      });
+      window.ShowboxButtons.configure('ok', {
+        text: 'Okay',
+        color: 'green',
+        onClick: () => handleOkAction()
+      });
       window.ShowboxButtons.init();
     }
     updateButtonStates();

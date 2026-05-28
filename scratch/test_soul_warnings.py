@@ -11,7 +11,9 @@ def test_soul_warnings():
     print("============================================================")
     print(" 🚀 STARTING SOULAG INJECTION WARNING TEST")
     print("============================================================")
-    
+    for f in ["data/soul_embeddings.index", "data/soul_fact_ids.pkl"]:
+        if os.path.exists(f):
+            os.remove(f)
     gnom_hub.db.init_db()
     
     # Save a test fact

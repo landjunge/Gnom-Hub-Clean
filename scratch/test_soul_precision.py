@@ -15,6 +15,9 @@ def print_banner(text):
 
 def run_tests():
     print_banner("TESTING SOULAG HIGH-PRECISION RETRIEVAL")
+    for f in ["data/soul_embeddings.index", "data/soul_fact_ids.pkl"]:
+        if os.path.exists(f):
+            os.remove(f)
     gnom_hub.db.init_db()
     
     # Seed a specific fact

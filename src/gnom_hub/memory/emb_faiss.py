@@ -15,7 +15,7 @@ class FaissEmbeddingHelper:
         except Exception: facts = []
         embs = np.vstack([get_emb(self.model, f[2]) for f in facts]) if facts else []
         dim = embs.shape[1] if len(embs) > 0 else 384
-        if len(embs) >= 256:
+        if len(embs) >= 100000:
             self.index = faiss.IndexIVFPQ(faiss.IndexFlatL2(dim), dim, 100, 8, 8)
             self.index.train(embs); self.index.add(embs)
         else:
