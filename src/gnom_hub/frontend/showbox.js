@@ -38,12 +38,104 @@
   window.showboxManualNavigation = false;
 
   let toastRevertTimeout = null;
+  let activeDecisionId = null;
 
   function cancelToastRevert() {
     if (toastRevertTimeout) {
       clearTimeout(toastRevertTimeout);
       toastRevertTimeout = null;
     }
+  }
+
+  async function handleOkAction() {
+    if (!activeDecisionId) return;
+    toast('Entscheidung gesendet: Erlauben', 'success');
+    if (window.ShowboxButtons) {
+      window.ShowboxButtons.configure('ok', { disabled: true });
+      window.ShowboxButtons.configure('cancel', { disabled: true });
+    }
+    if (typeof window.api === 'function') {
+      await window.api('POST', '/chat', { content: `@@approve_decision ${activeDecisionId}` });
+      if (typeof window.loadChat === 'function') window.loadChat();
+    }
+  }
+
+  async function handleCancelAction() {
+    if (!activeDecisionId) return;
+    toast('Entscheidung gesendet: Ablehnen', 'warning');
+    if (window.ShowboxButtons) {
+      window.ShowboxButtons.configure('ok', { disabled: true });
+      window.ShowboxButtons.configure('cancel', { disabled: true });
+    }
+    if (typeof window.api === 'function') {
+      await window.api('POST', '/chat', { content: `@@reject_decision ${activeDecisionId}` });
+      if (typeof window.loadChat === 'function') window.loadChat();
+    }
+  }
+
+  function initHTML(container) {
+    container.innerHTML = `
+      <div class="modular-showbox">
+        <div class="showbox-layers-container" id="sb-layers-container">
+          <div class="sb-layer active" id="sb-layer-1" data-layer="1">
+            <span class="sb-layer-label">System-Agenten</span>
+            <div class="sb-layer-body" id="sb-layer-body-1">STANDBY</div>
+          </div>
+          <div class="sb-layer" id="sb-layer-2" data-layer="2">
+            <span class="sb-layer-label">Worker</span>
+            <div class="sb-layer-body" id="sb-layer-body-2">STANDBY</div>
+          </div>
+          <div class="sb-layer" id="sb-layer-3" data-layer="3">
+            <span class="sb-layer-label">User / Entscheidung</span>
+            <div class="sb-layer-body" id="sb-layer-body-3">STANDBY</div>
+          </div>
+        </div>
+        <div class="showbox-controls">
+          <button class="sb-btn" id="sb-btn-prev" title="Zurück"></button>
+          <button class="sb-btn" id="sb-btn-delete" title="Löschen"></button>
+          <button class="sb-btn" id="sb-btn-switch" title="Layer wechseln"></button>
+          <button class="sb-btn" id="sb-btn-next" title="Vor"></button>
+        </div>
+        <div class="showbox-extra-controls">
+          <button class="sb-btn sb-btn-long sb-btn-red" id="sb-btn-cancel">Abbrechen</button>
+          <button class="sb-btn sb-btn-long sb-btn-green" id="sb-btn-ok">Okay</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function initLayers() {
+    const container = document.getElementById('sb-layers-container');
+    if (container) {
+      container.addEventListener('dblclick', () => {
+        if (typeof window.openShowboxOverlay === 'function') {
+          window.openShowboxOverlay();
+        }
+      });
+    }
+    for (let i = 1; i <= 3; i++) {
+      const layerEl = document.getElementById(`sb-layer-${i}`);
+      if (layerEl) {
+        layerEl.addEventListener('click', (e) => {
+          if (e.target.closest('button') || e.target.closest('a') || e.target.closest('.showbox-controls') || e.target.closest('.showbox-extra-controls')) return;
+          cancelToastRevert();
+          switchLayer(i);
+        });
+      }
+    }
+  }
+
+  function initButtons() {
+    if (window.ShowboxButtons) {
+      window.ShowboxButtons.configure('prev', { onClick: () => prevSlide() });
+      window.ShowboxButtons.configure('delete', { onClick: () => clearActiveLayer() });
+      window.ShowboxButtons.configure('switch', { onClick: () => cycleLayer() });
+      window.ShowboxButtons.configure('next', { onClick: () => nextSlide() });
+      window.ShowboxButtons.configure('cancel', { onClick: () => handleCancelAction() });
+      window.ShowboxButtons.configure('ok', { onClick: () => handleOkAction() });
+      window.ShowboxButtons.init();
+    }
+    updateButtonStates();
   }
 
   // Initialize modular Showbox DOM structure
@@ -53,87 +145,9 @@
       console.warn("Modular Showbox container (#modular-showbox-container) not found in DOM.");
       return;
     }
-
-    // Build the markup
-    container.innerHTML = `
-      <div class="modular-showbox">
-        <div class="showbox-layers-container" id="sb-layers-container">
-          <!-- Layer 1: System-Agenten -->
-          <div class="sb-layer active" id="sb-layer-1" data-layer="1">
-            <span class="sb-layer-label">System-Agenten</span>
-            <div class="sb-layer-body" id="sb-layer-body-1">STANDBY</div>
-          </div>
-          <!-- Layer 2: Worker -->
-          <div class="sb-layer" id="sb-layer-2" data-layer="2">
-            <span class="sb-layer-label">Worker</span>
-            <div class="sb-layer-body" id="sb-layer-body-2">STANDBY</div>
-          </div>
-          <!-- Layer 3: User / Entscheidung -->
-          <div class="sb-layer" id="sb-layer-3" data-layer="3">
-            <span class="sb-layer-label">User / Entscheidung</span>
-            <div class="sb-layer-body" id="sb-layer-body-3">STANDBY</div>
-          </div>
-        </div>
-        <!-- 4 Buttons below -->
-        <div class="showbox-controls">
-          <button class="sb-btn" id="sb-btn-prev" title="Zurück">
-            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-          </button>
-          <button class="sb-btn" id="sb-btn-delete" title="Löschen">
-            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-          </button>
-          <button class="sb-btn" id="sb-btn-switch" title="Layer wechseln">
-            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-          </button>
-          <button class="sb-btn" id="sb-btn-next" title="Vor">
-            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-          </button>
-        </div>
-      </div>
-    `;
-
-    // Bind event listeners to buttons
-    document.getElementById('sb-btn-prev').addEventListener('click', (e) => {
-      e.stopPropagation();
-      prevSlide();
-    });
-    document.getElementById('sb-btn-delete').addEventListener('click', (e) => {
-      e.stopPropagation();
-      clearActiveLayer();
-    });
-    document.getElementById('sb-btn-switch').addEventListener('click', (e) => {
-      e.stopPropagation();
-      cycleLayer();
-    });
-    document.getElementById('sb-btn-next').addEventListener('click', (e) => {
-      e.stopPropagation();
-      nextSlide();
-    });
-
-    // Make container double-clickable to open full detail modal
-    document.getElementById('sb-layers-container').addEventListener('dblclick', () => {
-      if (typeof window.openShowboxOverlay === 'function') {
-        window.openShowboxOverlay();
-      }
-    });
-
-    // Sync button disabled states initially
-    updateButtonStates();
-
-    // Make layers clickable to switch directly
-    for (let i = 1; i <= 3; i++) {
-      const layerEl = document.getElementById(`sb-layer-${i}`);
-      if (layerEl) {
-        layerEl.addEventListener('click', (e) => {
-          // If the user clicks on links or buttons inside the body, don't switch layer
-          if (e.target.closest('button') || e.target.closest('a') || e.target.closest('.showbox-controls')) return;
-          cancelToastRevert();
-          switchLayer(i);
-        });
-      }
-    }
-
-    // Set initial body classes
+    initHTML(container);
+    initLayers();
+    initButtons();
     switchLayer(state.activeLayer, true);
   }
 
@@ -238,6 +252,15 @@
     }
   }
 
+  function updateDecisionButtons(decisionId) {
+    activeDecisionId = decisionId;
+    if (window.ShowboxButtons) {
+      const disabled = !decisionId;
+      window.ShowboxButtons.configure('ok', { disabled });
+      window.ShowboxButtons.configure('cancel', { disabled });
+    }
+  }
+
   // Render the current slide of the current history item in the given layer
   function renderLayerContent(layerIdx) {
     const layer = state.layers[layerIdx];
@@ -247,12 +270,18 @@
     if (layer.currentHistoryIdx === -1 || layer.history.length === 0) {
       body.innerHTML = 'STANDBY';
       body.style.fontSize = '0.82rem';
+      if (layerIdx === LAYERS.USER) updateDecisionButtons(null);
       return;
     }
 
     const pres = layer.history[layer.currentHistoryIdx];
     const slide = pres.slides[pres.currentSlideIdx] || 'Kein Inhalt';
     body.innerHTML = slide;
+
+    if (layerIdx === LAYERS.USER) {
+      const match = slide.match(/@@approve_decision\s+([a-f0-9\-]+)/);
+      updateDecisionButtons(match ? match[1] : null);
+    }
 
     autoFitText(layerIdx);
   }
@@ -323,30 +352,18 @@
 
   // Update enable/disabled visual states of buttons
   function updateButtonStates() {
-    const btnPrev = document.getElementById('sb-btn-prev');
-    const btnNext = document.getElementById('sb-btn-next');
-    if (!btnPrev || !btnNext) return;
-
+    if (!window.ShowboxButtons) return;
     const layer = state.layers[state.activeLayer];
     if (layer.currentHistoryIdx === -1 || layer.history.length === 0) {
-      btnPrev.disabled = true;
-      btnNext.disabled = true;
-      btnPrev.style.opacity = 0.4;
-      btnNext.style.opacity = 0.4;
+      window.ShowboxButtons.configure('prev', { disabled: true });
+      window.ShowboxButtons.configure('next', { disabled: true });
       return;
     }
-
     const pres = layer.history[layer.currentHistoryIdx];
-    
-    // Can we go back?
     const hasPrev = pres.currentSlideIdx > 0 || layer.currentHistoryIdx > 0;
-    btnPrev.disabled = !hasPrev;
-    btnPrev.style.opacity = hasPrev ? 1 : 0.4;
-
-    // Can we go forward?
     const hasNext = pres.currentSlideIdx < pres.slides.length - 1 || layer.currentHistoryIdx < layer.history.length - 1;
-    btnNext.disabled = !hasNext;
-    btnNext.style.opacity = hasNext ? 1 : 0.4;
+    window.ShowboxButtons.configure('prev', { disabled: !hasPrev });
+    window.ShowboxButtons.configure('next', { disabled: !hasNext });
   }
 
   // Expose triggers & helpers to window for Gnom-Hub sync and legacy code support
