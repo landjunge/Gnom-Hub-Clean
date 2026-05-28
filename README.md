@@ -106,7 +106,7 @@ Gnom-Hub development phases:
     *   Flanked sidebar stats with two fixed 30px placeholders.
     *   Clean logo in left header, uniform 86px buttons in right header.
 *   **💾 Phase 19: Global Actions & Clean UI**
-    *   Added Back (`↩`) and Save (`💾`) buttons to the header navigation.
+    *   Added standard-sized (86px) Back and Save buttons to positions 1 and 6 in the header navigation.
     *   Removed all redundant local "Speichern" / "Apply & Save" buttons.
 
 ---

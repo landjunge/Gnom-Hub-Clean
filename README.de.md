@@ -96,7 +96,7 @@ Die Entwicklungsschritte im Überblick:
     *   Zwei feste 30px Platzhalter umschließen das Metriken-Modul.
     *   Einheitliche 86px Breite für alle Header-Buttons mit zentriertem Text.
 *   **💾 Phase 19: Globale Aktionen & Clean UI**
-    *   Zurück- (`↩`) und Speichern- (`💾`) Buttons in der Header-Navigationsleiste.
+    *   Back- und Save-Buttons in Standardgröße (86px) an Position 1 und 6 im Header.
     *   Redundante, lokale "Speichern"- und "Apply & Save"-Buttons wurden entfernt.
 
 ---
