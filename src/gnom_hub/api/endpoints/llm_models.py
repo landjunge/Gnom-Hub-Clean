@@ -44,10 +44,18 @@ async def check_and_update_models():
     return repo.get_value("openrouter_working_models") or []
 
 
+_cached_available_models = None
+_cached_time = 0
+
 @router.get("/api/llm/available_models")
 async def get_available_models():
+    global _cached_available_models, _cached_time
+    import time
+    now = time.time()
+    if _cached_available_models and (now - _cached_time < 30):
+        return _cached_available_models
+        
     repo = SQLiteStateRepository()
-    
     or_models = repo.get_value("openrouter_working_models")
     if not or_models:
         from gnom_hub.core.config import Config
@@ -55,14 +63,14 @@ async def get_available_models():
  
     local_models = []
     try:
-        async with httpx.AsyncClient(timeout=3.0) as client:
+        async with httpx.AsyncClient(timeout=0.5) as client:
             r = await client.get("http://127.0.0.1:11434/api/tags")
             if r.status_code == 200:
                 local_models = [m["name"] for m in r.json().get("models", []) if m.get("name")]
     except Exception: pass
     if not local_models: local_models = ['llama3', 'mistral', 'qwen2', 'phi3', 'gemma2']
     
-    return {
+    res = {
         "deepseek": ["deepseek-chat", "deepseek-reasoner"], 
         "openrouter": or_models, 
         "lokal": local_models,
@@ -71,6 +79,9 @@ async def get_available_models():
         "gemini": ["gemini-1.5-pro", "gemini-1.5-flash", "gemini-2.0-flash-exp"],
         "mistral": ["mistral-large-latest", "pixtral-large-latest", "codestral-latest"]
     }
+    _cached_available_models = res
+    _cached_time = now
+    return res
 
 @router.post("/api/llm/check_free_models")
 async def check_free_models_endpoint():

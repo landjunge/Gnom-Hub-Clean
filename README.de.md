@@ -140,6 +140,8 @@ Das System wurde in einem strukturierten Prozess um folgende Funktionen erweiter
 *   **Auto-Freigaben für sichere Aktionen**: Automatisches Durchwinken risikofreier Schreibzugriffe im Workspace und freigegebener Terminalprogramme (z. B. `python3`, `pytest`, `git status`) zur Vermeidung lästiger manueller Abfragen.
 *   **Echtzeit-PyPI-Download-Verifizierung**: Automatisierte API-Abfragen bei Paketinstallationen (`pip install`), um Download-Legitimität und Schadcode-Freiheit (0 registrierte Schwachstellen) direkt vorab im Netz zu prüfen.
 *   **Denkprozess-Filterung (Security Bypass Fix)**: Dynamische Entfernung der `<think>`-Blöcke von DeepSeek-R1 aus maschinell verarbeiteten Ausgaben (Vermeidung von Gatekeeper-Bypasses durch Erwähnungen im Denkprozess) bei gleichzeitigem Erhalt des formatierten Details-Widgets im Chat-UI.
+*   **Agenten-Limitierung (4/4-Regel)**: Begrenzung des Schwarms auf exakt 4 Worker- und 4 System-Agenten (mit automatischer Test-Bypass-Regel im Integrationsmodus), um unkontrolliertes Spawnen neuer Agenten zu blockieren.
+*   **Performance-Optimierung der LLM-Konsole**: Umstellung sequentieller API-Anfragen im Frontend auf parallele `Promise.all`-Abfragen sowie Integration eines 30-Sekunden-Arbeitsspeicher-Caches mit 0,5s-Timeout für die Modell-Verfügbarkeit, um jegliche UI-Verzögerungen zu eliminieren.
 
 ---
 
@@ -339,8 +341,9 @@ Architekt der Härtungsphase. Spezifische Beiträge:
 * Migration der JSON-Speicherung auf eine transaktionssichere SQLite3-Datenbank (WAL-Modus)
 * Implementierung des `psutil`-Prozessmanagers mit PID-Dateien und Lifespan-Integration
 * Integration von SFTP-Bereitstellung, CORS-Einschränkung auf Localhost und des `log.py`-Frameworks
-* Implementation der Härtungs-Phasen 1-15 (darunter Zero-Trust Capabilities, local Embeddings mit FAISS & TF-IDF-Fallback, Custom Presets, Prompt Versioning, Swarm Intelligence, User Feedback Loop und extrem performantes In-Memory/SQLite-Caching)
+* Implementation der Härtungs-Phasen 1-16 (darunter Zero-Trust Capabilities, local Embeddings mit FAISS & TF-IDF-Fallback, Custom Presets, Prompt Versioning, Swarm Intelligence, User Feedback Loop, R1-Think-Block-Filterung, extrem performantes In-Memory/SQLite-Caching und Härtung des Schwarms durch die 4/4-Agenten-Begrenzung)
 * Modularisierung des Frontend-Codes in 7 spezialisierte, entkoppelte JavaScript-Dateien zur Durchsetzung von Separation-of-Concerns
+* Optimierung der LLM-Konsolen-Performance durch parallele API-Abfragen und serverseitiges Caching der Modelllisten
 
 ---
 

@@ -111,6 +111,8 @@ Gnom-Hub has been developed through a structured hardening process:
 *   **Automated Gatekeeper Approvals**: Automatically approves safe writes within the workspace and whitelisted shell commands (`python3`, `pytest`, `git status`) to speed up execution.
 *   **Dynamic PyPI Verification**: Performs real-time validation checks against the PyPI JSON API during package installations to check package legitimacy and active vulnerabilities.
 *   **Reasoning Block Filtering**: Automatically strips DeepSeek R1 `<think>...</think>` blocks from machine-parsed outputs to prevent gatekeeper bypasses while keeping the styled details widget in the chat UI.
+*   **Agent Limit Enforcement**: Restricts active agent counts to exactly 4 worker and 4 system agents (with automatic test-mode bypasses) to prevent uncontrolled swarm growth.
+*   **Console Performance Tuning**: Rewrote sequential configuration fetches into parallel `Promise.all` requests and added a 30s TTL cache with 0.5s timeout for model availability checks, eliminating UI lag.
 
 ---
 
@@ -228,8 +230,9 @@ Architect of the hardening phase. Key contributions:
 * Migrated JSON storage layers into a transaction-safe local SQLite3 database (WAL mode).
 * Implemented the `psutil` process manager with PID files and Lifespan hooks.
 * Added SFTP deployments, CORS protections, and custom presets support.
-* Implemented Phase 1-16 hardening tasks (Zero-Trust Leases, local FAISS embeddings, prompt version manager, user feedback loop, and R1 think blocks filter).
+* Implemented Phase 1-16 hardening tasks (Zero-Trust Leases, local FAISS embeddings, prompt version manager, user feedback loop, R1 think blocks filter, and strict 4/4 agent limits).
 * Modularized the monolithic web dashboard script into 7 decoupled static JS modules to enforce proper separation of concerns.
+* Optimized LLM console dashboard loading latencies by parallelizing backend requests and caching model lookups.
 
 ---
 

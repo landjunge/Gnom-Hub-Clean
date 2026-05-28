@@ -5,6 +5,10 @@ from .connection import get_db_conn
 
 def set_agent_role(agent_ref: str, role: str) -> Optional[dict]:
     with get_db_conn() as c, c:
+        row = c.execute("SELECT name FROM agents WHERE id = ? OR name = ?", (agent_ref, agent_ref)).fetchone()
+        name = row["name"] if row else agent_ref
+        from gnom_hub.db.legacy_db import validate_agent_limit_db
+        validate_agent_limit_db(c, role, name)
         if role == "general":
             c.execute("UPDATE agents SET role = 'normal' WHERE role = 'general'")
         c.execute("UPDATE agents SET role = ? WHERE id = ? OR name = ?", (role, agent_ref, agent_ref))

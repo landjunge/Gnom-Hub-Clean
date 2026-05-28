@@ -577,28 +577,36 @@ async function loadLLMConfig() {
   } catch (e) {
     window.testedAgentStatus = {};
   }
-  await loadLanguageState();
-  await loadSystemInfoState();
-  await loadFtpAutoDeployState();
-  await loadBrowserDockerState();
-  await loadActivePreset();
-
-  const keysRes = await api('GET', '/llm/keys');
-  if (keysRes) {
-    globalKeys = Object.keys(keysRes).length > 0 ? Object.values(keysRes) : [];
-    renderKeyStatus(globalKeys);
-    if (globalKeys.length > 0) {
-      document.getElementById('llm-keys-input').value = globalKeys.map(k => {
-        if (!k.key) return '';
-        const keyName = k.label ? k.label + "=" : (k.provider ? k.provider.toUpperCase() + "_API_KEY=" : "");
-        const displayKey = window.showKeysFull ? k.key : maskKey(k.key);
-        return keyName + displayKey;
-      }).filter(k => k).join('\n');
+  let keysRes, agentsRes, llmAgentsRes;
+  try {
+    const results = await Promise.all([
+      loadLanguageState(),
+      loadSystemInfoState(),
+      loadFtpAutoDeployState(),
+      loadBrowserDockerState(),
+      loadActivePreset(),
+      api('GET', '/llm/keys'),
+      api('GET', '/agents'),
+      api('GET', '/llm/agents')
+    ]);
+    keysRes = results[5];
+    agentsRes = results[6];
+    llmAgentsRes = results[7];
+    if (keysRes) {
+      globalKeys = Object.keys(keysRes).length > 0 ? Object.values(keysRes) : [];
+      renderKeyStatus(globalKeys);
+      if (globalKeys.length > 0) {
+        document.getElementById('llm-keys-input').value = globalKeys.map(k => {
+          if (!k.key) return '';
+          const keyName = k.label ? k.label + "=" : (k.provider ? k.provider.toUpperCase() + "_API_KEY=" : "");
+          const displayKey = window.showKeysFull ? k.key : maskKey(k.key);
+          return keyName + displayKey;
+        }).filter(k => k).join('\n');
+      }
     }
+  } catch (e) {
+    console.error("Failed to load initial config in parallel", e);
   }
-
-  const agentsRes = await api('GET', '/agents');
-  const llmAgentsRes = await api('GET', '/llm/agents');
   
   const providers = ['deepseek', 'openrouter', 'openai', 'anthropic', 'gemini', 'mistral', 'lokal'];
   let models = {
