@@ -40,11 +40,13 @@ Während GNOM-HUB die Phase ist, in der noch experimentiert, angepasst und geler
 
 ### 📊 Ist-Zustand (Status Quo)
 - **SuperGNOM-Modus (`SUPERGNOM_MODE`)**: In der Konfiguration implementiert. Schaltet das dynamische Lernen und Prompt-Evolution ab, um ein stabiles und vorhersagbares Systemverhalten im Produktiveinsatz zu garantieren.
-- **Isolierte Agenten-Gedächtnis-Bereiche (Isolated Memory Scopes)**: Implementiert für alle Worker-Agenten (`CoderAG`, `WriterAG`, `ResearcherAG`, `EditorAG`). Jeder Agent besitzt einen physikalisch getrennten FAISS-Vektorindex und SQLite-Filter, um eine gegenseitige Rollenverseuchung (Faktenleaks) zu verhindern. Allgemeine Benutzereinstellungen und Präferenzen liegen im gemeinsamen `global`-Scope.
+- **Isolierte Agenten-Gedächtnis-Bereiche (Isolated Memory Scopes)**: Implementiert für alle Worker-Agenten (`CoderAG`, `WriterAG`, `ResearcherAG`, `EditorAG`). Jeder Agent besitzt einen physikalisch getrennten FAISS-Vektorindex und SQLite-Filter, um eine gegenseitige Rollenverseuchung (Faktenleaks) zu verhindern.
+- **SuperGNOM `@bake` Exporter (Compiler)**: Automatisiertes Einfrieren der evolvierten Prompts, Bereinigung der SQLite-Datenbank (Chats limitiert auf letzte 1000 Zeilen), Generierung des SHA-256 Hashes `manifest.json` zur Startup-Integritätsprüfung.
+- **Passives Notfall-Backup-Archiv**: Eine passive historische Datenbank (`passive_archive.db`), in der sämtliche Interaktionen und Fakten transaktionssicher dupliziert werden, abfragbar bei Gedächtnisverlust über `@emergency` bzw. `@notfall`.
 
 ### 📝 Was noch getan werden muss (Roadmap / ToDo)
-- **SuperGNOM-Kompilierung / Export**: Ein automatisiertes Skript, das ein GNOM-HUB-Projekt nimmt, die aktuellen Prompt-Evolutionen einfriert (Snapshot), alle unnötigen Debug- und Lern-Module entfernt und einen minimalen, stabilen "SuperGNOM" exportiert (z.B. als autarkes CLI oder Docker-Image).
-- **Passives Notfall-Backup-Archiv**: Eine passive historische Datenbank, in der sämtliche Interaktionen festgehalten werden, die aber nur im absoluten Notfall zur Abfrage herangezogen wird, falls das primäre Gedächtnis Lücken aufweist.
+- **Spezifische UI-Layouts**: Implementierung optimierter Templates für spezifische Anwendungsfälle (z. B. barrierefreies Chat-UI oder Headless-API-Runner).
+- **Single-Click Docker- & Binary-Exporte**: Kompilierung der SuperGNOM-Laufzeitumgebung in ein eigenständiges Binary oder Docker-Image.
 
 ---
 
@@ -136,16 +138,12 @@ Die Datenbank-Initialisierung (`init_db()`), das Seeding der Standard-Agenten un
 
 ---
 
-## 📐 Die 40-Zeilen-Regel
+## 📐 Die 40-Zeilen-Regel (Funktionen & Methoden)
 
-```
-Modularität und Fokus: Die 40-Zeilen-Zielsetzung.
-```
-
-Gnom-Hub löst strukturelle Komplexität, indem es seine Codebasis extrem fokussiert und modular hält.
-* **Zielsetzung:** Um unübersichtlichen Code und Monolithen zu vermeiden, war das Ziel ursprünglich, jedes interne Python-Modul in `src/gnom_hub/` auf maximal 40 Zeilen zu begrenzen.
-* **Aktueller Stand:** Über 80 % aller 176 Python-Module halten sich weiterhin strikt an dieses Limit. Einige wenige komplexe Steuerungsdateien (insgesamt 35 Module, darunter `db.py` für die relationale SQLite-Schnittstelle, `gatekeeper.py` für die Sicherheitsprüfungen und `router_stage.py` für das LLM-Routing) sind im Zuge der Härtungsphasen angewachsen, um zusammengehörige Logik lesbar und wartbar in einer Datei zu belassen.
-* **Worker-Einfachheit:** Worker wie `CoderAG` benötigen nach wie vor lediglich ein kurzes Python-Skript von ca. 8–10 Zeilen für ihre Registrierung und Polling-Schleife.
+Gnom-Hub verhindert Komplexität und Code-Bloat durch einen klaren Design-Standard:
+*   **Die Richtlinie**: Jede einzelne **Funktion und Methode** im Backend soll eine Länge von 40 Zeilen nicht überschreiten. Dies fördert Single-Responsibility, Übersichtlichkeit und Testbarkeit.
+*   **Nicht-dogmatische Dateilängen**: Diese Regel ist ein Qualitätsstandard für ausführbaren Code und keine starre Begrenzung für ganze Dateien. Ganze Python-Module dürfen selbstverständlich länger als 40 Zeilen sein, um Konfigurations-Schemas, zusammenhängende Hilfsfunktionen, Konfigurationstabellen (wie Agenten-Definitionen) oder Import-Blöcke sauber zu bündeln, solange die einzelnen Funktionen darin kompakt bleiben.
+*   **Worker-Einfachheit**: Über 80% aller Python-Dateien im Projekt sind insgesamt kürzer als 40 Zeilen. Worker-Schleifen (wie `CoderAG`) benötigen nach wie vor lediglich ein kompaktes Skript von ca. 10 Zeilen.
 
 ---
 

@@ -40,11 +40,13 @@ While GNOM-HUB is the experimental, adaptive playground, the **SuperGNOM** is th
 
 ### 📊 Current State
 - **SuperGNOM Mode (`SUPERGNOM_MODE`)**: Flag implemented in configuration. Disables dynamic prompt evolution and fact learning, ensuring a stable, static behavior.
-- **Isolated Agent Memory Scopes**: Fully implemented for all workers (`CoderAG`, `WriterAG`, `ResearcherAG`, `EditorAG`). Each agent has a physically separate FAISS vector index and SQLite filters to prevent "role contamination". A `global` scope is preserved for general user preferences and system guidelines.
+- **Isolated Agent Memory Scopes**: Fully implemented for all workers (`CoderAG`, `WriterAG`, `ResearcherAG`, `EditorAG`). Each agent has a physically separate FAISS vector index and SQLite filters to prevent "role contamination".
+- **SuperGNOM `@bake` Compiler**: Automates snapshots of evolved agent prompts, cleans SQLite logs (chat history limited to 1000 messages), generates SHA-256 integrity check `manifest.json`, and bundles the standalone package.
+- **Passive Archive Backup**: A secondary transaction-safe passive database (`passive_archive.db`) log that records all historical traces, queried in case of context loss via the `@emergency` command.
 
 ### 📝 What is Still Needed (Roadmap / ToDo)
-- **SuperGNOM Compilation / Export**: An automated script/tool to snapshot the evolved prompts, strip out learning and debug subsystems, and bundle the workspace into a single immutable, fast executable (CLI or Docker runtime).
-- **Passive Archive Backup**: A secondary passive database log that records all historical traces, queried only as a fallback in case of context loss or retrieval failures.
+- **Dedicated UI Skins**: Implement templates tailored to specific use cases (e.g. simplified, headless, senior layouts).
+- **Single-Click Docker & Binary Exports**: Auto-compile the SuperGNOM runtime into standalone binaries.
 
 ---
 
@@ -129,12 +131,12 @@ Gnom-Hub development phases:
 
 ---
 
-## 📐 The 40-Line Rule
+## 📐 The 40-Line Rule (Functions & Methods)
 
-Gnom-Hub keeps structural complexity low by keeping code focused.
-*   **Objective**: Originally, all Python files under `src/gnom_hub/` were targeted to be under 40 lines.
-*   **Current Compliance**: Over 80% of our 176 Python modules strictly respect this limit. To maintain readability for complex features (e.g., SQLite WAL operations in `db.py`, security audits in `gatekeeper.py`, and multi-tier routing in `router_stage.py`), 35 files have been allowed to grow.
-*   **Worker Simplicity**: Background workers remain extremely compact (e.g., CoderAG requires only ~10 lines of code to handle polling, processing, and executing actions).
+Gnom-Hub keeps structural complexity low by keeping code focused and modular:
+*   **The Constraint**: Every single **function and method** in the backend is targeted to be strictly under 40 lines. This ensures single-responsibility, ease of understanding, and clean maintainable logic.
+*   **Non-Dogmatic Module Lengths**: This rule is a target standard to maintain code quality, not a dogmatic restriction on entire file sizes. Complete Python modules/files can naturally exceed 40 lines (holding configuration templates, multiple related helpers, dictionary setups, or import segments) as long as their individual functions remain compact.
+*   **Worker Simplicity**: Over 80% of our 176 Python modules strictly respect this limit, and background workers remain extremely compact (e.g., CoderAG requires only ~10 lines of code for polling and action loops).
 
 ---
 
