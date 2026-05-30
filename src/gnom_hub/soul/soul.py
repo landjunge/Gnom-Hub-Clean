@@ -36,8 +36,9 @@ class SoulAG:
                 "[\n"
                 "  {\n"
                 "    \"key\": \"ein_beschreibender_schluessel\",\n"
-                "    \"value\": \"Der präzise, eigenständige Fakt (z.B. 'Der User bevorzugt Python 3.11 und SQLite als Datenbank.')\",\n"
-                "    \"priority\": \"high\" // 'high' für Präferenzen, Projekt-Settings, Pfade, wiederholt Erwähntes; 'medium' für normale Fakten; 'low' für flüchtige/sekundäre Fakten\n"
+                "    \"value\": \"Der präzise, eigenständige Fakt.\",\n"
+                "    \"priority\": \"high\",\n"
+                "    \"target_agent\": \"CoderAG\" // 'CoderAG', 'WriterAG', 'ResearcherAG', 'EditorAG' oder 'all' (wenn global relevant)\n"
                 "  }\n"
                 "]\n"
                 "Falls keine neuen Fakten enthalten sind, antworte mit einem leeren Array: []"
@@ -48,14 +49,15 @@ class SoulAG:
                     "Du bist der SoulAG Lerneffekt-Extraktor von Gnom-Hub. Deine Aufgabe ist es, Nachrichten zu analysieren "
                     "und qualitativ hochwertige, präzise und kategorisierte Fakten zu extrahieren. "
                     "Befolge diese Regeln:\n"
-                    "1. Schlüssel (key) müssen deskriptiv, kleingeschrieben und mit Unterstrichen sein (z.B. user_pref_language, project_backend).\n"
-                    "2. Werte (value) müssen vollständig, grammatikalisch korrekt und im Kontext verständlich sein. Vermeide Pronomen.\n"
-                    "3. Weise eine Priorität ('high', 'medium', 'low') basierend auf der Wichtigkeit zu:\n"
-                    "   - 'high': Explizite Wünsche des Users, Präferenzen, Projekt-Einstellungen, Pfade, wiederholte Aussagen, oder ehrliche Ablehnungen/Einschränkungen von Agenten.\n"
-                    "   - 'medium': Allgemeine nützliche Fakten, Kontextinformationen, Workflow-Details.\n"
-                    "   - 'low': Flüchtige Details, Beispieldaten, untergeordnete Beobachtungen.\n"
-                    "4. Extrahiere keine flüchtigen Programmierfehler, Begrüßungen oder reinen Code-Spam.\n"
-                    "5. Antworte AUSSCHLIESSLICH mit dem JSON-Array. Kein Markdown, kein Einleitungstext."
+                    "1. Schlüssel (key) müssen deskriptiv, kleingeschrieben und mit Unterstrichen sein.\n"
+                    "2. Werte (value) müssen vollständig und im Kontext verständlich sein. Vermeide Pronomen.\n"
+                    "3. Weise eine Priorität ('high', 'medium', 'low') zu.\n"
+                    "4. Bestimme den 'target_agent' für jeden Fakt. Wenn der Fakt sich spezifisch auf Programmierrichtlinien, "
+                    "Code-Style, Bibliotheken oder technische Umsetzung bezieht, weise 'CoderAG' zu. Wenn er sich auf das Verfassen von Texten "
+                    "bezieht, weise 'WriterAG' zu. Wenn er sich auf Recherchen oder Suche bezieht, weise 'ResearcherAG' zu. Wenn er sich "
+                    "auf Review oder Qualitätssicherung bezieht, weise 'EditorAG' zu. Wenn der Fakt allgemein gültig ist, weise 'all' zu.\n"
+                    "5. Extrahiere keine flüchtigen Programmierfehler oder Begrüßungen.\n"
+                    "6. Antworte AUSSCHLIESSLICH mit dem JSON-Array. Kein Markdown, kein Einleitungstext."
                 ),
                 agent_name="SoulAG"
             ).content
@@ -64,11 +66,13 @@ class SoulAG:
             for f in json.loads(res[s:e+1]):
                 k, v = f.get("key",""), f.get("value","")
                 p = f.get("priority", "medium").lower()
+                target = f.get("target_agent", "all")
                 if p not in ["high", "medium", "low"]: p = "medium"
                 if self._val(k, v) < 2: _log.debug("[Soul] Fact rejected by validator: %s", k); continue
                 if self._is_dup(f"{k}: {v}"): _log.info("[Soul] Duplicate skipped: %s", k); continue
-                save_soul_fact(k, v, agent="SoulAG", priority=p)
-                _log.info("[Soul] Fact saved: %s (priority: %s)", k, p)
+                agent_name = "SoulAG" if target.lower() == "all" else target
+                save_soul_fact(k, v, agent=agent_name, priority=p)
+                _log.info("[Soul] Fact saved: %s (priority: %s, target: %s)", k, p, agent_name)
         except json.JSONDecodeError as e: _log.warning("[Soul] JSON parse error in fact extraction: %s", e)
         except Exception as e: _log.error("[Soul] Fact extraction failed: %s", e, exc_info=True)
     def inject_context(self, sys: str, msg: str, agent_name: str = None) -> str:
@@ -79,7 +83,7 @@ class SoulAG:
                 settings = get_state_value("agent_settings", {}).get(agent_name.lower(), {})
                 top_k = {1: 2, 2: 4, 3: 8, 4: 12, 5: 16}.get(settings.get("memory_strength", 3), 8)
             except Exception: pass
-        facts = retrieve_relevant_facts(msg, top_k=top_k)
+        facts = retrieve_relevant_facts(msg, agent_name=agent_name, top_k=top_k)
         if agent_name and facts:
             for f in facts:
                 key = (agent_name.lower(), f)

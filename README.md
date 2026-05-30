@@ -30,6 +30,24 @@ Gnom-Hub is a local-first multi-agent system with a clear structure: **176 Pytho
 
 ---
 
+## 🔮 The Vision: SuperGNOM & GNOM-HUB
+
+GNOM-HUB is not a standard AI chatbot nor a classic multi-agent framework. It is a structured development workbench where exactly eight fixed agents with clearly defined roles collaborate. Four of these are permanent administrative system agents handling security, memory, guardrails, and coordination.
+
+The core idea is not to grow infinitely in complexity. Instead, GNOM-HUB serves as a staging environment to eventually build a stable, specialized, single-mind AI system – the **SuperGNOM**.
+
+While GNOM-HUB is the experimental, adaptive playground, the **SuperGNOM** is the final compilation: immutable, robust, and customized for a specific human user or task. A SuperGNOM does not evolve or learn continuously in production; it remains predictable, controllable, and reliable.
+
+### 📊 Current State
+- **SuperGNOM Mode (`SUPERGNOM_MODE`)**: Flag implemented in configuration. Disables dynamic prompt evolution and fact learning, ensuring a stable, static behavior.
+- **Isolated Agent Memory Scopes**: Fully implemented for all workers (`CoderAG`, `WriterAG`, `ResearcherAG`, `EditorAG`). Each agent has a physically separate FAISS vector index and SQLite filters to prevent "role contamination". A `global` scope is preserved for general user preferences and system guidelines.
+
+### 📝 What is Still Needed (Roadmap / ToDo)
+- **SuperGNOM Compilation / Export**: An automated script/tool to snapshot the evolved prompts, strip out learning and debug subsystems, and bundle the workspace into a single immutable, fast executable (CLI or Docker runtime).
+- **Passive Archive Backup**: A secondary passive database log that records all historical traces, queried only as a fallback in case of context loss or retrieval failures.
+
+---
+
 ## 🚀 Key Features
 
 Gnom-Hub combines robust multi-process orchestration with an interactive web interface. Key features include:

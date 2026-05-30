@@ -30,6 +30,24 @@ Gnom-Hub ist ein lokales Multi-Agenten-System mit einer klaren Struktur: **176 P
 
 ---
 
+## 🔮 Die Vision: SuperGNOM & GNOM-HUB
+
+GNOM-HUB ist kein gewöhnlicher KI-Chatbot und auch kein klassisches Multi-Agenten-System. Es ist eine strukturierte Entwicklungsumgebung, in der genau acht feste Agenten mit klar definierten Rollen zusammenarbeiten. Vier davon sind dauerhafte System-Agenten, die sich um Sicherheit, Gedächtnis, Überwachung und Koordination kümmern.
+
+Der Kern der Idee ist nicht, immer komplexer oder größer zu werden. Stattdessen geht es darum, aus dieser flexiblen Werkstatt irgendwann ein stabiles, spezialisiertes KI-System zu erschaffen – den **SuperGNOM**.
+
+Während GNOM-HUB die Phase ist, in der noch experimentiert, angepasst und gelernt werden kann, ist der **SuperGNOM** das fertige Produkt: unveränderbar, stabil und auf einen bestimmten Menschen oder eine konkrete Aufgabe zugeschnitten. Ein SuperGNOM soll nicht ständig dazulernen und sich verändern. Er soll verlässlich, kontrollierbar und vorhersagbar bleiben.
+
+### 📊 Ist-Zustand (Status Quo)
+- **SuperGNOM-Modus (`SUPERGNOM_MODE`)**: In der Konfiguration implementiert. Schaltet das dynamische Lernen und Prompt-Evolution ab, um ein stabiles und vorhersagbares Systemverhalten im Produktiveinsatz zu garantieren.
+- **Isolierte Agenten-Gedächtnis-Bereiche (Isolated Memory Scopes)**: Implementiert für alle Worker-Agenten (`CoderAG`, `WriterAG`, `ResearcherAG`, `EditorAG`). Jeder Agent besitzt einen physikalisch getrennten FAISS-Vektorindex und SQLite-Filter, um eine gegenseitige Rollenverseuchung (Faktenleaks) zu verhindern. Allgemeine Benutzereinstellungen und Präferenzen liegen im gemeinsamen `global`-Scope.
+
+### 📝 Was noch getan werden muss (Roadmap / ToDo)
+- **SuperGNOM-Kompilierung / Export**: Ein automatisiertes Skript, das ein GNOM-HUB-Projekt nimmt, die aktuellen Prompt-Evolutionen einfriert (Snapshot), alle unnötigen Debug- und Lern-Module entfernt und einen minimalen, stabilen "SuperGNOM" exportiert (z.B. als autarkes CLI oder Docker-Image).
+- **Passives Notfall-Backup-Archiv**: Eine passive historische Datenbank, in der sämtliche Interaktionen festgehalten werden, die aber nur im absoluten Notfall zur Abfrage herangezogen wird, falls das primäre Gedächtnis Lücken aufweist.
+
+---
+
 ## 🚀 Features (Funktionsumfang)
 
 Gnom-Hub kombiniert eine robuste Multi-Prozess-Orchestrierung mit einem interaktiven Web-Interface. Die wichtigsten Features umfassen:

@@ -15,24 +15,56 @@ _logger = logging.getLogger("embeddings")
 class SoulEmbedder:
     def __init__(self, model_name: str = "all-MiniLM-L6-v2", db_path: str = None):
         from gnom_hub.db.legacy_db import DB_PATH
-        self.db_path, self.helper = str(db_path or DB_PATH), None
-        if HAS_LIBS:
+        self.model_name = model_name
+        self.db_path = str(db_path or DB_PATH)
+        self.helpers = {}
+
+    def get_helper(self, scope: str = "global"):
+        if not HAS_LIBS:
+            return None
+        if scope not in self.helpers:
             from gnom_hub.memory.emb_faiss import FaissEmbeddingHelper
-            self.helper = FaissEmbeddingHelper(model_name, self.db_path)
+            self.helpers[scope] = FaissEmbeddingHelper(self.model_name, self.db_path, scope)
+        return self.helpers[scope]
 
-    def add_fact(self, fact_id: str, key: str, value: str):
+    def add_fact(self, fact_id: str, key: str, value: str, scope: str = "global"):
         _search_cache.clear()
-        if self.helper: self.helper.add_fact(fact_id, key, value)
+        helper = self.get_helper(scope)
+        if helper:
+            helper.add_fact(fact_id, key, value)
 
-    def search_sync(self, query: str, top_k: int = 8, raw: bool = False) -> list:
-        k = (query, top_k, raw)
-        if k in _search_cache: return _search_cache[k]
-        res = self.helper.search(query, top_k, raw=raw) if self.helper else sr.retrieve_similar_sync(query, top_k, raw=raw)
+    def search_sync(self, query: str, agent_name: str = None, top_k: int = 8, raw: bool = False) -> list:
+        k = (query, agent_name, top_k, raw)
+        if k in _search_cache:
+            return _search_cache[k]
+        
+        g_helper = self.get_helper("global")
+        global_results = g_helper.search(query, top_k, raw=raw) if g_helper else []
+        
+        agent_scope = agent_name.lower() if agent_name else None
+        if agent_scope and agent_scope in ["coderag", "researcherag", "writerag", "editorag"]:
+            a_helper = self.get_helper(agent_scope)
+            agent_results = a_helper.search(query, top_k, raw=raw) if a_helper else []
+            seen = set()
+            merged = []
+            for r in agent_results + global_results:
+                content = r.split(": ", 1)[1] if ": " in r else r
+                if content not in seen:
+                    seen.add(content)
+                    merged.append(r)
+            res = merged[:top_k]
+        else:
+            res = global_results
+            
+        if not g_helper:
+            res = sr.retrieve_similar_sync(query, agent_name, top_k, raw=raw)
+            
         _search_cache[k] = res
         return res
 
     def has_similar(self, text: str, threshold: float = 0.92) -> bool:
-        if not self.helper or self.helper.index.ntotal == 0: return False
+        helper = self.get_helper("global")
+        if not helper or helper.index.ntotal == 0: return False
         results = self.search_sync(text, top_k=1, raw=True)
         if not results: return False
         try:
@@ -40,8 +72,8 @@ class SoulEmbedder:
             from gnom_hub.memory.emb_cache import get_emb
             val_text = text.split(": ", 1)[1] if ": " in text else text
             res_val = results[0].split(": ", 1)[1] if ": " in results[0] else results[0]
-            v1 = get_emb(self.helper.model, val_text).flatten()
-            v2 = get_emb(self.helper.model, res_val).flatten()
+            v1 = get_emb(helper.model, val_text).flatten()
+            v2 = get_emb(helper.model, res_val).flatten()
             cos = float(np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)))
             return cos > threshold
         except Exception:
@@ -54,5 +86,5 @@ def get_embedder() -> SoulEmbedder:
     global _instance
     if _instance is None:
         _instance = SoulEmbedder()
-        _logger.info("SoulEmbedder singleton initialized (FAISS=%s)", _instance.helper is not None)
+        _logger.info("SoulEmbedder singleton initialized (FAISS=%s)", _instance.get_helper("global") is not None)
     return _instance

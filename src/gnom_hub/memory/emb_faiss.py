@@ -1,32 +1,36 @@
 # emb_faiss.py — FAISS index and sentence embeddings logic helper
 import os, pickle, sqlite3, numpy as np, faiss; from sentence_transformers import SentenceTransformer; from gnom_hub.memory.emb_cache import get_emb
 class FaissEmbeddingHelper:
-    def __init__(self, model_name: str, db_path: str):
+    def __init__(self, model_name: str, db_path: str, scope: str = "global"):
+        self.scope = scope
         self.db_path, self.model, self.index, self.fact_ids = db_path, SentenceTransformer(model_name), None, []
         os.makedirs("data", exist_ok=True)
-        if not os.path.exists("data/soul_embeddings.index"): self._create()
+        self.index_path = f"data/soul_embeddings_{scope}.index"
+        self.pkl_path = f"data/soul_fact_ids_{scope}.pkl"
+        if not os.path.exists(self.index_path): self._create()
         else:
-            self.index = faiss.read_index("data/soul_embeddings.index")
-            try: self.fact_ids = pickle.load(open("data/soul_fact_ids.pkl", "rb"))
+            self.index = faiss.read_index(self.index_path)
+            try: self.fact_ids = pickle.load(open(self.pkl_path, "rb"))
             except Exception: pass
     def _create(self):
         try:
-            with sqlite3.connect(self.db_path) as conn: facts = conn.execute("SELECT id, key, value FROM soul_memory").fetchall()
+            with sqlite3.connect(self.db_path) as conn:
+                if self.scope == "global":
+                    facts = conn.execute("SELECT id, key, value FROM soul_memory WHERE agent IS NULL OR LOWER(agent) IN ('system', 'all', 'soulag')").fetchall()
+                else:
+                    facts = conn.execute("SELECT id, key, value FROM soul_memory WHERE LOWER(agent) = ?", (self.scope.lower(),)).fetchall()
         except Exception: facts = []
         embs = np.vstack([get_emb(self.model, f[2]) for f in facts]) if facts else []
         dim = embs.shape[1] if len(embs) > 0 else 384
-        if len(embs) >= 100000:
-            self.index = faiss.IndexIVFPQ(faiss.IndexFlatL2(dim), dim, 100, 8, 8)
-            self.index.train(embs); self.index.add(embs)
-        else:
-            self.index = faiss.IndexFlatL2(dim)
-            if len(embs) > 0: self.index.add(embs)
-        self.fact_ids = [f[0] for f in facts]; faiss.write_index(self.index, "data/soul_embeddings.index")
-        pickle.dump(self.fact_ids, open("data/soul_fact_ids.pkl", "wb"))
+        self.index = faiss.IndexFlatL2(dim)
+        if len(embs) > 0: self.index.add(embs)
+        self.fact_ids = [f[0] for f in facts]
+        faiss.write_index(self.index, self.index_path)
+        pickle.dump(self.fact_ids, open(self.pkl_path, "wb"))
     def add_fact(self, fact_id: str, key: str, value: str):
         self.index.add(get_emb(self.model, value)); self.fact_ids.append(fact_id)
-        faiss.write_index(self.index, "data/soul_embeddings.index")
-        pickle.dump(self.fact_ids, open("data/soul_fact_ids.pkl", "wb"))
+        faiss.write_index(self.index, self.index_path)
+        pickle.dump(self.fact_ids, open(self.pkl_path, "wb"))
     def search(self, query: str, top_k: int = 8, raw: bool = False) -> list:
         if self.index is None or self.index.ntotal == 0: return []
         if raw:

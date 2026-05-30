@@ -527,7 +527,8 @@ def save_soul_fact(key: str, value: str, agent: str = "System", priority: str = 
             logger.warning(f"[DB] Passive archive fact logging failed: {ex}")
         try:
             from gnom_hub.memory.embeddings import get_embedder
-            get_embedder().add_fact(str(row_id), key, value)
+            scope = ag.lower() if ag.lower() in ["coderag", "researcherag", "writerag", "editorag"] else "global"
+            get_embedder().add_fact(str(row_id), key, value, scope=scope)
         except Exception as e:
             logger.warning(f"[DB] Failed to add fact to FAISS index: {e}")
     except sqlite3.Error as e:
