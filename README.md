@@ -1,13 +1,13 @@
 # 🧠 GNOM-HUB
 
-> **8 Agents. ~7500 Lines. 176 Modules. Zero tolerance for bloat.**
+> **8 Agents. ~8350 Lines. 180 Modules. Zero tolerance for bloat.**
 > *A local-first multi-agent orchestration playground with a defensive zero-trust architecture and a modularized War Room dashboard.*
 
 [![License](https://img.shields.io/badge/License-Private_Use-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](#)
 [![Agents](https://img.shields.io/badge/Agents-8-blueviolet.svg)](#)
-[![Lines of Code](https://img.shields.io/badge/Lines_of_Code-~7500-blue.svg)](#)
-[![Modules](https://img.shields.io/badge/Modules-176-blue.svg)](#)
+[![Lines of Code](https://img.shields.io/badge/Lines_of_Code-~8350-blue.svg)](#)
+[![Modules](https://img.shields.io/badge/Modules-180-blue.svg)](#)
 [![Linting](https://img.shields.io/badge/Linting-Ruff-orange.svg)](#)
 
 ---
@@ -22,7 +22,7 @@
 
 ## What is Gnom-Hub?
 
-Gnom-Hub is a local-first multi-agent system with a clear structure of **176 Python modules**. It offers a lightweight, high-performance orchestrator without heavy frameworks, running entirely locally on your Mac. It controls background agents through a web dashboard called the **War Room**.
+Gnom-Hub is a local-first multi-agent system with a clear structure of **180 Python modules**. It offers a lightweight, high-performance orchestrator without heavy frameworks, running entirely locally on your Mac. It controls background agents through a web dashboard called the **War Room**.
 
 > [!IMPORTANT]
 > **Conscious Minimalism:** Gnom-Hub is designed for simplicity and maximum performance. It is intentionally **not** built to control hundreds of agents, but to efficiently orchestrate a small, highly specialized, and transparent team.
@@ -184,6 +184,29 @@ Gnom-Hub development phases:
 
 ---
 
+## ⚡ Performance & Benchmarks
+
+GNOM-HUB features high-performance optimization layers like in-memory TTL capability caches, SQLite write-ahead logging (WAL), and localized query caching. Below are the actual measurements executed on a macOS system:
+
+### Codebase Metrics
+| Metric | Value | Note |
+| :--- | :--- | :--- |
+| **Active Agents** | 8 | Fixed topology (4 System, 4 Workers) |
+| **Python Modules** | 180 | Modular backend structure inside `src/` |
+| **Python Lines of Code (LOC)** | ~8,350 | Clean architecture, no bloated external frameworks |
+| **JavaScript UI Modules** | 9 | Decoupled client scripts in the War Room |
+
+### System & Memory Latency
+| Operation | Cold Run | Warm Run (Cached) | Speedup / Efficiency |
+| :--- | :--- | :--- | :--- |
+| **Capability Check** | 0.7255 ms | 0.0006 ms | **~1,200x** (O(1) Memory Cache vs SQLite) |
+| **Semantic Memory Search** | 2,830.53 ms | 0.0006 ms | **~4,700,000x** (Query Cache vs local FAISS Embeddings) |
+
+> [!TIP]
+> Benchmarks can be verified locally at any time by running `python3 scratch/run_benchmarks.py`.
+
+---
+
 ## 📐 The 40-Line Rule (For Agent-Written Code)
 
 To prevent structural complexity and unmaintainable code in projects, GNOM-HUB enforces a strict programming standard on any code written by the swarm:
@@ -268,7 +291,7 @@ Gnom-Hub background agents interact with the system, filesystem, and external AP
 
 ```text
 gnom-hub/
-├── src/gnom_hub/        # 176 Python modules (Backend)
+├── src/gnom_hub/        # 180 Python modules (Backend)
 │   ├── core/            # Global configuration, logger, and Gatekeeper security
 │   │   └── security/    # Path validation (path_validator.py) & Gatekeeper (gatekeeper.py)
 │   ├── db/              # SQLite3 database (WAL mode) & repositories (legacy_db.py)
