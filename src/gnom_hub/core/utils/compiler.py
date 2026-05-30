@@ -45,17 +45,50 @@ def bake_supergnom(name: str, template: str = "chat") -> str:
     # Clean temporary and session-bound tables in target DB copy
     try:
         conn = sqlite3.connect(str(db_dest))
-        for tbl in ["audit_log", "chat", "explainable_outputs", "graceful_degradation_failures", 
+        for tbl in ["audit_log", "explainable_outputs", "graceful_degradation_failures", 
                     "token_budget_logs", "token_budget_alerts", "showbox_presentations"]:
             try:
                 conn.execute(f"DELETE FROM {tbl}")
             except sqlite3.OperationalError:
                 pass
+        try:
+            conn.execute("DELETE FROM chat WHERE id NOT IN (SELECT id FROM chat ORDER BY timestamp DESC LIMIT 1000)")
+        except sqlite3.OperationalError:
+            pass
         conn.execute("DELETE FROM state WHERE key NOT IN ('active_preset', 'agent_settings')")
         conn.commit()
         conn.close()
     except Exception as e:
         print(f"Error cleaning DB: {e}")
+
+    # Bake evolved prompts and generate manifest hashes
+    try:
+        import hashlib
+        from gnom_hub.core.utils.evolution_v2 import get_active_version
+        from gnom_hub.agents.agent_definitions import AGENT_DEFINITIONS
+        
+        compiled_defs = {}
+        prompt_hashes = {}
+        
+        for k, v in AGENT_DEFINITIONS.items():
+            compiled_defs[k] = v.copy()
+            active_v = get_active_version(v["name"])
+            if active_v:
+                evolved_prompt = active_v.base_prompt + "\n" + "\n".join(active_v.modifications)
+                compiled_defs[k]["sys_prompt"] = evolved_prompt
+                print(f"Baking evolved prompt for {v['name']} (version {active_v.id})")
+            
+            p_bytes = compiled_defs[k]["sys_prompt"].encode("utf-8")
+            prompt_hashes[v["name"]] = hashlib.sha256(p_bytes).hexdigest()
+            
+        target_def_file = src_dest / "gnom_hub" / "agents" / "agent_definitions.py"
+        with open(target_def_file, "w", encoding="utf-8") as f:
+            f.write(f"AGENT_DEFINITIONS = {repr(compiled_defs)}\n")
+            
+        with open(cfg_dest / "manifest.json", "w", encoding="utf-8") as f:
+            json.dump(prompt_hashes, f, indent=2)
+    except Exception as e:
+        print(f"Error baking prompts: {e}")
 
     # Copy package configurations
     shutil.copy2(PROJECT_ROOT / "pyproject.toml", dist_dir / "pyproject.toml")

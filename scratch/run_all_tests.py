@@ -22,7 +22,8 @@ tests = [
     "test_agent_optimizer.py",
     "test_swarm_stability.py",
     "test_agent_limit.py",
-    "test_memory_scopes.py"
+    "test_memory_scopes.py",
+    "test_compiler.py"
 ]
 
 def main():

@@ -25,6 +25,39 @@ async def start_openrouter_updater():
 async def lifespan(app: FastAPI):
     from gnom_hub.db.schema import init_database
     init_database()
+    
+    # Prompt validation check in SUPERGNOM_MODE
+    from gnom_hub.core.config import CONFIG_DIR
+    if os.getenv("SUPERGNOM_MODE", "False").lower() == "true":
+        try:
+            import json, hashlib
+            from gnom_hub.agents.agent_definitions import AGENT_DEFINITIONS
+            manifest_path = CONFIG_DIR / "manifest.json"
+            if manifest_path.exists():
+                with open(manifest_path, "r", encoding="utf-8") as f:
+                    manifest = json.load(f)
+                corrupted = []
+                for name, expected_hash in manifest.items():
+                    found = False
+                    for k, v in AGENT_DEFINITIONS.items():
+                        if v["name"].lower() == name.lower():
+                            found = True
+                            p_bytes = v["sys_prompt"].encode("utf-8")
+                            current_hash = hashlib.sha256(p_bytes).hexdigest()
+                            if current_hash != expected_hash:
+                                corrupted.append(v["name"])
+                            break
+                    if not found:
+                        corrupted.append(name)
+                if corrupted:
+                    print(f"⚠️ [WARNUNG] Prompt-Integritätsverletzung erkannt! Modifizierte Agenten: {', '.join(corrupted)}")
+                else:
+                    print("✅ Prompt-Integritätsprüfung erfolgreich: Alle Hashes stimmen überein.")
+            else:
+                print("⚠️ [WARNUNG] Keine prompt manifest.json gefunden. Integritätsprüfung übersprungen.")
+        except Exception as e:
+            print(f"⚠️ Fehler bei Prompt-Integritätsprüfung: {e}")
+
     start_background_agents()
     
     import asyncio
