@@ -32,11 +32,11 @@ Gnom-Hub is a local-first multi-agent system with a clear structure: **176 Pytho
 
 ## 🔮 The Vision: SuperGNOM & GNOM-HUB
 
-GNOM-HUB is not a standard AI chatbot nor a classic multi-agent framework. It is a structured development workbench where exactly eight fixed agents with clearly defined roles collaborate. Four of these are permanent administrative system agents handling security, memory, guardrails, and coordination.
+GNOM-HUB is not a standard AI chatbot nor a classic multi-agent framework. It is the **factory (the "forge")** where a **SuperGNOM** is defined, trained, and customized via **presets** (configuration profiles). GNOM-HUB offers a structured development environment where exactly eight fixed agents with clearly defined roles collaborate. Four of these are permanent administrative system agents handling security, memory, guardrails, and coordination.
 
-The core idea is not to grow infinitely in complexity. Instead, GNOM-HUB serves as a staging environment to eventually build a stable, specialized, single-mind AI system – the **SuperGNOM**.
+The core idea is not to grow infinitely in complexity. Instead, the GNOM-HUB factory calibrates agent behaviors, prompt rules, and swarming configurations via presets, from which the stable, specialized AI system – the **SuperGNOM** – is eventually compiled ("baked").
 
-While GNOM-HUB is the experimental, adaptive playground, the **SuperGNOM** is the final compilation: immutable, robust, and customized for a specific human user or task. A SuperGNOM does not evolve or learn continuously in production; it remains predictable, controllable, and reliable.
+While the GNOM-HUB factory serves as the flexible, learning workbench, the **SuperGNOM** is the final product: immutable, robust, and customized for a specific user or task. A SuperGNOM does not continuously evolve or learn in production; it remains predictable, controllable, and reliable.
 
 ### 📊 Current State
 - **SuperGNOM Mode (`SUPERGNOM_MODE`)**: Flag implemented in configuration. Disables dynamic prompt evolution and fact learning, ensuring a stable, static behavior.

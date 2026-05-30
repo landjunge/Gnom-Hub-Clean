@@ -32,11 +32,11 @@ Gnom-Hub ist ein lokales Multi-Agenten-System mit einer klaren Struktur: **176 P
 
 ## 🔮 Die Vision: SuperGNOM & GNOM-HUB
 
-GNOM-HUB ist kein gewöhnlicher KI-Chatbot und auch kein klassisches Multi-Agenten-System. Es ist eine strukturierte Entwicklungsumgebung, in der genau acht feste Agenten mit klar definierten Rollen zusammenarbeiten. Vier davon sind dauerhafte System-Agenten, die sich um Sicherheit, Gedächtnis, Überwachung und Koordination kümmern.
+GNOM-HUB ist kein gewöhnlicher KI-Chatbot und auch kein klassisches Multi-Agenten-System. Es ist die **Fabrik ("Schmiede")**, in der ein **SuperGNOM** über sogenannte **Presets** (Konfigurations-Profile) definiert, trainiert und geformt wird. GNOM-HUB bietet eine strukturierte Entwicklungsumgebung, in der genau acht feste Agenten mit klar definierten Rollen zusammenarbeiten. Vier davon sind administrative System-Agenten, die sich um Sicherheit, Gedächtnis, Überwachung und Koordination kümmern.
 
-Der Kern der Idee ist nicht, immer komplexer oder größer zu werden. Stattdessen geht es darum, aus dieser flexiblen Werkstatt irgendwann ein stabiles, spezialisiertes KI-System zu erschaffen – den **SuperGNOM**.
+Der Kern der Idee ist nicht, immer komplexer oder größer zu werden. Stattdessen dient die Fabrik GNOM-HUB dazu, die Agenteneigenschaften und das Schwarmverhalten über Presets exakt zu kalibrieren und daraus das stabile, spezialisierte KI-System – den **SuperGNOM** – zu kompilieren (zu "backen").
 
-Während GNOM-HUB die Phase ist, in der noch experimentiert, angepasst und gelernt werden kann, ist der **SuperGNOM** das fertige Produkt: unveränderbar, stabil und auf einen bestimmten Menschen oder eine konkrete Aufgabe zugeschnitten. Ein SuperGNOM soll nicht ständig dazulernen und sich verändern. Er soll verlässlich, kontrollierbar und vorhersagbar bleiben.
+Während die Fabrik GNOM-HUB die flexible, lernende Werkstatt ist, ist der **SuperGNOM** das fertige Produkt: unveränderbar, stabil und auf einen bestimmten Menschen oder eine konkrete Aufgabe zugeschnitten. Ein SuperGNOM soll im Produktiveinsatz nicht ständig dazulernen und sich verändern, sondern verlässlich, kontrollierbar und vorhersagbar bleiben.
 
 ### 📊 Ist-Zustand (Status Quo)
 - **SuperGNOM-Modus (`SUPERGNOM_MODE`)**: In der Konfiguration implementiert. Schaltet das dynamische Lernen und Prompt-Evolution ab, um ein stabiles und vorhersagbares Systemverhalten im Produktiveinsatz zu garantieren.
