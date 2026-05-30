@@ -16,7 +16,7 @@ class FaissEmbeddingHelper:
         try:
             with sqlite3.connect(self.db_path) as conn:
                 if self.scope == "global":
-                    facts = conn.execute("SELECT id, key, value FROM soul_memory WHERE agent IS NULL OR LOWER(agent) IN ('system', 'all', 'soulag')").fetchall()
+                    facts = conn.execute("SELECT id, key, value FROM soul_memory WHERE agent IS NULL OR LOWER(agent) NOT IN ('coderag', 'researcherag', 'writerag', 'editorag')").fetchall()
                 else:
                     facts = conn.execute("SELECT id, key, value FROM soul_memory WHERE LOWER(agent) = ?", (self.scope.lower(),)).fetchall()
         except Exception: facts = []

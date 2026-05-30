@@ -22,10 +22,21 @@ class SoulEmbedder:
     def get_helper(self, scope: str = "global"):
         if not HAS_LIBS:
             return None
+        import time
+        now = time.time()
+        # Evict inactive helpers (except global scope) after 120s of inactivity
+        expired = [s for s, (_, ts) in self.helpers.items() if s != "global" and now - ts > 120]
+        for s in expired:
+            del self.helpers[s]
+            
         if scope not in self.helpers:
             from gnom_hub.memory.emb_faiss import FaissEmbeddingHelper
-            self.helpers[scope] = FaissEmbeddingHelper(self.model_name, self.db_path, scope)
-        return self.helpers[scope]
+            helper = FaissEmbeddingHelper(self.model_name, self.db_path, scope)
+            self.helpers[scope] = (helper, now)
+        else:
+            helper, _ = self.helpers[scope]
+            self.helpers[scope] = (helper, now)
+        return helper
 
     def add_fact(self, fact_id: str, key: str, value: str, scope: str = "global"):
         _search_cache.clear()
@@ -57,7 +68,7 @@ class SoulEmbedder:
             res = global_results
             
         if not g_helper:
-            res = sr.retrieve_similar_sync(query, agent_name, top_k, raw=raw)
+            res = sr.retrieve_similar_sync(query, top_k=top_k, agent_name=agent_name, raw=raw)
             
         _search_cache[k] = res
         return res

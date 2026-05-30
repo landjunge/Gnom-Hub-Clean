@@ -22,6 +22,10 @@ def run_in_sandbox(command: str, agent=None, timeout: int = 30):
 
 def run_browser_in_sandbox(code_path: str, net: str, timeout: int = 45):
     wd = os.path.abspath(str(WORKSPACE_DIR))
-    cmd = ["docker", "run", "--rm", f"--network={net}", "--memory=512m", "-v", f"{wd}:/workspace:rw", "-w", "/workspace", "gnom-playwright:latest", "python3", code_path]
-    return subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+    if is_docker_running():
+        cmd = ["docker", "run", "--rm", f"--network={net}", "--memory=512m", "-v", f"{wd}:/workspace:rw", "-w", "/workspace", "gnom-playwright:latest", "python3", code_path]
+        return subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+    import sys
+    py_exec = sys.executable or "python3"
+    return run_sandboxed([py_exec, code_path], wd, timeout=timeout)
 

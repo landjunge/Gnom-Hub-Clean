@@ -19,7 +19,7 @@ def _fetch_recent(agent_name: str, limit: int) -> list:
             if agent_name:
                 rows = conn.execute("""
                     SELECT key, value FROM soul_memory 
-                    WHERE agent IS NULL OR LOWER(agent) IN ('system', 'all', 'soulag', ?)
+                    WHERE LOWER(agent) = ? OR agent IS NULL OR LOWER(agent) NOT IN ('coderag', 'researcherag', 'writerag', 'editorag')
                     ORDER BY 
                         CASE priority
                             WHEN 'high' THEN 1
@@ -33,7 +33,7 @@ def _fetch_recent(agent_name: str, limit: int) -> list:
             else:
                 rows = conn.execute("""
                     SELECT key, value FROM soul_memory 
-                    WHERE agent IS NULL OR LOWER(agent) IN ('system', 'all', 'soulag')
+                    WHERE agent IS NULL OR LOWER(agent) NOT IN ('coderag', 'researcherag', 'writerag', 'editorag')
                     ORDER BY 
                         CASE priority
                             WHEN 'high' THEN 1
