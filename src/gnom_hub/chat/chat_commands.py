@@ -107,3 +107,20 @@ def handle_reject_decision(q):
     else:
         _post_chat("System", f"Fehler: Entscheidung '{decision_id}' nicht gefunden.")
         return {"status": "error", "message": "Decision not found"}
+
+def handle_bake(q):
+    parts = q.strip().split()
+    if not parts or not parts[0].strip():
+        _post_chat("System", "Fehler: Bitte gib einen Namen für deinen SuperGNOM an (z.B. `@bake senior_assistant`)")
+        return {"status": "error", "message": "Missing name"}
+    name = parts[0]
+    template = parts[1] if len(parts) > 1 else "chat"
+    _post_chat("System", f"🚀 Starte Kompilierung von SuperGNOM **{name}** (Template: *{template}*)...")
+    try:
+        from gnom_hub.core.utils.compiler import bake_supergnom
+        dist_path = bake_supergnom(name, template)
+        _post_chat("System", f"✅ SuperGNOM **{name}** erfolgreich kompiliert!\n\nVerzeichnis: `{dist_path}`\n\nStarte ihn im neuen Ordner per: `bash run.sh`")
+        return {"status": "ok", "path": dist_path}
+    except Exception as e:
+        _post_chat("System", f"❌ Fehler bei der Kompilierung: {str(e)}")
+        return {"status": "error", "message": str(e)}

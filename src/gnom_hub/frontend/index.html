@@ -2191,6 +2191,23 @@
           document.getElementById('content').innerHTML = '<div class="empty" style="padding:80px 20px"><h2 style="color:var(--error);margin-bottom:10px">Hub unreachable (No API)</h2><p>Server nicht gefunden. Öffne http://127.0.0.1:3002/ im Browser.</p></div>';
           return;
         }
+        try {
+          const sysInfo = await api('GET', '/system/info');
+          if (sysInfo && sysInfo.is_supergnom) {
+            document.body.classList.add('supergnom-mode');
+            const style = document.createElement('style');
+            style.textContent = `
+              body.supergnom-mode .sidebar { display: none !important; }
+              body.supergnom-mode .content { margin-left: 0 !important; width: 100% !important; max-width: 900px !important; margin: 0 auto !important; padding: 20px !important; }
+              body.supergnom-mode header button { display: none !important; }
+              body.supergnom-mode #nuke-btn { pointer-events: none !important; cursor: default !important; }
+              body.supergnom-mode .logo { cursor: default !important; }
+            `;
+            document.head.appendChild(style);
+          }
+        } catch (e) {
+          console.error("Failed to check SuperGNOM mode", e);
+        }
         await loadAgents();
         await loadActivePreset();
         updateLamps(agents);

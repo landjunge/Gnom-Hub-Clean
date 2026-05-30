@@ -1,0 +1,113 @@
+# compiler.py — Compiles a Gnom-Hub instance into a standalone SuperGNOM
+import os
+import shutil
+import sqlite3
+import json
+from pathlib import Path
+from gnom_hub.core.config import PROJECT_ROOT, DB_PATH
+
+def bake_supergnom(name: str, template: str = "chat") -> str:
+    # 1. Normalise name
+    safe_name = "".join([c if c.isalnum() or c == "_" else "" for c in name.lower()]).strip("_")
+    if not safe_name:
+        raise ValueError("Ungültiger Name für den SuperGNOM.")
+
+    dist_dir = PROJECT_ROOT / "dist" / f"supergnom_{safe_name}"
+    dist_dir.mkdir(parents=True, exist_ok=True)
+
+    # 2. Copy source code & assets
+    src_dest = dist_dir / "src"
+    if src_dest.exists():
+        shutil.rmtree(src_dest)
+    shutil.copytree(PROJECT_ROOT / "src", src_dest, ignore=shutil.ignore_patterns("__pycache__", "*.pyc", ".DS_Store"))
+
+    # Copy config folder structure (excluding keys and environment files)
+    cfg_dest = dist_dir / "config"
+    if cfg_dest.exists():
+        shutil.rmtree(cfg_dest)
+    shutil.copytree(PROJECT_ROOT / "config", cfg_dest, ignore=shutil.ignore_patterns("*.json", ".env*"))
+
+    # Recreate isolated user directory structure for portable operation
+    gnom_home = dist_dir / ".gnom-hub"
+    data_dir = gnom_home / "data"
+    run_dir = gnom_home / "run"
+    data_dir.mkdir(parents=True, exist_ok=True)
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    # Copy database file to distribution package
+    db_dest = data_dir / "gnomhub.db"
+    shutil.copy2(DB_PATH, db_dest)
+
+    # Create local workspace directory
+    workspace_dest = dist_dir / "gnom_workspace"
+    workspace_dest.mkdir(parents=True, exist_ok=True)
+
+    # Clean temporary and session-bound tables in target DB copy
+    try:
+        conn = sqlite3.connect(str(db_dest))
+        for tbl in ["audit_log", "chat", "explainable_outputs", "graceful_degradation_failures", 
+                    "token_budget_logs", "token_budget_alerts", "showbox_presentations"]:
+            try:
+                conn.execute(f"DELETE FROM {tbl}")
+            except sqlite3.OperationalError:
+                pass
+        conn.execute("DELETE FROM state WHERE key NOT IN ('active_preset', 'agent_settings')")
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"Error cleaning DB: {e}")
+
+    # Copy package configurations
+    shutil.copy2(PROJECT_ROOT / "pyproject.toml", dist_dir / "pyproject.toml")
+
+    # Generate custom static configuration file
+    config_data = {
+        "name": safe_name,
+        "template": template,
+        "baked_at": os.popen("date").read().strip(),
+    }
+    with open(dist_dir / "supergnom_config.json", "w", encoding="utf-8") as f:
+        json.dump(config_data, f, indent=2, ensure_ascii=False)
+
+    # Write custom portable .env configuration file
+    env_content = (
+        f"SUPERGNOM_MODE=True\n"
+        f"GNOM_HUB_HOME=./.gnom-hub\n"
+        f"PORT=3003\n"
+        f"HOST=127.0.0.1\n"
+        f"DEFAULT_LLM_PROVIDER={os.getenv('DEFAULT_LLM_PROVIDER', 'ollama')}\n"
+    )
+    if os.getenv("OPENROUTER_API_KEY"):
+        env_content += f"OPENROUTER_API_KEY={os.getenv('OPENROUTER_API_KEY')}\n"
+    if os.getenv("OLLAMA_BASE_URL"):
+        env_content += f"OLLAMA_BASE_URL={os.getenv('OLLAMA_BASE_URL')}\n"
+    
+    with open(cfg_dest / ".env", "w", encoding="utf-8") as f:
+        f.write(env_content)
+
+    # Write execution startup script (run.sh)
+    run_sh_content = (
+        "#!/bin/bash\n"
+        "DIR=\"$( cd \"$( dirname \"${BASH_SOURCE[0]}\" )\" >/dev/null 2>&1 && pwd )\"\n"
+        "cd \"$DIR\"\n"
+        "export GNOM_HUB_HOME=\"$DIR/.gnom-hub\"\n"
+        "export SUPERGNOM_MODE=True\n"
+        "export GNOM_HUB_PORT=3003\n"
+        "export PORT=3003\n"
+        "if [ ! -d \".venv\" ]; then\n"
+        "  echo 'Erstelle venv...'\n"
+        "  python3 -m venv .venv\n"
+        "  source .venv/bin/activate\n"
+        "  pip install fastapi uvicorn pydantic requests python-dotenv psutil\n"
+        "else\n"
+        "  source .venv/bin/activate\n"
+        "fi\n"
+        "echo 'Starte SuperGNOM...' \n"
+        "python3 -m uvicorn gnom_hub.api.app:app --host 127.0.0.1 --port 3003\n"
+    )
+    run_sh_path = dist_dir / "run.sh"
+    with open(run_sh_path, "w", encoding="utf-8") as f:
+        f.write(run_sh_content)
+    os.chmod(run_sh_path, 0o755)
+
+    return str(dist_dir)

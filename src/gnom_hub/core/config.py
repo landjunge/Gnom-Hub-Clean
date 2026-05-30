@@ -20,6 +20,8 @@ class Config:
     DEBUG = os.getenv("DEBUG", "True").lower() == "true"
     PID_DIR = RUN_DIR
     ENABLE_WORKSPACE_SANDBOX = os.getenv("ENABLE_WORKSPACE_SANDBOX", "True").lower() == "true"
+    SUPERGNOM_MODE = os.getenv("SUPERGNOM_MODE", "False").lower() == "true"
+    SUPERGNOM_CONFIG = os.getenv("SUPERGNOM_CONFIG", "")
 
     # OpenRouter Free-Modelle (zentral verwaltet)
     OPENROUTER_FREE_MODELS = [

@@ -7,6 +7,9 @@ class SoulAG:
         self.name = "SoulAG"
         self._injections = {}
     def on_message(self, m: str, s: str):
+        from gnom_hub.core.config import Config
+        if Config.SUPERGNOM_MODE:
+            return
         m_lower = m.lower()
         if (s.lower() == "user" or 
             any(x in m_lower for x in ["abschluss", "zusammenfassung", "[write:", "blockiert", "fehlt", "fehler", "berechtigung", "verweigert", "schreibrechte"]) or
@@ -112,12 +115,18 @@ def _save_rules(res: str, prefix=""):
             logging.getLogger("db").error(f"[Soul] Failed to parse and save rules: {ex}")
 
 def run_evolution(task: str, hist: str):
+    from gnom_hub.core.config import Config
+    if Config.SUPERGNOM_MODE:
+        return
     try: _save_rules(ask_router(f"Analysiere '{task}' und den Verlauf:\n{hist}\nSchlage Verbesserungen vor. Antworte NUR im JSON-Format: [{{\"agent\": \"AgentName\", \"rule\": \"Regelinhalt\"}}]", sys="Du bist Optimierer.", agent_name="GeneralAG").content)
     except Exception: pass
 
 def handle_user_feedback(vote: str, comment: str):
+    from gnom_hub.core.config import Config
     save_soul_fact(f"feedback_{uuid.uuid4().hex[:6]}", f"Vote: {vote} | {comment}", agent="User")
     add_chat_message("default", "System", "system", "chat", f"@user Feedback: {vote} | {comment}")
+    if Config.SUPERGNOM_MODE:
+        return
     
     try:
         from gnom_hub.core.utils.evolution_v2 import update_version_score

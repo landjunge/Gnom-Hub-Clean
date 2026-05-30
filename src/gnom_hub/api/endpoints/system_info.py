@@ -11,7 +11,13 @@ def get_system_info():
         cpu = subprocess.check_output(["sysctl", "-n", "machdep.cpu.brand_string"], text=True, stderr=subprocess.DEVNULL).strip()
     except Exception: pass
     ram = f"{round(psutil.virtual_memory().total / (1024**3))} GB"
-    return {"cpu": cpu, "ram": ram, "is_intel": "intel" in cpu.lower()}
+    from gnom_hub.core.config import Config
+    return {
+        "cpu": cpu,
+        "ram": ram,
+        "is_intel": "intel" in cpu.lower(),
+        "is_supergnom": Config.SUPERGNOM_MODE
+    }
 
 @router.post("/api/restart")
 def restart_server(request: Request):
