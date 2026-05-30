@@ -38,6 +38,60 @@ The core idea is not to grow infinitely in complexity. Instead, the GNOM-HUB fac
 
 While the GNOM-HUB factory serves as the flexible, learning workbench, the **SuperGNOM** is the final product: immutable, robust, and customized for a specific user or task. A SuperGNOM does not continuously evolve or learn in production; it remains predictable, controllable, and reliable.
 
+### 🏗️ Workflow: From Factory to Product (Compilation)
+
+```mermaid
+graph TD
+    subgraph Forge [GNOM-HUB Factory]
+        P[Presets Config] -->|Defines Swarm| GH[Staging Swarm: 8 Agents]
+        GH -->|Evolution & Learning| DB[(gnomhub.db)]
+    end
+    
+    subgraph Compiler [Automated Exporter]
+        GH -->|Command: @bake| C[Compiler Core]
+        DB -->|Prunes History to 1000 Chats| C
+        C -->|Freeze Active Prompts| AD[agent_definitions.py]
+        C -->|Calculate SHA-256| M[manifest.json]
+    end
+
+    subgraph Product [Portable SuperGNOM]
+        AD --> SG[SuperGNOM Swarm Runtime]
+        M -->|Startup Validation Check| SG
+    end
+```
+
+### 🧬 Swarm Topology & Memory Isolation
+
+```mermaid
+graph TD
+    U[User Chat Input] -->|Sends Command| G[GeneralAG - Orchestrator]
+    
+    subgraph Admin [System Administrative Layer]
+        G -->|Checks Rules| W[WatchdogAG]
+        G -->|Checks Security| S[SecurityAG]
+        G -->|Reads/Writes Facts| So[SoulAG]
+    end
+
+    subgraph Workers [Worker Execution Layer]
+        G -->|Delegates: @AgentName| C[CoderAG]
+        G -->|Delegates: @AgentName| Wr[WriterAG]
+        G -->|Delegates: @AgentName| R[ResearcherAG]
+        G -->|Delegates: @AgentName| E[EditorAG]
+    end
+
+    subgraph Memory [Memory & Isolated Scopes]
+        So -->|Injects Global Memory| GS[(Global Scope)]
+        C -.->|Isolated Query| MC[(Coder Memory Index)]
+        Wr -.->|Isolated Query| MWr[(Writer Memory Index)]
+        R -.->|Isolated Query| MR[(Researcher Memory Index)]
+        E -.->|Isolated Query| ME[(Editor Memory Index)]
+        GS -.->|Inherited by| MC
+        GS -.->|Inherited by| MWr
+        GS -.->|Inherited by| MR
+        GS -.->|Inherited by| ME
+    end
+```
+
 ### 📊 Current State
 - **SuperGNOM Mode (`SUPERGNOM_MODE`)**: Flag implemented in configuration. Disables dynamic prompt evolution and fact learning, ensuring a stable, static behavior.
 - **Isolated Agent Memory Scopes**: Fully implemented for all workers (`CoderAG`, `WriterAG`, `ResearcherAG`, `EditorAG`). Each agent has a physically separate FAISS vector index and SQLite filters to prevent "role contamination".

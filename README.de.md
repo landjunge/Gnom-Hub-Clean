@@ -38,6 +38,60 @@ Der Kern der Idee ist nicht, immer komplexer oder größer zu werden. Stattdesse
 
 Während die Fabrik GNOM-HUB die flexible, lernende Werkstatt ist, ist der **SuperGNOM** das fertige Produkt: unveränderbar, stabil und auf einen bestimmten Menschen oder eine konkrete Aufgabe zugeschnitten. Ein SuperGNOM soll im Produktiveinsatz nicht ständig dazulernen und sich verändern, sondern verlässlich, kontrollierbar und vorhersagbar bleiben.
 
+### 🏗️ Workflow: Von der Fabrik zum Produkt (Kompilierung)
+
+```mermaid
+graph TD
+    subgraph Werkstatt [GNOM-HUB Fabrik]
+        P[Presets-Konfiguration] -->|Definiert Schwarm| GH[Entwicklungs-Schwarm: 8 Agenten]
+        GH -->|Eigenschaften & Lernen| DB[(gnomhub.db)]
+    end
+    
+    subgraph Compiler [Automatisierter Exporter]
+        GH -->|Chat-Befehl: @bake| C[Exporter / Compiler]
+        DB -->|Prüft & reduziert Chat-Verlauf auf 1000 Zeilen| C
+        C -->|Friert aktive Prompts ein| AD[agent_definitions.py]
+        C -->|Erzeugt SHA-256 Hashes| M[manifest.json]
+    end
+
+    subgraph Endprodukt [Portabler SuperGNOM]
+        AD --> SG[SuperGNOM Laufzeitumgebung]
+        M -->|Integritätsprüfung beim Start| SG
+    end
+```
+
+### 🧬 System-Topologie & Gedächtnis-Isolation
+
+```mermaid
+graph TD
+    U[Benutzer Chat-Eingabe] -->|Sendet Befehl| G[GeneralAG - Orchestrator]
+    
+    subgraph System [System- & Wächter-Schicht]
+        G -->|Regelüberwachung| W[WatchdogAG]
+        G -->|Schadcodescan| S[SecurityAG]
+        G -->|Liest/Schreibt Fakten| So[SoulAG]
+    end
+
+    subgraph Workers [Worker-Schicht]
+        G -->|Delegiert: @AgentenName| C[CoderAG]
+        G -->|Delegiert: @AgentenName| Wr[WriterAG]
+        G -->|Delegiert: @AgentenName| R[ResearcherAG]
+        G -->|Delegiert: @AgentenName| E[EditorAG]
+    end
+
+    subgraph Memory [Langzeitgedächtnis & Scopes]
+        So -->|Injiziert globale Vorlieben| GS[(Globaler Vektor-Scope)]
+        C -.->|Isolierte Abfrage| MC[(Coder Vektor-Scope)]
+        Wr -.->|Isolierte Abfrage| MWr[(Writer Vektor-Scope)]
+        R -.->|Isolierte Abfrage| MR[(Researcher Vektor-Scope)]
+        E -.->|Isolierte Abfrage| ME[(Editor Vektor-Scope)]
+        GS -.->|Vererbt an| MC
+        GS -.->|Vererbt an| MWr
+        GS -.->|Vererbt an| MR
+        GS -.->|Vererbt an| ME
+    end
+```
+
 ### 📊 Ist-Zustand (Status Quo)
 - **SuperGNOM-Modus (`SUPERGNOM_MODE`)**: In der Konfiguration implementiert. Schaltet das dynamische Lernen und Prompt-Evolution ab, um ein stabiles und vorhersagbares Systemverhalten im Produktiveinsatz zu garantieren.
 - **Isolierte Agenten-Gedächtnis-Bereiche (Isolated Memory Scopes)**: Implementiert für alle Worker-Agenten (`CoderAG`, `WriterAG`, `ResearcherAG`, `EditorAG`). Jeder Agent besitzt einen physikalisch getrennten FAISS-Vektorindex und SQLite-Filter, um eine gegenseitige Rollenverseuchung (Faktenleaks) zu verhindern.
