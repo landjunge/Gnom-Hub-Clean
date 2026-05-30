@@ -84,7 +84,12 @@ def ask_router(p, sys="Du bist ein Assistent.", agent_name=None, depth=0):
         sys = _build_sys(n, sys, agent_name)
         msgs = [{"role": "system", "content": sys}, {"role": "user", "content": p}]
         kdb, adb = get_state_value("llm_keys") or {}, get_state_value("llm_agents") or {}
-        cfg = adb.get(n) or {"provider": "auto", "model": "stage_3"}
+        from gnom_hub.core.utils.routing_override import load_routing_from_txt
+        txt_routing = load_routing_from_txt()
+        if txt_routing and n in txt_routing:
+            cfg = txt_routing[n]
+        else:
+            cfg = adb.get(n) or {"provider": "auto", "model": "stage_3"}
         pvd, mdl = cfg.get("provider", "auto"), cfg.get("model", "stage_3")
         cands = _resolve(pvd, mdl, kdb, n)
         logger = AgentLogger(agent_name or "Unknown")
