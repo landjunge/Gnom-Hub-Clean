@@ -50,7 +50,10 @@ def _row_to_msg(row):
     """Konvertiert eine Zeile der chat-Tabelle in ein Message-Dictionary."""
     d = dict(row)
     try:
-        d["metadata"] = json.loads(d["metadata"])
+        meta = json.loads(d["metadata"])
+        if isinstance(meta, str):
+            meta = json.loads(meta)
+        d["metadata"] = meta if isinstance(meta, dict) else {}
     except (json.JSONDecodeError, TypeError) as e:
         logger.error(f"[DB] Failed to parse metadata JSON for message {d.get('id')}: {e}")
         d["metadata"] = {}
@@ -62,12 +65,18 @@ def add_chat_message(project: str, sender: str, agent_id: str, msg_type: str, co
         with get_db_conn() as conn:
             with conn:
                 msg_id = str(uuid.uuid4())
+                meta_val = metadata or {}
+                if isinstance(meta_val, str):
+                    try:
+                        meta_val = json.loads(meta_val)
+                    except Exception:
+                        meta_val = {}
                 conn.execute("""
                     INSERT INTO chat (id, project, sender, agent_id, msg_type, content, timestamp, metadata)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """, (msg_id, project, sender, agent_id, msg_type, content,
                       datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-                      json.dumps(metadata or {})))
+                      json.dumps(meta_val)))
                 return msg_id
     except sqlite3.Error as e:
         logger.error(f"[DB] Failed to add chat message: {e}")
