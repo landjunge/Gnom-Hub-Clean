@@ -14,12 +14,16 @@ def bake_supergnom(name: str, template: str = "chat") -> str:
 
     dist_dir = PROJECT_ROOT / "dist" / f"supergnom_{safe_name}"
     dist_dir.mkdir(parents=True, exist_ok=True)
-
-    # 2. Copy source code & assets
     src_dest = dist_dir / "src"
     if src_dest.exists():
         shutil.rmtree(src_dest)
     shutil.copytree(PROJECT_ROOT / "src", src_dest, ignore=shutil.ignore_patterns("__pycache__", "*.pyc", ".DS_Store"))
+
+    # Copy agents folder structure
+    agents_dest = dist_dir / "agents"
+    if agents_dest.exists():
+        shutil.rmtree(agents_dest)
+    shutil.copytree(PROJECT_ROOT / "agents", agents_dest, ignore=shutil.ignore_patterns("__pycache__", "*.pyc", ".DS_Store"))
 
     # Copy config folder structure (excluding keys and environment files)
     cfg_dest = dist_dir / "config"
@@ -127,11 +131,12 @@ def bake_supergnom(name: str, template: str = "chat") -> str:
         "export SUPERGNOM_MODE=True\n"
         "export GNOM_HUB_PORT=3003\n"
         "export PORT=3003\n"
+        "export PYTHONPATH=\"src:.:\$PYTHONPATH\"\n"
         "if [ ! -d \".venv\" ]; then\n"
         "  echo 'Erstelle venv...'\n"
         "  python3 -m venv .venv\n"
         "  source .venv/bin/activate\n"
-        "  pip install fastapi uvicorn pydantic requests python-dotenv psutil\n"
+        "  pip install fastapi uvicorn pydantic requests python-dotenv psutil httpx python-multipart\n"
         "else\n"
         "  source .venv/bin/activate\n"
         "fi\n"
