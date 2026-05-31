@@ -146,3 +146,10 @@ def handle_emergency(q):
     except Exception as e:
         _post_chat("System", f"❌ Fehler bei der Notfall-Abfrage: {str(e)}")
         return {"status": "error", "message": str(e)}
+
+def handle_diagnose(q):
+    from gnom_hub.chat.brainstorm.brainstorm import dispatch
+    _post_chat("System", "🔍 Starte Selbstdiagnose der Gnom-Agenten...")
+    task = "Führe eine Selbstdiagnose deiner Systemumgebung und Berechtigungen durch. Versuche testweise eine Datei zu schreiben und einen harmlosen Shell-Befehl auszuführen, um zu prüfen, ob dir Schreibrechte (WRITE) oder Terminalrechte (SHELL) fehlen. Prüfe auch die Verfügbarkeit von Programmen wie 'git' und 'docker'. Melde alle fehlenden Berechtigungen oder Tools SOFORT als Warnung über die Showbox!"
+    dispatch(task, target="all")
+    return {"status": "ok"}

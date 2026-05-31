@@ -34,4 +34,7 @@ def format_tools_prompt(soul: dict, name: str):
     char = f" – {soul['character']}" if soul.get("character") else ""
     intro = f"You are {name} ({soul.get('role', 'Agent')}{char})."
     if soul.get("directive"): intro += f"\n[PERSONALITY] {soul['directive']}"
-    return intro + "\nAvailable Tools:\n" + "\n".join(lines) + syn
+    sys_prompt = intro + "\nAvailable Tools:\n" + "\n".join(lines) + syn
+    sys_prompt += "\n\n[SELF-DIAGNOSIS / SELBSTDIAGNOSE]:\n"
+    sys_prompt += "Falls eine deiner Aktionen fehlschlägt (z.B. weil dir Berechtigungen wie WRITE oder SHELL fehlen oder ein Tool wie git/docker auf dem System nicht installiert ist), musst du diesen Zustand selbstständig erkennen und dem Benutzer sofort über ein SHOWBOX-Update eine verständliche Fehlermeldung/Warnung präsentieren! (Format: <SHOWBOX:2>[\"<h3>Fehlende Berechtigung / Fehlendes Tool</h3><p>Details...</p>\"]</SHOWBOX>)."
+    return sys_prompt

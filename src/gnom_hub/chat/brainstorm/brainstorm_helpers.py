@@ -25,7 +25,23 @@ def ask_llm(ag, q, ctx, bs_mode=False, depth=0):
     try:
         eo = ask_router(u_msg, sys, agent_name=ag.get("name", ""), depth=depth)
         if not eo.content: return post(ag["name"], f"[Fehler: Keine Antwort vom LLM]", depth=depth)
-        post(ag["name"], process_actions(eo.content, ag, soul.get("permissions", []), bs_mode, wd), depth=depth)
+        processed = process_actions(eo.content, ag, soul.get("permissions", []), bs_mode, wd)
+        
+        has_failure = any(term in processed for term in ["[System:", "[Gatekeeper:", "Fehler:", "blockiert", "BLOCKIERT", "not found", "command not found", "permission denied"])
+        has_showbox = any(tag in processed for tag in ["<SHOWBOX", "<showbox", "[SHOWBOX", "[showbox"])
+        
+        if has_failure and not has_showbox:
+            retry_prompt = (
+                f"Beobachtung (Systemfehler / Aktion fehlgeschlagen):\n"
+                f"{processed}\n\n"
+                f"WICHTIG: Erkenne das Problem selbstständig (z.B. fehlende Schreibrechte, fehlende Shell-Erlaubnis oder ein nicht installiertes Programm wie git/docker). "
+                f"Melde dieses Fehlen SOFORT dem Benutzer über die Showbox! Schreibe dazu eine verständliche Showbox-Präsentation mit Slides (Format: <SHOWBOX:index>[\"Slide 1\"]</SHOWBOX>)."
+            )
+            eo2 = ask_router(retry_prompt, sys + f"\n\nBisherige Gedanken/Antwort:\n{eo.content}", agent_name=ag.get("name", ""), depth=depth)
+            if eo2.content:
+                processed = process_actions(eo2.content, ag, soul.get("permissions", []), bs_mode, wd)
+                
+        post(ag["name"], processed, depth=depth)
     except Exception as e: post(ag["name"], f"[Fehler: {str(e)[:80]}]", depth=depth)
     finally:
         set_agent_status(ag["name"], "online"); update_agent_active_job(ag["name"], None)
