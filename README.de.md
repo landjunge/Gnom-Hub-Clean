@@ -38,11 +38,32 @@
 
 ---
 
+## 🚀 Quick Start
+
+```bash
+# 1. Klonen & Installieren
+git clone https://github.com/landjunge/gnom-hub.git
+cd gnom-hub
+bash scripts/install.sh
+
+# 2. Umgebungskonfiguration
+cp config/.env.example config/.env
+# Trage deine API-Keys (DeepSeek, OpenRouter) in config/.env ein
+
+# 3. Starten
+./run.sh
+```
+Öffne **[http://127.0.0.1:3002](http://127.0.0.1:3002)** im Browser, um den War Room zu betreten.
+
+---
+
 ## Was ist Gnom-Hub?
 
 Gnom-Hub ist ein **lokaler Multi-Agenten-Orchestrator** mit einer festen Topologie von 4+4 Agenten, einem integrierten glassmorphen **War Room Dashboard** und einer einzigartigen Kompilierungs-Pipeline, die evolvierte Agentenschwärme in eingefrorene, portable KI-Produkte namens **SuperGNOMs** "backt" (`@bake`).
 
-Im Gegensatz zu cloud-abhängigen Frameworks, bei denen unbegrenzt Agenten gestartet werden können, setzt Gnom-Hub auf **bewussten Minimalismus**: exakt 8 Agenten mit klaren Rollen, defensiven Sicherheitsbarrieren und voller Transparenz. Alles läuft auf deiner Maschine – keine Cloud-Orchestrierung, kein API-Lock-in, kein unkontrollierter Agenten-Sprawl.
+> *"Gnom-Hub ist die Werkbank für KI-Teams, die keine Cloud-Monster wollen – sondern ein eingeschworenes 8-Agenten-Team, das du backen kannst wie ein Sauerteigbrot."*
+
+Im Gegensatz zu cloud-abhängigen Frameworks, bei denen unbegrenzt Agenten gestartet werden können, setzt Gnom-Hub auf **bewussten Minimalismus**. Wir glauben an Intentionalität: *Wir haben genau die richtigen Features. Keine mehr.* Alles läuft auf deiner Maschine – exakt 8 Agenten mit klaren Rollen, defensiven Sicherheitsbarrieren und voller Transparenz. Keine Cloud-Orchestrierung, kein API-Lock-in, kein unkontrollierter Agenten-Sprawl.
 
 ---
 
@@ -50,7 +71,7 @@ Im Gegensatz zu cloud-abhängigen Frameworks, bei denen unbegrenzt Agenten gesta
 
 Um die Stärke von Gnom-Hub in der Praxis zu verstehen, sind hier drei reale, lokale Workflows, die komplett offline auf deiner Maschine laufen, ohne sensible Daten oder Code an die Cloud zu senden:
 
-1. **Lokale Codebase-Governance & Refactoring**: Trainiere einen Workflow, bei dem CoderAG lokale Repositories analysiert, WatchdogAG die Einhaltung strenger Qualitätsrichtlinien (z. B. das Limit von maximal 40 Zeilen pro Funktion) überprüft und EditorAG Verstöße automatisch refaktoriert – vollkommen lokal.
+1. **Lokale Codebase-Governance & Refactoring**: Trainiere einen Workflow, bei dem CoderAG lokale Repositories analysiert, WatchdogAG die Einhaltung strenger Qualitätsrichtlinien überprüft und EditorAG Verstöße automatisch refaktoriert – vollkommen lokal.
 2. **Zero-Trust Web-Recherche**: Führe tiefgehende Web-Scraping-Aufgaben in einer isolierten Playwright-Browserumgebung aus. SecurityAG analysiert Abhängigkeiten in Echtzeit und gleicht PyPI-Pakete vor der Code-Ausführung mit bekannten Sicherheitslücken (CVEs) ab.
 3. **Lokaler DevOps- & Build-Assistent**: Der Schwarm führt Test-Suiten aus, validiert Docker-Sandbox-Konfigurationen und nutzt das `@bake`-Kompilierungs-Kommando, um die optimierten Agenten-Prompts und das extrahierte Gedächtnis in ein portables, sofort startbares SuperGNOM-Produkt zu verpacken.
 
@@ -66,30 +87,30 @@ Wir haben **mehr als 12 führende Multi-Agenten-Frameworks** analysiert (CrewAI,
 |:--|:--------|:---------------|:-------------|
 | 🏭 | **`@bake`-Compiler** | Kompiliert deinen evolvierten Schwarm in ein unveränderbares, portables SuperGNOM-Produkt mit eingefrorenen Prompts und SHA-256 Integritätsmanifest. | ❌ Kein Äquivalent vorhanden |
 | 🛡️ | **3-Agenten-Tribunal** | Jede riskante Aktion löst eine Multi-Agenten-Beratung aus: WatchdogAG erklärt den Verstoß, SoulAG liefert Kontext, GeneralAG empfiehlt – visualisiert als interaktive Genehmigungskarten in der Showbox. | ❌ Höchstens simple Pause/Resume-HITL-Schnittstellen |
-| 🧬 | **Steganografisches Tracing (ZWC)** | Experimentelles Sicherheits-/Audit-Proof-of-Concept: Agenten-Metadaten werden als unsichtbare Zero-Width-Unicode-Fingerabdrücke in Ausgabetexte eingebettet. | ❌ Nichts Vergleichbares in anderen Systemen |
+| 🧬 | **Steganografisches Tracing (ZWC)** | Forensischer Audit-Trail für regulierte Codebases: Agenten-Metadaten werden als unsichtbare Zero-Width-Unicode-Fingerabdrücke in Ausgabetexte eingebettet. | ❌ Nichts Vergleichbares in anderen Systemen |
 | 🎛️ | **5-Achsen-Live-Tuning** | Live-Regler für Persönlichkeit, Detailgrad, Gedächtnisstärke, Kreativität (Temperatur) und Risikobereitschaft der Worker-Agenten mit sofortiger Wirkung sowie Custom-Suffix-Injektion. | ❌ Keine Echtzeit-Einstellungsregler vorhanden |
 | 🔄 | **Prompt Version Manager (PVM)** | Jede Prompt-Änderung wird mit SHA-256-IDs, Parent-Child-Verbindungen und Performance-Metriken aus User-Feedback versioniert. Automatischer Rollback, wenn die Bewertung unter 95% des Vorgängers fällt. | ❌ Kein "Git für Prompts" mit Auto-Rollback vorhanden |
 | 🚨 | **Notfall-Archiv** | Eine transaktionssichere passive Backup-Datenbank spiegelt alle Interaktionen. `@emergency [Begriff]` stellt Kontext wieder her, falls das Hauptgedächtnis ausfällt. | ❌ Nirgends als Standard-Feature implementiert |
 | 🔒 | **Feste 4+4 Topologie** | Hardcodiertes Limit auf exakt 8 Agenten verhindert unkontrolliertes Spawnen. Jede Rolle ist präzise definiert und transparent auditierbar. | ❌ Unbegrenztes Spawnen von Agenten ist Standard |
 | 💣 | **Cinematische Nuke-Aktion** | Logo für 2 Sekunden gedrückt halten → CRT-Röhren-Scanlines + weißes Rauschen + Retro-Boot-Sequenz + synthetisiertes Godzilla-Brüllen via Web Audio API. | ❌ Einzigartig und mit viel Liebe zum Detail 😄 |
-| 🔐 | **Live PyPI-Schwachstellenscan** | Bei Ausführung von `pip install` durch Agenten werden Pakete in Echtzeit gegen die Live-API von PyPI auf Existenz, valide Releases und bekannte CVEs geprüft, *bevor* Code ausgeführt wird. | ❌ Keine Echtzeit-Validierung von externen Paketen |
+| 🔐 | **Live PyPI-Schwachstellenscan** | Bei Ausführung von `pip install` durch Agenten werden Pakete in Echtzeit gegen die Live-API von PyPI auf Existenz, valide Releases und bekannte CVEs geprüft, *befür* Code ausgeführt wird. | ❌ Keine Echtzeit-Validierung von externen Paketen |
 
 ### 📊 Vergleich der Frameworks
 
-| Funktion | GNOM-HUB | CrewAI | AutoGen/AG2 | LangGraph | MetaGPT | Google ADK | OpenAI Agents |
-|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **100% Lokal ausführbar** | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ |
-| **Integriertes Dashboard** | ✅ War Room | ❌ | ⚠️ Studio | ⚠️ Studio | ⚠️ Web | ✅ Dev UI | ❌ |
-| **Multi-Agenten-Sicherheitsgates** | ✅ 3-Agenten-Tribunal | ⚠️ Basic | ❌ | ⚠️ HITL | ❌ | ❌ | ⚠️ Guardrails |
-| **Persistentes Lernen** | ✅ FAISS + Soul | ✅ | ✅ | ✅ | ⚠️ | ✅ | ⚠️ |
-| **Feste Topologie** | ✅ 4+4 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **Kompilierung zum Produkt** | ✅ @bake | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **Prompt-Versionierung** | ✅ + Rollback | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **Live-Tuning-UI (Regler)** | ✅ 5 Regler | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **Steganografisches Tracing** | ✅ ZWC+ECC (Exp.) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Funktion | GNOM-HUB | CrewAI | AutoGen/AG2 | LangGraph | OpenAI Agents | Andere |
+|:---|:---:|:---:|:---:|:---:|:---:|:---:|
+| **100% Lokal ausführbar** | ✅ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ |
+| **Integriertes Dashboard** | ✅ War Room | ❌ | ⚠️ Studio | ⚠️ Studio | ❌ | ⚠️ |
+| **Multi-Agenten-Sicherheitsgates** | ✅ 3-Agenten-Tribunal | ⚠️ Basic | ❌ | ⚠️ HITL | ⚠️ Guardrails | ❌ |
+| **Persistentes Lernen** | ✅ FAISS + Soul | ✅ | ✅ | ✅ | ⚠️ | ⚠️ |
+| **Feste Topologie** | ✅ 4+4 | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **Kompilierung zum Produkt** | ✅ `@bake` | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **Prompt-Versionierung** | ✅ + Rollback | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **Live-Tuning-UI (Regler)** | ✅ 5 Regler | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **Steganografisches Tracing** | ✅ ZWC (Exp. PoC) | ❌ | ❌ | ❌ | ❌ | ❌ |
 
 > [!NOTE]
-> Die meisten Frameworks eignen sich hervorragend für den Bau von Cloud-Skalierungs-Pipelines. Gnom-Hub fokussiert sich bewusst auf eine andere Nische: **Eine lokale, transparente, sicherheitsorientierte Schmiede**, um ein kleines, eingespieltes Team zu trainieren und in ein stabiles Produkt zu gießen.
+> Die meisten Frameworks eignen sich hervorragend für den Bau von Cloud-Skalierungs-Pipelines. Gnom-Hub fokussiert sich bewusst auf eine andere Nische: **Eine lokale, transparente, sicherheitsorientierte Schmiede**, um ein kleines, eingespieltes Team zu trainieren und in ein stabiles Produkt zu gießen. Die meisten Frameworks eignen sich hervorragend für den Bau von Cloud-Skalierungs-Pipelines. Gnom-Hub fokussiert sich bewusst auf eine andere Nische: **Eine lokale, transparente, sicherheitsorientierte Schmiede**, um ein kleines, eingespieltes Team zu trainieren und in ein stabiles Produkt zu gießen.
 
 ### 🪶 Die Anti-Bloat-Story (Gnom-Hub im Vergleich zu Schwergewichten)
 
@@ -320,7 +341,7 @@ Um Performance-Flaschenhälse in schnellen Agenten-Interaktionsschleifen zu verm
 | Operation | Datenbank / Inferenz (Kalt) | Arbeitsspeicher / Cache (Warm) | Zweck / Abhilfe |
 |:----------|:----------------------------|:-------------------------------|:----------------|
 | **Rechteprüfung (Capability)** | 0,73 ms (SQLite-DB-Abfrage) | 0,0006 ms (TTL-Cache) | Verhindert DB-Abfragen bei jedem einzelnen Aufruf des Action-Handlers |
-| **Semantische Gedächtnissuche** | 2.830,0 ms (FAISS & Modell) | 0,0006 ms (Query-Cache) | Vermeidet wiederholte Aufrufe lokaler Einbettungsmodelle (sentence-transformers) |
+| **Semantische Gedächtnissuche** | 2.830,0 ms (FAISS & Modell Kaltstart) | 0,0006 ms (Query-Cache - 4.700× schneller) | Vermeidet wiederholte Aufrufe lokaler Einbettungsmodelle (sentence-transformers) |
 
 ### Allgemeine System-Metriken
 | Metrik | Wert |
@@ -334,24 +355,7 @@ Um Performance-Flaschenhälse in schnellen Agenten-Interaktionsschleifen zu verm
 > [!TIP]
 > Führe `python3 scratch/run_benchmarks.py` aus, um die Leistungswerte lokal zu ermitteln.
 
----
-
-## 🚀 Quick Start
-
-```bash
-# 1. Klonen & Installieren
-git clone https://github.com/landjunge/gnom-hub.git
-cd gnom-hub
-bash scripts/install.sh
-
-# 2. Umgebungskonfiguration
-cp config/.env.example config/.env
-# Trage deine API-Keys (DeepSeek, OpenRouter) in config/.env ein
-
-# 3. Starten
-./run.sh
-```
-Öffne **[http://127.0.0.1:3002](http://127.0.0.1:3002)** im Browser, um den War Room zu betreten.
+**LLM Routing:** Gnom-Hub unterstützt 7 Anbieter (DeepSeek, OpenRouter, OpenAI, Anthropic, Gemini, Mistral, lokales Ollama). Lege eine Datei namens `routing.txt` auf deinem Desktop ab, um das Routing im laufenden Betrieb zu ändern, ohne neu zu starten.
 
 ---
 

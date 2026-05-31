@@ -35,6 +35,26 @@
 | Live 5-axis sliders to calibrate worker personality, detail level, temperature, risk tolerance, and prompts. | Built-in interactive documentation and walkthrough manuals for agents and commands. |
 
 </details>
+---
+
+## 🚀 Quick Start
+
+```bash
+# 1. Clone & Install
+git clone https://github.com/landjunge/gnom-hub.git
+cd gnom-hub
+bash scripts/install.sh
+
+# 2. Configure
+cp config/.env.example config/.env
+# Add your LLM API keys (OpenRouter, DeepSeek, etc.) or configure local Ollama
+
+# 3. Run
+./run.sh
+
+# 4. Open War Room
+open http://127.0.0.1:3002
+```
 
 ---
 
@@ -42,7 +62,9 @@
 
 Gnom-Hub is a **local-first multi-agent orchestrator** with a fixed 4+4 agent topology, a built-in glassmorphic War Room dashboard, and a unique compilation pipeline that "bakes" evolved agent swarms into frozen, portable AI products called **SuperGNOMs**.
 
-Unlike cloud-dependent frameworks that let you spawn unlimited agents, Gnom-Hub enforces **conscious minimalism**: exactly 8 agents with clear roles, defensive security gates, and full transparency. Everything runs on your machine — no cloud orchestration, no API lock-in, no uncontrolled agent explosion.
+> *"Gnom-Hub is the workbench for AI teams who don't want cloud monsters – but a committed 8-agent team that you can bake like sourdough bread."*
+
+Unlike cloud-dependent frameworks that let you spawn unlimited agents, Gnom-Hub enforces **conscious minimalism**. We believe in intentionality: *We have exactly the right features. No more.* Everything runs on your machine — exactly 8 agents with clear roles, defensive security gates, and full local transparency. No cloud orchestration, no API lock-in, no uncontrolled agent explosion.
 
 ---
 
@@ -50,7 +72,7 @@ Unlike cloud-dependent frameworks that let you spawn unlimited agents, Gnom-Hub 
 
 To understand Gnom-Hub's power in practice, here are three real-world local workloads it handles seamlessly without sending your sensitive codebase or interactions to the cloud:
 
-1. **Local Codebase Governance & Refactoring**: Evolve a workflow where CoderAG analyzes local repositories, WatchdogAG validates code style compliance against strict guidelines (e.g. the 40-line guideline), and EditorAG automatically refactors violations — all locally.
+1. **Local Codebase Governance & Refactoring**: Evolve a workflow where CoderAG analyzes local repositories, WatchdogAG validates code style compliance against strict guidelines, and EditorAG automatically refactors violations — all locally.
 2. **Zero-Trust Web Research**: Run deep-dive web crawling via a sandboxed Playwright browser environment. SecurityAG inspects dependencies in real-time, verifying PyPI packages for known CVEs before any script is executed.
 3. **Local DevOps & Build Assistance**: Let the swarm run test suites locally, verify Docker sandbox environments, and execute `@bake` to package the fully-optimized agent definitions and memories into a self-contained portable SuperGNOM binary/appliance.
 
@@ -66,7 +88,7 @@ We analyzed **12+ leading multi-agent frameworks** (CrewAI, AutoGen/AG2, LangGra
 |:--|:--------|:-------------|:------------|
 | 🏭 | **`@bake` Compiler** | Compiles your evolved swarm into an immutable, portable SuperGNOM product with frozen prompts and SHA-256 integrity manifest | ❌ No equivalent exists anywhere |
 | 🛡️ | **3-Agent Security Tribunal** | Every dangerous action triggers a multi-agent deliberation: WatchdogAG explains the violation, SoulAG provides memory context, GeneralAG recommends — rendered as interactive Approve/Reject cards in the Showbox | ❌ Others have simple pause/resume HITL at best |
-| 🧬 | **Steganographic Tracing (ZWC)** | Experimental security/audit proof-of-concept: agent metadata is embedded as invisible zero-width Unicode fingerprints in output texts | ❌ Nothing comparable in any framework |
+| 🧬 | **Steganographic Tracing (ZWC)** | Forensic audit-trail for regulated local codebases: agent metadata is embedded as invisible zero-width Unicode fingerprints in output texts | ❌ Nothing comparable in any framework |
 | 🎛 | **5-Axis Live Agent Tuning** | Per-agent personality, creativity, response style, memory strength, and risk tolerance sliders with immediate effect — plus custom prompt suffix injection | ❌ No framework offers real-time behavior sliders |
 | 🔄 | **Prompt Version Manager** | Every prompt change is versioned with SHA-256 IDs, parent-child chains, and performance scores from user feedback. Auto-rollback when quality drops below 95% of the parent version | ❌ No "git for prompts" with auto-rollback exists |
 | 🚨 | **Emergency Archive** | A secondary transaction-safe database mirrors all interactions. `@emergency [term]` recovers context when primary memory is lost | ❌ Not a feature anywhere |
@@ -76,17 +98,17 @@ We analyzed **12+ leading multi-agent frameworks** (CrewAI, AutoGen/AG2, LangGra
 
 ### 📊 Framework Comparison
 
-| Capability | GNOM-HUB | CrewAI | AutoGen/AG2 | LangGraph | MetaGPT | Google ADK | OpenAI Agents |
-|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **100% Local** | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ |
-| **Built-in Dashboard** | ✅ War Room | ❌ | ⚠️ Studio | ⚠️ Studio | ⚠️ Web | ✅ Dev UI | ❌ |
-| **Multi-Agent Security Gates** | ✅ 3-Agent Tribunal | ⚠️ Basic | ❌ | ⚠️ HITL | ❌ | ❌ | ⚠️ Guardrails |
-| **Persistent Learning** | ✅ FAISS + Soul | ✅ | ✅ | ✅ | ⚠️ | ✅ | ⚠️ |
-| **Fixed Topology** | ✅ 4+4 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **Compile to Product** | ✅ @bake | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **Prompt Versioning** | ✅ + Rollback | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **Live Agent Tuning UI** | ✅ 5 Sliders | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **Steganographic Tracing** | ✅ ZWC+ECC (Exp.) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Capability | GNOM-HUB | CrewAI | AutoGen/AG2 | LangGraph | OpenAI Agents | Others |
+|:---|:---:|:---:|:---:|:---:|:---:|:---:|
+| **100% Local** | ✅ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ |
+| **Built-in Dashboard** | ✅ War Room | ❌ | ⚠️ Studio | ⚠️ Studio | ❌ | ⚠️ |
+| **Multi-Agent Security Gates** | ✅ 3-Agent Tribunal | ⚠️ Basic | ❌ | ⚠️ HITL | ⚠️ Guardrails | ❌ |
+| **Persistent Learning** | ✅ FAISS + Soul | ✅ | ✅ | ✅ | ⚠️ | ⚠️ |
+| **Fixed Topology** | ✅ 4+4 | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **Compile to Product** | ✅ `@bake` | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **Prompt Versioning** | ✅ + Rollback | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **Live Agent Tuning UI** | ✅ 5 Sliders | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **Steganographic Tracing** | ✅ ZWC (Exp. PoC) | ❌ | ❌ | ❌ | ❌ | ❌ |
 
 > [!NOTE]
 > Most frameworks are excellent tools for building cloud-scale agent pipelines. Gnom-Hub intentionally targets a different niche: **a local, transparent, security-first forge** where you evolve a small team of agents and compile them into a stable product.
@@ -320,7 +342,7 @@ To avoid performance bottlenecks in tight agent interaction loops, Gnom-Hub uses
 | Operation | Database / Inference (Cold) | Memory / Cache (Warm) | Purpose / Mitigation |
 |:----------|:----------------------------|:----------------------|:---------------------|
 | **Capability Check** | 0.73 ms (SQLite DB read) | 0.0006 ms (TTL Cache) | Prevents checking permissions via DB on every single action handler call |
-| **Semantic Search** | 2,830.0 ms (FAISS & model)  | 0.0006 ms (Query Cache) | Avoids calling local embedding models (sentence-transformers) on repeat queries |
+| **Semantic Search** | 2,830.0 ms (FAISS & model cold start)  | 0.0006 ms (Query Cache - 4,700× faster) | Avoids calling local embedding models (sentence-transformers) on repeat queries |
 
 ### General System Metrics
 | Metric | Value |
@@ -333,27 +355,6 @@ To avoid performance bottlenecks in tight agent interaction loops, Gnom-Hub uses
 
 > [!TIP]
 > Run `python3 scratch/run_benchmarks.py` to verify benchmarks locally.
-
----
-
-## 🚀 Quick Start
-
-```bash
-# 1. Clone & Install
-git clone https://github.com/landjunge/gnom-hub.git
-cd gnom-hub
-bash scripts/install.sh
-
-# 2. Configure
-cp config/.env.example config/.env
-# Add your LLM API keys (OpenRouter, DeepSeek, etc.) or configure local Ollama
-
-# 3. Run
-./run.sh
-
-# 4. Open War Room
-open http://127.0.0.1:3002
-```
 
 **LLM Routing:** Gnom-Hub supports 7 providers (DeepSeek, OpenRouter, OpenAI, Anthropic, Gemini, Mistral, local Ollama). Drop a `routing.txt` file on your Desktop to switch routing on-the-fly without restarting.
 
