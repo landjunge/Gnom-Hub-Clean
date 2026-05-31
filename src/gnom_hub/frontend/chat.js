@@ -559,12 +559,23 @@ async function refreshChat() {
     // 3. Speak normal message if new and main TTS is enabled
     if (!isUser && !window._spokenIds.has(m.id)) {
       window._spokenIds.add(m.id);
-      const speechText = cleaned.replace(/\[WRITE:\s*([^\]\n]+)\]([\s\S]*?)\[\/WRITE\]/gi, 'schreibt Datei $1')
-                                .replace(/\[SHELL:\s*([^\]\n]+)\]/gi, 'führt Befehl $1 aus')
-                                .replace(/<SHOWBOX[\s\S]*?<\/SHOWBOX>/gi, '')
-                                .trim();
+      let speechText = cleaned.replace(/\[WRITE:\s*([^\]\n]+)\]([\s\S]*?)\[\/WRITE\]/gi, 'schreibt Datei $1')
+                              .replace(/\[SHELL:\s*([^\]\n]+)\]/gi, 'führt Befehl $1 aus')
+                              .replace(/<SHOWBOX[\s\S]*?<\/SHOWBOX>/gi, '')
+                              .trim();
+      const hasBlock = cleaned.includes('blockiert') || cleaned.includes('BLOCKIERT') || 
+                       cleaned.includes('Fehler') || cleaned.includes('permission denied') || 
+                       cleaned.includes('keine WRITE') || cleaned.includes('keine SHELL') ||
+                       cleaned.includes('Gatekeeper') || cleaned.includes('System-Blockade');
+      if (hasBlock) {
+        speechText = "🛑 CRITICAL: System-Blockade";
+      }
       if (speechText) {
-        speak(`${sender} sagt: ${speechText}`, sender);
+        if (speechText === "🛑 CRITICAL: System-Blockade") {
+          speak(speechText, sender);
+        } else {
+          speak(`${sender} sagt: ${speechText}`, sender);
+        }
       }
     }
   }
@@ -620,6 +631,20 @@ function getVoiceForAgent(agentName, lang) {
   const langPrefix = lang.split('-')[0].toLowerCase();
   let filtered = voices.filter(v => v.lang.toLowerCase().startsWith(langPrefix));
   if (!filtered.length) filtered = voices;
+  
+  // Prioritize premium/high-quality voices
+  const premium = filtered.filter(v => 
+    v.name.includes('Premium') || 
+    v.name.includes('Enhanced') || 
+    v.name.includes('Siri') || 
+    v.name.includes('Google') || 
+    v.name.includes('Yannick') || 
+    v.name.includes('Anna')
+  );
+  if (premium.length > 0) {
+    filtered = premium;
+  }
+  
   let hash = 0;
   for (let i = 0; i < agentName.length; i++) {
     hash = agentName.charCodeAt(i) + ((hash << 5) - hash);

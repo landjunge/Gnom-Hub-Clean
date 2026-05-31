@@ -34,8 +34,10 @@ def ask_llm(ag, q, ctx, bs_mode=False, depth=0):
             retry_prompt = (
                 f"Beobachtung (Systemfehler / Aktion fehlgeschlagen):\n"
                 f"{processed}\n\n"
-                f"WICHTIG: Erkenne das Problem selbstständig (z.B. fehlende Schreibrechte, fehlende Shell-Erlaubnis oder ein nicht installiertes Programm wie git/docker). "
-                f"Melde dieses Fehlen SOFORT dem Benutzer über die Showbox! Schreibe dazu eine verständliche Showbox-Präsentation mit Slides (Format: <SHOWBOX:index>[\"Slide 1\"]</SHOWBOX>)."
+                f"WICHTIG: Melde dieses Fehlen SOFORT dem Benutzer über die Showbox! "
+                f"Schreibe dazu ein EXTREM kurzes, scrollfreies Showbox-Update (maximal 1-2 Zeilen), das perfekt ohne Scrollen in die Box passt! "
+                f"Verwende genau den Titel '<h3>🛑 CRITICAL: System-Blockade</h3>' und nenne kurz den Grund (z. B. fehlendes Tool, fehlendes WRITE oder fehlendes SHELL). "
+                f"Format: <SHOWBOX:2>[\"<h3>🛑 CRITICAL: System-Blockade</h3><p>Fehlende Berechtigung: WRITE.</p>\"]</SHOWBOX>"
             )
             eo2 = ask_router(retry_prompt, sys + f"\n\nBisherige Gedanken/Antwort:\n{eo.content}", agent_name=ag.get("name", ""), depth=depth)
             if eo2.content:

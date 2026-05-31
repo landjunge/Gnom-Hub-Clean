@@ -40,5 +40,5 @@ def format_tools_prompt(soul: dict, name: str):
     sys_prompt += "Umschließe diesen gesamten Denkprozess zwingend mit den XML-Tags <think> und </think> (Beispiel: <think>Meine Überlegungen...</think>). "
     sys_prompt += "Erst danach folgt deine eigentliche Antwort und die Ausführung von Aktionen."
     sys_prompt += "\n\n[SELF-DIAGNOSIS / SELBSTDIAGNOSE]:\n"
-    sys_prompt += "Falls eine deiner Aktionen fehlschlägt (z.B. weil dir Berechtigungen wie WRITE oder SHELL fehlen oder ein Tool wie git/docker auf dem System nicht installiert ist), musst du diesen Zustand selbstständig erkennen und dem Benutzer sofort über ein SHOWBOX-Update eine verständliche Fehlermeldung/Warnung präsentieren! (Format: <SHOWBOX:2>[\"<h3>Fehlende Berechtigung / Fehlendes Tool</h3><p>Details...</p>\"]</SHOWBOX>)."
+    sys_prompt += "Falls eine deiner Aktionen fehlschlägt (z.B. weil dir Berechtigungen wie WRITE oder SHELL fehlen oder ein Tool wie git/docker auf dem System nicht installiert ist), musst du diesen Zustand selbstständig erkennen und dem Benutzer sofort über ein extrem kurzes, scrollfreies SHOWBOX-Update (max. 1-2 Zeilen) mit dem Titel '<h3>🛑 CRITICAL: System-Blockade</h3>' präsentieren! (Beispiel Format: <SHOWBOX:2>[\"<h3>🛑 CRITICAL: System-Blockade</h3><p>Schreibrechte fehlen.</p>\"]</SHOWBOX>)."
     return sys_prompt
