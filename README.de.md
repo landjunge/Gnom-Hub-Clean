@@ -1,18 +1,17 @@
 # 🧠 GNOM-HUB
 
-> **8 Agenten. ~8350 Zeilen. 180 Module. Null Toleranz für Bloat.**
-> *Ein lokales Multi-Agenten-Orchestrierungssystem mit defensiven Sandbox-Sicherheitsbarrieren und modularisiertem War Room Dashboard.*
+> **Die lokale Multi-Agenten-Schmiede, die KI-Schwärme in unveränderbare Produkte kompiliert.**
+> *8 Agenten. 180 Module. Null Cloud-Abhängigkeiten. Keine unkontrollierte Ausbreitung.*
 
-[![License](https://img.shields.io/badge/Lizenz-Private_Use-blue.svg)](LICENSE)
+[![Lizenz](https://img.shields.io/badge/Lizenz-Private_Use-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](#)
-[![Agents](https://img.shields.io/badge/Agenten-8-blueviolet.svg)](#)
-[![Lines of Code](https://img.shields.io/badge/Zeilen_Code-~8350-blue.svg)](#)
-[![Modules](https://img.shields.io/badge/Module-180-blue.svg)](#)
+[![Agenten](https://img.shields.io/badge/Agenten-8_(Feste_Topologie)-blueviolet.svg)](#)
+[![Module](https://img.shields.io/badge/Module-180-blue.svg)](#)
 [![Linting](https://img.shields.io/badge/Linting-Ruff-orange.svg)](#)
 
 ---
 
-🇩🇪 **Deutsch (README.de.md)** • 🇬🇧 **[English (README.md)](README.md)**
+🇬🇧 **[English (README.md)](README.md)** • 🇩🇪 **Deutsch (README.de.md)**
 
 ---
 
@@ -22,336 +21,295 @@
 
 ## Was ist Gnom-Hub?
 
-Gnom-Hub ist ein lokales Multi-Agenten-System mit einer klaren Struktur von **180 Python-Modulen**. Es bietet einen leichtgewichtigen Orchestrator ohne aufgeblähte Frameworks, der vollständig lokal läuft, kein schwerfälliges Docker benötigt und die Agenten über ein Web-Dashboard namens **War Room** steuert.
+Gnom-Hub ist ein **lokaler Multi-Agenten-Orchestrator** mit einer festen Topologie von 4+4 Agenten, einem integrierten glassmorphen **War Room Dashboard** und einer einzigartigen Kompilierungs-Pipeline, die evolvierte Agentenschwärme in eingefrorene, portable KI-Produkte namens **SuperGNOMs** "backt" (`@bake`).
 
-> [!IMPORTANT]
-> **Bewusster Minimalismus:** Gnom-Hub ist auf Einfachheit und maximale Performance ausgelegt. Das System ist bewusst **nicht** dafür konzipiert, Hunderte von Agenten zu steuern, sondern dient der effizienten Orchestrierung einer kleinen, hochspezialisierten und überschaubaren Gruppe von Agenten.
+Im Gegensatz zu cloud-abhängigen Frameworks, bei denen unbegrenzt Agenten gestartet werden können, setzt Gnom-Hub auf **bewussten Minimalismus**: exakt 8 Agenten mit klaren Rollen, defensiven Sicherheitsbarrieren und voller Transparenz. Alles läuft auf deiner Maschine – keine Cloud-Orchestrierung, kein API-Lock-in, kein unkontrollierter Agenten-Sprawl.
 
 ---
 
-## 🔮 Die Vision: SuperGNOM & GNOM-HUB
+## 🏆 Was macht Gnom-Hub besonders?
 
-GNOM-HUB ist kein gewöhnlicher KI-Chatbot und auch kein klassisches Multi-Agenten-System. Es ist die **Fabrik ("Schmiede")**, in der ein **SuperGNOM** über sogenannte **Presets** (Konfigurations-Profile) definiert, trainiert und geformt wird. GNOM-HUB bietet eine strukturierte Entwicklungsumgebung, in der genau acht feste Agenten mit klar definierten Rollen zusammenarbeiten. Vier davon sind administrative System-Agenten, die sich um Sicherheit, Gedächtnis, Überwachung und Koordination kümmern.
+Wir haben **mehr als 12 führende Multi-Agenten-Frameworks** analysiert (CrewAI, AutoGen/AG2, LangGraph, MetaGPT, OpenAI Agents, Google ADK, Mastra und andere). Hier ist, was Gnom-Hub bietet, das **kein anderer** auf dem Markt hat:
 
-Der Kern der Idee ist nicht, immer komplexer oder größer zu werden. Stattdessen dient die Fabrik GNOM-HUB dazu, die Agenteneigenschaften und das Schwarmverhalten über Presets exakt zu kalibrieren und daraus das stabile, spezialisierte KI-System – den **SuperGNOM** – zu kompilieren (zu "backen").
+### ✨ 10 einzigartige Alleinstellungsmerkmale
 
-Während die Fabrik GNOM-HUB die flexible, lernende Werkstatt ist, ist der **SuperGNOM** das fertige Produkt: unveränderbar, stabil und auf einen bestimmten Menschen oder eine konkrete Aufgabe zugeschnitten. Ein SuperGNOM soll im Produktiveinsatz nicht ständig dazulernen und sich verändern, sondern verlässlich, kontrollierbar und vorhersagbar bleiben.
+| # | Feature | Funktionsweise | Wettbewerber |
+|:--|:--------|:---------------|:-------------|
+| 🏭 | **`@bake`-Compiler** | Kompiliert deinen evolvierten Schwarm in ein unveränderbares, portables SuperGNOM-Produkt mit eingefrorenen Prompts und SHA-256 Integritätsmanifest. | ❌ Kein Äquivalent vorhanden |
+| 🛡️ | **3-Agenten-Tribunal** | Jede riskante Aktion löst eine Multi-Agenten-Beratung aus: WatchdogAG erklärt den Verstoß, SoulAG liefert Kontext, GeneralAG empfiehlt – visualisiert als interaktive Genehmigungskarten in der Showbox. | ❌ Höchstens simple Pause/Resume-HITL-Schnittstellen |
+| 🧬 | **Steganografischer Speicher** | Agenten-Metadaten werden als unsichtbare Zero-Width-Unicode-Zeichen (ZWC) mit Fehlerkorrekturcodes in Chat-Antworten eingebettet – unsichtbare Fingerabdrücke in jeder Nachricht. | ❌ Nichts Vergleichbares in anderen Systemen |
+| 🎛️ | **5-Achsen-Live-Tuning** | Live-Regler für Persönlichkeit, Detailgrad, Gedächtnisstärke, Kreativität (Temperatur) und Risikobereitschaft der Worker-Agenten mit sofortiger Wirkung sowie Custom-Suffix-Injektion. | ❌ Keine Echtzeit-Einstellungsregler vorhanden |
+| 📐 | **40-Zeilen-Code-Regel** | WatchdogAG erzwingt, dass jede von Agenten geschriebene Funktion/Methode unter 40 Zeilen bleibt. EditorAG strukturiert Code bei Verstößen automatisch um. | ❌ Keine agenten-erzwungenen Qualitätsstandards |
+| 🔄 | **Prompt Version Manager (PVM)** | Jede Prompt-Änderung wird mit SHA-256-IDs, Parent-Child-Verbindungen und Performance-Metriken aus User-Feedback versioniert. Automatischer Rollback, wenn die Bewertung unter 95% des Vorgängers fällt. | ❌ Kein "Git für Prompts" mit Auto-Rollback vorhanden |
+| 🚨 | **Notfall-Archiv** | Eine transaktionssichere passive Backup-Datenbank spiegelt alle Interaktionen. `@emergency [Begriff]` stellt Kontext wieder her, falls das Hauptgedächtnis ausfällt. | ❌ Nirgends als Standard-Feature implementiert |
+| 🔒 | **Feste 4+4 Topologie** | Hardcodiertes Limit auf exakt 8 Agenten verhindert unkontrolliertes Spawnen. Jede Rolle ist präzise definiert und transparent auditierbar. | ❌ Unbegrenztes Spawnen von Agenten ist Standard |
+| 💣 | **Cinematische Nuke-Aktion** | Logo für 2 Sekunden gedrückt halten → CRT-Röhren-Scanlines + weißes Rauschen + Retro-Boot-Sequenz + synthetisiertes Godzilla-Brüllen via Web Audio API. | ❌ Einzigartig und mit viel Liebe zum Detail 😄 |
+| 🔐 | **Live PyPI-Schwachstellenscan** | Bei Ausführung von `pip install` durch Agenten werden Pakete in Echtzeit gegen die Live-API von PyPI auf Existenz, valide Releases und bekannte CVEs geprüft, *bevor* Code ausgeführt wird. | ❌ Keine Echtzeit-Validierung von externen Paketen |
 
-### 🏗️ Workflow: Von der Fabrik zum Produkt (Kompilierung)
+### 📊 Vergleich der Frameworks
+
+| Funktion | GNOM-HUB | CrewAI | AutoGen/AG2 | LangGraph | MetaGPT | Google ADK | OpenAI Agents |
+|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **100% Lokal ausführbar** | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ |
+| **Integriertes Dashboard** | ✅ War Room | ❌ | ⚠️ Studio | ⚠️ Studio | ⚠️ Web | ✅ Dev UI | ❌ |
+| **Multi-Agenten-Sicherheitsgates** | ✅ 3-Agenten-Tribunal | ⚠️ Basic | ❌ | ⚠️ HITL | ❌ | ❌ | ⚠️ Guardrails |
+| **Persistentes Lernen** | ✅ FAISS + Soul | ✅ | ✅ | ✅ | ⚠️ | ✅ | ⚠️ |
+| **Feste Topologie** | ✅ 4+4 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **Kompilierung zum Produkt** | ✅ @bake | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **Prompt-Versionierung** | ✅ + Rollback | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **Live-Tuning-UI (Regler)** | ✅ 5 Regler | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **Steganografische Identität** | ✅ ZWC + ECC | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+
+> [!NOTE]
+> Die meisten Frameworks eignen sich hervorragend für den Bau von Cloud-Skalierungs-Pipelines. Gnom-Hub fokussiert sich bewusst auf eine andere Nische: **Eine lokale, transparente, sicherheitsorientierte Schmiede**, um ein kleines, eingespieltes Team zu trainieren und in ein stabiles Produkt zu gießen.
+
+---
+
+## 🔮 Die Vision: Von der Schmiede zum Produkt
+
+GNOM-HUB ist die **Schmiede ("Forge")**, in der die Agenten trainiert, kalibriert und weiterentwickelt werden. Der **SuperGNOM** ist das fertige Produkt: unveränderbar, portabel und maßgeschneidert für einen bestimmten Nutzer oder Usecase.
 
 ```mermaid
 graph TD
-    subgraph Werkstatt [GNOM-HUB Fabrik]
-        P[Presets-Konfiguration] -->|Definiert Schwarm| GH[Entwicklungs-Schwarm: 8 Agenten]
-        GH -->|Eigenschaften & Lernen| DB[(gnomhub.db)]
+    subgraph Forge ["🔧 GNOM-HUB Schmiede"]
+        P["⚙️ Presets & Regler"] -->|Konfigurieren| GH["🤖 8-Agenten-Schwarm"]
+        GH -->|"Lernen & Evolution"| DB[("💾 gnomhub.db")]
+        FB["👍👎 User-Feedback"] -->|"Trigger: evolution_* Regeln"| GH
     end
     
-    subgraph Compiler [Automatisierter Exporter]
-        GH -->|Chat-Befehl: @bake| C[Exporter / Compiler]
-        DB -->|Prüft & reduziert Chat-Verlauf auf 1000 Zeilen| C
-        C -->|Friert aktive Prompts ein| AD[agent_definitions.py]
-        C -->|Erzeugt SHA-256 Hashes| M[manifest.json]
+    subgraph Compiler ["🏭 @bake Compiler"]
+        GH -->|"Befehl: @bake"| C["⚡ Compiler Kern"]
+        DB -->|"Reduziere auf 1000 Chats"| C
+        C -->|"Friere aktive Prompts ein"| AD["📄 agent_definitions.py"]
+        C -->|"SHA-256 Integrität"| M["🔐 manifest.json"]
     end
 
-    subgraph Endprodukt [Portabler SuperGNOM]
-        AD --> SG[SuperGNOM Laufzeitumgebung]
-        M -->|Integritätsprüfung beim Start| SG
+    subgraph Product ["📦 Portabler SuperGNOM"]
+        AD --> SG["🧠 Gefrorene Laufzeit"]
+        M -->|"Startup-Validierung"| SG
     end
 ```
 
-### 🧬 System-Topologie & Gedächtnis-Isolation
+**SuperGNOM Kernkonzepte:**
+- **Unveränderbarkeit (Immutability):** Prompts und Gedächtnis sind statisch. Kein Concept Drift, kein Risiko durch Prompt-Injektionen.
+- **Portabilität:** Eigenständiger Ordner mit lokaler SQLite-Datenbank, statischen Konfigurationen und `run.sh` Startskript.
+- **Fokus-UI:** Keine Entwickler-Konsolen oder Token-Zähler – nur eine saubere, zweckgebundene Benutzeroberfläche.
+
+---
+
+## 🧬 Schwarm-Topologie & Speicher-Architektur
 
 ```mermaid
 graph TD
-    U[Benutzer Chat-Eingabe] -->|Sendet Befehl| G[GeneralAG - Orchestrator]
+    U["👤 Benutzer"] -->|Chat-Eingabe| G["👑 GeneralAG<br/>Orchestrator"]
     
-    subgraph System [System- & Wächter-Schicht]
-        G -->|Regelüberwachung| W[WatchdogAG]
-        G -->|Schadcodescan| S[SecurityAG]
-        G -->|Liest/Schreibt Fakten| So[SoulAG]
+    subgraph Admin ["🛡️ System-Schicht (4 Agenten)"]
+        G -->|"Regelprüfung"| W["🐕 WatchdogAG"]
+        G -->|"Sicherheits-Scan"| S["🔒 SecurityAG"]
+        G -->|"Gedächtnis-Abfrage"| So["🧠 SoulAG"]
     end
 
-    subgraph Workers [Worker-Schicht]
-        G -->|Delegiert: @AgentenName| C[CoderAG]
-        G -->|Delegiert: @AgentenName| Wr[WriterAG]
-        G -->|Delegiert: @AgentenName| R[ResearcherAG]
-        G -->|Delegiert: @AgentenName| E[EditorAG]
+    subgraph Workers ["⚙️ Worker-Schicht (4 Agenten)"]
+        G -->|"@code"| C["💻 CoderAG"]
+        G -->|"@write"| Wr["✍️ WriterAG"]
+        G -->|"@research"| R["🔍 ResearcherAG"]
+        G -->|"@edit"| E["📝 EditorAG"]
     end
 
-    subgraph Memory [Langzeitgedächtnis & Scopes]
-        So -->|Injiziert globale Vorlieben| GS[(Globaler Vektor-Scope)]
-        C -.->|Isolierte Abfrage| MC[(Coder Vektor-Scope)]
-        Wr -.->|Isolierte Abfrage| MWr[(Writer Vektor-Scope)]
-        R -.->|Isolierte Abfrage| MR[(Researcher Vektor-Scope)]
-        E -.->|Isolierte Abfrage| ME[(Editor Vektor-Scope)]
-        GS -.->|Vererbt an| MC
-        GS -.->|Vererbt an| MWr
-        GS -.->|Vererbt an| MR
-        GS -.->|Vererbt an| ME
+    subgraph Memory ["💾 Isolierte Speicher-Scopes"]
+        So -->|"Globale Fakten"| GS[("🌍 Globaler Index")]
+        C -.->|"Isolierter Query"| MC[("Coder FAISS")]
+        Wr -.->|"Isolierter Query"| MWr[("Writer FAISS")]
+        R -.->|"Isolierter Query"| MR[("Researcher FAISS")]
+        E -.->|"Isolierter Query"| ME[("Editor FAISS")]
+        GS -.->|"Vererbt an"| MC
+        GS -.->|"Vererbt an"| MWr
+        GS -.->|"Vererbt an"| MR
+        GS -.->|"Vererbt an"| ME
     end
 ```
 
-### 📊 Ist-Zustand (Status Quo)
-- **SuperGNOM-Modus (`SUPERGNOM_MODE`)**: In der Konfiguration implementiert. Schaltet das dynamische Lernen und Prompt-Evolution ab, um ein stabiles und vorhersagbares Systemverhalten im Produktiveinsatz zu garantieren.
-- **Isolierte Agenten-Gedächtnis-Bereiche (Isolated Memory Scopes)**: Implementiert für alle Worker-Agenten (`CoderAG`, `WriterAG`, `ResearcherAG`, `EditorAG`). Jeder Agent besitzt einen physikalisch getrennten FAISS-Vektorindex und SQLite-Filter, um eine gegenseitige Rollenverseuchung (Faktenleaks) zu verhindern.
-- **SuperGNOM `@bake` Exporter (Compiler)**: Automatisiertes Einfrieren der evolvierten Prompts, Bereinigung der SQLite-Datenbank (Chats limitiert auf letzte 1000 Zeilen), Generierung des SHA-256 Hashes `manifest.json` zur Startup-Integritätsprüfung.
-- **Passives Notfall-Backup-Archiv**: Eine passive historische Datenbank (`passive_archive.db`), in der sämtliche Interaktionen und Fakten transaktionssicher dupliziert werden, abfragbar bei Gedächtnisverlust über `@emergency` bzw. `@notfall`.
+### System-Agenten (Administrativ)
+| Agent | Rolle | Besondere Befugnisse |
+|:------|:-----|:---------------------|
+| **SoulAG** | Zentrales Bewusstsein & Gedächtnis | Extrahiert Fakten aus Chats, injiziert relevante Erinnerungen via FAISS semantischer Suche und steuert die Evolutions-Regeln. |
+| **GeneralAG** | Koordinator & Orchestrator | Zerlegt `@job`-Aufgaben, delegiert via `@AgentenName` und synthetisiert Brainstorm-Ergebnisse. **Kann keine Dateien schreiben oder Shell-Befehle ausführen.** |
+| **WatchdogAG** | Codebase-Wächter | Erzwingt die 40-Zeilen-Regel, validiert Workspace-Pfade und löst Gatekeeper-Sperren aus. |
+| **SecurityAG** | Sicherheits-Scanner | Erkennt unsichere Code-Muster (`eval`, `rm -rf`, `subprocess`) und validiert externe Pakete live gegen die PyPI-API. |
 
-### 📝 Was noch getan werden muss (Roadmap / ToDo)
-- **Spezifische UI-Layouts**: Implementierung optimierter Templates für spezifische Anwendungsfälle (z. B. barrierefreies Chat-UI oder Headless-API-Runner).
-- **Single-Click Docker- & Binary-Exporte**: Kompilierung der SuperGNOM-Laufzeitumgebung in ein eigenständiges Binary oder Docker-Image.
-
----
-
-## 🚀 Features (Funktionsumfang)
-
-Gnom-Hub kombiniert eine robuste Multi-Prozess-Orchestrierung mit einem interaktiven Web-Interface. Die wichtigsten Features umfassen:
-
-*   **Automatisches intelligentes Routing**:
-    Der LLM-Router (`router.py`) leitet Anfragen dynamisch an das am besten geeignete Modell (z. B. DeepSeek-Reasoner, Claude, GPT) weiter. Bei API-Ausfällen oder Netzwerksperren greift das System vollautomatisch auf konfigurierte lokale Fallbacks (wie eine Offline-Llama-Instanz über Ollama) zurück, um Blockaden im Swarm zu verhindern.
-*   **Layer-basiertes visuelles System in der Showbox**:
-    Die Showbox im Web-Dashboard stellt Arbeitsergebnisse, Textentwürfe und UI-Mockups in Echtzeit auf interaktiven Informationsebenen (Layern) dar. Jeder Layer besitzt eine feste farbliche Kennzeichnung und erzeugt beim Wechsel einen visuellen Highlight-Effekt (Blinken) an der zugehörigen Agenten-Gruppe (Worker links oder System-Agenten oben), um dem Nutzer sofort die Herkunft der Information anzuzeigen.
-*   **Modulares Frontend**:
-    Das glassmorphe Web-Dashboard wurde vollständig refaktoriert: Anstelle einer riesigen, monolithischen JavaScript-Datei im HTML-Code ist das UI nun in 9 hochgradig spezialisierte JavaScript-Module aufgeteilt. Dies gewährleistet eine saubere Trennung der Zuständigkeiten (core.js, chat.js, workspace.js, system_dashboard.js, worker_dashboard.js, worker_sidebar.js, dashboard.js, showbox.js, showbox-buttons.js) und vereinfacht die Wartung.
-*   **Gemeinsames Langzeitgedächtnis**:
-    Alle Agenten teilen sich eine persistente SQLite-Wissensbasis. SoulAG analysiert Chats und Interaktionen, speichert relevante Erkenntnisse ab und injiziert diese kontextabhängig via FAISS-Vektorsuche (oder mathematischem TF-IDF-Fallback bei fehlenden Bibliotheken) vor jedem LLM-Call direkt in den Systemprompt der Worker, um wiederholte Fehler zu vermeiden.
-*   **Brainstorming-Modus mit strukturierter Agenten-Diskussion**:
-    Über den Befehl `@bs [Thema]` wird eine koordinierte Agenten-Diskussion angestoßen. Alle Worker-Agenten analysieren das Problem parallel im Brainstorm-Modus, während GeneralAG anschließend die Ergebnisse konsolidiert, filtert und dem Nutzer in einem strukturierten Aktionsplan präsentiert.
-*   **Visuelles Dashboard mit Live-Status**:
-    Das Dashboard bietet Echtzeit-Observability für den gesamten Schwarm. Über ein glassmorphes Bento-Grid-Layout werden der Live-Status jedes Daemons (Heartbeat-Überwachung via `/api/metrics`), durchschnittliche Latenzen, Erfolgsraten, Tokenverbräuche sowie das Benutzer-Feedback-Panel direkt visualisiert.
+### Worker-Agenten (Sandboxed)
+| Agent | Rolle | Fähigkeiten |
+|:------|:-----|:------------|
+| **CoderAG** | Software-Entwicklung & Debugging | `read` (Lesen), `write` (Schreiben), `run` (Shell-Befehle), `godmode` (Playwright-Browserautomation). |
+| **ResearcherAG** | Recherche & Websuche | `read`, `write`, `browser` (nur Navigation). |
+| **WriterAG** | Dokumentation & Entwürfe | `read`, `write`, `image` (KI-Bilderstellung). |
+| **EditorAG** | Refactoring & QA | `read`, `write`. |
 
 ---
 
-## ✅ Abgeschlossene Phasen (Härtungs-Milestones)
+## 🛡️ Sicherheits-Architektur
 
-Die Entwicklungsschritte im Überblick:
+Gnom-Hub implementiert ein **Zero-Trust, Defense-in-Depth** Sicherheitsmodell, das sich elementar von klassischen Multi-Agenten-Umgebungen unterscheidet:
 
-*   **🛡️ Phase 1: Sicherheit & Gatekeeper**
-    *   Doppelte Freigabe (`WatchdogAG` + `SecurityAG`) für alle Datei-Schreibzugriffe und Shell-Befehle.
-    *   Strikter Zugriffsschutz auf systemkritische Systemdateien.
-*   **📊 Phase 2: Observability & Health**
-    *   Strukturiertes JSON-Logging aller System-Events in SQLite.
-    *   Glassmorphes Bento-Grid-Dashboard für Live-Status.
-*   **🧠 Phase 3 & 6: Wissensbasis & Retrieval**
-    *   Intelligente Fakten-Suche (Schlüssel-Übereinstimmung gewichtet doppelt).
-    *   Dynamisches Injezieren der top 8 relevantesten Fakten vor jedem LLM-Call.
-*   **🔄 Phase 4: Recovery & Cleanup**
-    *   LLM-Key-Rotation und nahtloses Ausweichen auf lokale Ollama-Modelle.
-    *   Automatisches Löschen alter Chats (>7 Tage) und Fakten (>30 Tage).
-*   **🌐 Phase 5: Browser-Automation (Playwright)**
-    *   Playwright-Browseraktionen laufen in isoliertem Docker-Container.
-    *   Standardmäßig offline (`--network=none`), Bridge-Netzwerk nur nach URL-Freigabe.
-*   **🔄 Phase 7 & 8: Kollaboration & Härtung**
-    *   Aufgabenverteilung über `@AgentenName -> Aufgabe`.
-    *   Gleichzeitiger Stress-Test aller Features & Release-Tagging.
-*   **🔗 Phase 9 & 10: Swarm-Comms & Git**
-    *   Direkte Agent-to-Agent Kommunikation im Chat.
-    *   Automatische Workspace-Commits nach erfolgreichen Swarm-Aufgaben.
-*   **🧠 Phase 11-13: Kontinuierliches Lernen & Feedback**
-    *   GeneralAG erzeugt Verhaltensregeln zur Selbstoptimierung (`evolution_*`).
-    *   User-Feedback (Daumen hoch/runter + Kommentar) beeinflusst Agentenverhalten.
-*   **⚡ Phase 14: Versionierung & Fallbacks**
-    *   Versionierung von System-Prompts bei Evolution mit Rollback-Funktion.
-    *   Automatisches Rerouting blockierter Aufgaben an Ersatz-Agenten.
-*   **🛡️ Phase 15: Zero-Trust-inspirierte Rechteprüfung & FAISS**
-    *   Lokale semantische Vektorsuche mittels FAISS (`sentence-transformers`).
-    *   In-Memory Capability Leases (TTL Cache) zur Vermeidung redundanter Rechteprüfungen.
-*   **🛡️ Phase 16: Systemhärtung & Wächter**
-    *   GeneralAG darf keine Dateien schreiben oder Befehle ausführen.
-    *   Strikte Einhaltung des 4/4 Agenten-Limits und paralleler UI-Ladevorgang (`Promise.all`).
-    *   Echtzeit-PyPI-Paketprüfung und Entfernen von DeepSeek `<think>`-Blöcken.
-*   **🔄 Phase 17: Stabilität & Loop-Prävention**
-    *   Kaskadentiefe von Agent-Erwähnungen auf maximal 3 beschränkt.
-    *   Automatisches Freigeben hängender `busy`-Agenten nach 5 Minuten.
-    *   Transaktionssichere Preset-Wechsel via SQLite immediate transaction.
-*   **🎨 Phase 18: Sidebar & Header-Layout**
-    *   Verschieben der Metriken in die Sidebar (dünnes Layout).
-    *   Zwei feste 30px Platzhalter umschließen das Metriken-Modul.
-    *   Einheitliche 86px Breite für alle Header-Buttons mit zentriertem Text.
-*   **💾 Phase 19: Globale Aktionen & Clean UI**
-    *   Back- und Save-Buttons in Standardgröße (86px) an Position 1 und 6 im Header.
-    *   Redundante, lokale "Speichern"- und "Apply & Save"-Buttons wurden entfernt.
+```
+Agenten-Aktion → Pfad-Validator → Pattern-Scanner (destruktiver Code) → Capability-Lease-Check
+                                                                              ↓
+                                                                  [Im Cache?] → ✅ Ausführen
+                                                                  [Neu?]       → Gatekeeper-Tribunal
+                                                                                    ↓
+                                                                      WatchdogAG erklärt Verstoß
+                                                                      SoulAG liefert Gedächtniskontext  
+                                                                      GeneralAG gibt Empfehlung
+                                                                                    ↓
+                                                                      Showbox: Approve / Reject (5 Min. Timeout)
+```
+
+**Zentrale Schutzmechanismen:**
+- **Zweistufige Freigabe:** Schreibzugriffe und Shell-Kommandos von Workern müssen zwingend WatchdogAG + SecurityAG passieren, bevor sie an das System übergeben werden.
+- **Echtzeit PyPI-Scans:** Bei `pip install` wird das Paket vorab über die PyPI-API auf Authentizität und bekannte Schwachstellen geprüft.
+- **Zero-Trust Capability Leases:** Einmal genehmigte Aktionen werden mit einer TTL (standardmäßig 5 Minuten) im Arbeitsspeicher gecached – dies führt zu einer **~1.200-fachen Beschleunigung** nachfolgender identischer Aufrufe.
+- **Path-Traversal-Blockade:** Worker können sich unter keinen Umständen aus dem zugewiesenen Workspace-Verzeichnis herausbewegen.
+- **Code-Scanning:** Statische Filter blockieren Ausführungsbefehle wie `eval()`, `os.system()`, `pickle.load()`, `chmod 777` etc.
+- **Systemintegrität:** GeneralAG ist permanent auf Code-Ebene gesperrt, Schreib- oder Terminalaktionen auszuführen.
 
 ---
 
-## 🏗️ Kern-Architektur
+## 🎛️ Agenten-Inspektor & Live-Optimierer
 
-Das Backend basiert auf FastAPI und stützt sich auf drei wesentliche Designentscheidungen:
+Jeder Worker-Agent kann im Sidebar-Panel in Echtzeit feinjustiert werden:
 
-### 1. Relationaler SQLite3-Speicher (WAL-Modus)
-Sämtliche Agenten-Interaktionen, Chat-Verläufe und Zustandsdaten werden in einer lokalen SQLite3-Datenbank (`gnomhub.db`) im **Write-Ahead Logging (WAL)-Modus** gespeichert. Dies verhindert Concurrency-Konflikte bei parallelen Schreibzugriffen der Agenten, stellt Transaktionssicherheit sicher (`with conn:`) und läuft nativ auf allen Plattformen.
+| Regler | Bereich | Auswirkung auf den Agenten |
+|:-------|:--------|:---------------------------|
+| **Persönlichkeit** | Formal (1) → Sehr Locker (5) | Steuert Tonalität und Kommunikationsstil im Chat. |
+| **Antwortstil** | Sehr Kurz (1) → Sehr Detailreich (5)| Bestimmt die Ausführlichkeit der Antworten. |
+| **Gedächtnisstärke**| Minimal / top_k:2 (1) → Maximum / top_k:16 (5)| Bestimmt, wie viele relevante Fakten SoulAG injiziert. |
+| **Kreativität** | Konservativ / temp:0.1 (1) → Wild / temp:1.2 (5)| LLM-Temperatur-Parameter. |
+| **Risikobereitschaft**| Sehr Vorsichtig (1) → Sehr Mutig (5) | Beeinflusst die Entscheidungsfindung bei Lösungsansätzen. |
 
-### 2. Prozess-Orchestrierung (psutil & PID-Dateien)
-Das Management der Hintergrundprozesse erfolgt plattformunabhängig und sicher über `psutil`.
-* Beim Starten eines Agenten wird eine PID-Datei unter `~/.gnom-hub/run/{agent_name}.pid` angelegt.
-* Vor jeder Prozess-Aktion (wie dem Stoppen eines Agenten) liest der Prozess-Manager die PID-Datei aus und verifiziert die Kommandozeile (`cmdline`) des Prozesses. Dies verhindert, dass versehentlich fremde Prozesse beendet werden, die eine wiederverwendete PID erhalten haben.
-
-### 3. FastAPI Lifespan-Hooks
-Die Datenbank-Initialisierung (`init_db()`), das Seeding der Standard-Agenten und der Start der Hintergrund-Dienste sind fest an das Lifespan-Startup-Event von FastAPI gebunden. Beim Herunterfahren des Servers (z. B. durch SIGINT / Ctrl+C) führt uvicorn automatisch ein geordnetes, kaskadierendes Herunterfahren aus, welches alle Hintergrundprozesse beendet und verwaiste PID-Dateien löscht.
+Zusätzlich:
+- **Custom System Prompt Suffix:** Überschreibt das Basisverhalten des Agenten per Texteingabe.
+- **Export/Import:** Speichere Agenten-Konfigurationen als JSON (Einstellungen, gelernte Fakten, Prompt-Versionen).
+- **Als Preset speichern:** Sichere die Reglereinstellungen der Gruppe als wiederverwendbares Preset ("Agenten-Bande").
+- **Live-Statistiken:** Übersicht über Aufrufe, Fehler, durchschnittliche Latenz und kumulierten Tokenverbrauch.
 
 ---
 
-## ⚡ Performance & Benchmarks
+## 📺 Showbox: 3-Kanal Visualisierungssystem
 
-GNOM-HUB verfügt über integrierte Performance-Optimierungen wie In-Memory-TTL-Capability-Leases, SQLite Write-Ahead Logging (WAL) und lokales Abfrage-Caching. Nachfolgend sind die echten Messwerte aufgeführt, die auf einem macOS-System erhoben wurden:
+Die Showbox im Dashboard dient als visuelles Ausgabemedium für die Zwischenergebnisse des Schwarms:
 
-### Struktur-Metriken
-| Metrik | Wert | Beschreibung |
-| :--- | :--- | :--- |
-| **Aktive Agenten** | 8 | Feste Topologie (4 System-Agenten, 4 Worker) |
-| **Python-Module** | 180 | Modulare Backend-Struktur unter `src/` |
-| **Python-Zeilen Code (LOC)** | ~8.350 | Schlanke Architektur ohne aufgeblähte externe Frameworks |
-| **JavaScript UI-Module** | 9 | Entkoppelte Client-Skripte im War Room |
+| Ebene (Layer) | Farbe | Zweck |
+|:--------------|:------|:------|
+| **Layer 1 — System** | Blau | System-Agenten-Aktivität (GeneralAG, SoulAG, SecurityAG, WatchdogAG). |
+| **Layer 2 — Worker** | Grün | Arbeitsergebnisse, Entwürfe, UI-Mockups und Code-Output der Worker. |
+| **Layer 3 — Decision** | Rot | Sicherheits-Sperrkarten mit Approve/Reject-Buttons für den Nutzer. |
 
-### System- & Speicherlatenz
-| Operation | Kaltstart (Cold Run) | Warmstart (Cached) | Beschleunigung / Effizienz |
-| :--- | :--- | :--- | :--- |
-| **Rechteprüfung (Capability Check)** | 0,7255 ms | 0,0006 ms | **~1.200x** (O(1) Memory Cache vs. SQLite) |
-| **Semantische Gedächtnissuche** | 2.830,53 ms | 0,0006 ms | **~4.700.000x** (Query Cache vs. lokale FAISS Embeddings) |
+- Jede Ebene speichert einen **Verlauf der letzten 30 Einträge** zum Durchblättern.
+- Ein Wechsel der Ebene löst **Blink-Animationen** an den entsprechenden Agentengruppen aus.
+- **Automatische Textskalierung** (40px → 11px) sichert optimale Lesbarkeit.
+- Toast-Benachrichtigungen werden nach 6 Sekunden automatisch ausgeblendet.
+
+---
+
+## 🧠 Gedächtnis- & Soul-System
+
+### Semantisches Langzeitgedächtnis
+- **FAISS-Vektorsuche** unter Verwendung von `sentence-transformers/all-MiniLM-L6-v2` Modellen.
+- **Prioritätsgewichtung** (Faktor 1.3× für hohe Wichtigkeit, 0.7× für niedrige) mit einer Ähnlichkeitsschwelle von 0,70.
+- **Isolierte Vektor-Indizes** je Worker-Agent verhindern eine gegenseitige Rollenverseuchung (Faktenleaks).
+- **Automatisches TF-IDF-Fallback** berechnet die Kosinus-Ähnlichkeit, falls FAISS lokal nicht installiert ist.
+- **~4.700.000x Beschleunigung** bei gecachten Anfragen im Vergleich zum Kaltstart der Vektorsuche.
+
+### SoulAG Lernschleife
+1. SoulAG liest alle Chat-Nachrichten im Hintergrund mit.
+2. Extrahiert strukturierte Fakten (Key, Value, Priorität, Ziel-Agent).
+3. Bereinigt Duplikate (Kosinus-Ähnlichkeit >0,92) und validiert Dateipfade.
+4. Injiziert die top-k wichtigsten Fakten zur Laufzeit in die Prompts.
+5. Überwacht die Injektionen und warnt bei wiederholten, ungenutzten Re-Injektionen.
+
+### Agenten-Evolution
+- Benutzer-Feedback (👍/👎 + Freitext-Kommentar) generiert dynamisch neue `evolution_*` Verhaltensregeln.
+- Diese werden im **Prompt Version Manager** als neue Prompt-Versionen mit Performance-Scores gespeichert.
+- Fällt der Score einer neuen Version unter 95% der Vorgängerversion, wird ein **automatischer Rollback** durchgeführt.
+- **Im SuperGNOM-Modus ist die Lernschleife vollständig deaktiviert** (Statische Prompts).
+
+### Steganografische Identität (ZWC)
+Die Identität des sendenden Agenten wird als unsichtbare **Zero-Width Unicode-Zeichenkette** direkt im Chat-Text codiert (Base64 → Binär → ZWC-Zeichen). Ein integrierter 3-Bit-Mehrheitsentscheid-Fehlerkorrekturcode sichert den Fingerabdruck gegen Verluste beim Kopieren und Einfügen.
+
+---
+
+## 🛠️ Agenten-Aktionen & Werkzeuge
+
+Agenten fordern Werkzeuge über strukturierte Markdown-Tags an:
+
+| Aktion | Beschreibung | Berechtigte Agenten | Beispiel |
+|:-------|:-------------|:-------------------|:---------|
+| `[READ: datei]` | Liest Dateiinhalte aus dem Workspace | Alle Worker | `[READ: index.html]` |
+| `[WRITE: datei]...[/WRITE]` | Erstellt oder überschreibt eine Datei | CoderAG, WriterAG, EditorAG, ResearcherAG | `[WRITE: hello.py]print("Hi")[/WRITE]` |
+| `[SHELL: cmd]` | Führt Terminal-Befehl aus | CoderAG | `[SHELL: pytest tests/]` |
+| `[IMAGE: prompt]` | Generiert ein KI-Bild | WriterAG, CoderAG | `[IMAGE: logo prompt]` |
+| `[BROWSER: json]` | Playwright-Browserautomation | CoderAG (godmode) | `[BROWSER: {"action": "goto", ...}]` |
+| `<SHOWBOX:n>...<SHOWBOX>` | Rendert HTML-Inhalt in der Showbox | Alle Agenten | `<SHOWBOX:2><h3>Draft</h3></SHOWBOX>` |
 
 > [!TIP]
-> Die Benchmarks können jederzeit lokal durch Ausführen von `python3 scratch/run_benchmarks.py` überprüft werden.
-
----
-
-## 📐 Die 40-Zeilen-Regel (Für Agenten-Code)
-
-Um Komplexität, Monolithen und Sicherheitsrisiken in Projekten zu vermeiden, überwacht GNOM-HUB die Einhaltung eines klaren Programmierstandards für die vom Schwarm geschriebenen Codesegmente:
-*   **Fokus für den Schwarm**: Jede einzelne **Funktion und Methode**, die von den Worker-Agenten (z. B. `CoderAG`) im Workspace erstellt oder refaktoriert wird, soll eine Länge von 40 Zeilen nicht überschreiten.
-*   **Regelprüfung durch WatchdogAG & EditorAG**: `WatchdogAG` fungiert als Wächter dieser Regel und verweigert die Freigabe (`APPROVED`), falls generierter Code diese Grenze überschreitet. `EditorAG` unterstützt bei der anschließenden Modularisierung und Aufteilung in kleinere Hilfsfunktionen.
-*   **Kein Dogma für die Plattform**: Dieser Standard betrifft ausschließlich den im Workspace durch die Agenten generierten Code, nicht das System-Backend von GNOM-HUB selbst. Systemkritische Steuerungsdateien (z. B. für SQLite-WAL oder Vektorsuchen) sind strukturbedingt länger, um Logik lesbar an einem Ort zu behalten.
-
----
-
-## 🤖 Die Agenten-Struktur
-
-Gnom-Hub steuert 8 registrierte Agenten, aufgeteilt in koordinierende System-Agenten und spezialisierte Worker-Agenten:
-
-### System-Agenten — halten das Haus sauber
-
-| Agent | Modul | Beschreibung |
-| :--- | :--- | :--- |
-| **GeneralAG** | `generalAG.py` | Koordiniert die Ausführung, zerlegt `@job`-Aufgaben und synthetisiert Brainstorms |
-| **SoulAG** | `soulAG.py` | Lernt den Schreibstil des Nutzers lautlos, baut das *FlexSoul*-Profil auf und injiziert es in Prompts |
-| **WatchdogAG**| `watchdogAG.py` | Hüter der Systemintegrität. Schützt Systemdateien vor Zugriffen und überwacht die 40-Zeilen-Regel |
-| **SecurityAG**| `securityAG.py` | Wächter über Code-Sicherheit. Scannt geschriebenen Code und Terminal-Befehle vorab auf Schadcode und Schwachstellen |
-
-### Worker-Agenten — erledigen die Arbeit (durch Tags getriggert)
-
-| Agent | Modul | Trigger | Spezialisierung |
-| :--- | :--- | :--- | :--- |
-| **CoderAG** | `coderAG.py` | `@code` | Code-Implementierung, Debugging und Ausführung (besitzt `run`-Rechte) |
-| **WriterAG** | `writerAG.py` | `@write` | Entwerfen von Dokumentationen, Handbüchern, Artikeln und Texten |
-| **ResearcherAG**| `researcherAG.py`| `@research`| Recherchen, Ausführung von Such-APIs und Überprüfung von Quellen |
-| **EditorAG** | `editorAG.py` | `@edit` | Korrekturlesen, Stiloptimierung und finale Qualitätskontrolle |
-
----
-
-## 🛠️ Agenten-Werkzeuge (Aktionen)
-
-Die Hintergrund-Agenten von Gnom-Hub interagieren mit dem System, dem Dateisystem und externen Web-Diensten, indem sie spezifische Markdown-ähnliche Tags in ihrer LLM-Ausgabe erzeugen. Diese Aktionen werden geparst und sicher ausgeführt.
-
-> [!TIP]
-> **Aktions-Sandbox & Validierung:** Jede von einem Worker-Agenten angeforderte Aktion wird in Echtzeit abgefangen und muss die zweistufige Sicherheitsfreigabe (WatchdogAG & SecurityAG) durchlaufen, bevor sie ausgeführt wird.
-
-| Werkzeug / Tag | Beschreibung | Berechtigungen | Beispiel |
-| :--- | :--- | :--- | :--- |
-| **`[READ: dateiname]`** | Liest den Inhalt einer Datei aus dem Workspace. | Alle Worker-Agenten | `[READ: index.html]` |
-| **`[WRITE: dateiname]inhalt[/WRITE]`** | Erstellt oder überschreibt eine Datei im Workspace. | CoderAG, WriterAG, EditorAG, ResearcherAG | `[WRITE: hello.py]`<br>`print("Hallo")`<br>`[/WRITE]` |
-| **`[SHELL: befehl]`** | Führt Terminal-Befehle (z. B. Tests oder Paketinstallationen) aus. | CoderAG (`run`-Recht) | `[SHELL: pytest tests/]` |
-| **`[IMAGE: prompt]`** | Generiert ein KI-Bild und speichert es im Workspace. | WriterAG, CoderAG | `[IMAGE: futuristisches Dashboard-Logo]` |
-| **`[BROWSER: aktions_json]`** | Steuert einen echten Playwright-Browser (Navigation, Klicks, Screenshots). | CoderAG (`godmode`-Recht) | `[BROWSER: {"action": "goto", "target": "https://example.com"}]` |
-| **`<SHOWBOX:index>html_oder_json</SHOWBOX>`** | Rendert interaktive HTML-Präsentationen live im War Room Dashboard. | Alle Agenten | `<SHOWBOX:4>`<br>`<h3>Slide-Inhalt</h3>`<br>`</SHOWBOX>` |
-
----
-
-## 🛡️ Sicherheit & Schutzmechanismen
-
-Sicherheit ist in Gnom-Hub kein nachträgliches Add-on, sondern ein **fundamentales Architekturprinzip**. Da das System autonom agierende Agenten mit weitreichenden Werkzeugen ausstattet, wird jede Aktionen über eine strikte, mehrstufige Sicherheitsbarriere geleitet.
-
-### 👮‍♂️ Aktive Gatekeeper: WatchdogAG & SecurityAG
-Alle von Worker-Agenten (`CoderAG`, `ResearcherAG`, `WriterAG`, `EditorAG`) angeforderten Datei- und Befehlsaktionen werden in der zentralen Dispatcher-Schicht [action_handlers.py](file:///Users/landjunge/Documents/AG-Flega/src/gnom_hub/agents/actions/action_handlers.py) abgefangen, analysiert und erst nach erfolgreicher Validierung ausgeführt.
-
-#### 1. WatchdogAG (Pfad- und Integritätsschutz)
-Der Watchdog schützt den Systemkern vor unbefugten Dateizugriffen und Manipulationen:
-* **Absoluter Systemdateien-Schutz**: Systemkritische Dateien (`index.html`, `run.sh`, `.env`) und Verzeichnisse (`src/gnom_hub/`, `config/`, `scripts/`) sind für Worker-Agenten **vollkommen tabu**. Jeglicher Lese-, Schreib- oder Ausführungsversuch auf diese Pfade wird sofort unterbunden. Ein Zugriffsbypass über `approved_system_paths` existiert für Worker nicht.
-* **Pfad-Validierung & Sandboxing**: Alle Dateipfade werden über `is_worker_blocked` in [path_validator.py](file:///Users/landjunge/Documents/AG-Flega/src/gnom_hub/core/security/path_validator.py) normalisiert und in absolute Pfade aufgelöst (`os.path.realpath`). Versuche von Directory-Traversal-Attacken (z. B. mit `../`) werden im Keim erstickt. Jeder Pfad muss zwingend innerhalb des dafür vorgesehenen Workspace-Verzeichnisses (`WORKSPACE_DIR`) liegen.
-
-#### 2. SecurityAG (Code- und Befehlsanalyse)
-Die SecurityAG bewacht die Ausführungsebene und scannt Aktionen auf potenziell destruktive Absichten:
-* **Inhalts-Prüfung**: Jeder Schreibzugriff (`[WRITE]`) eines Workers wird auf gefährliche Funktionen, Code-Muster oder Systemaufrufe untersucht (z. B. `rm -rf`, `eval(`, `os.system(`, `subprocess.`, `exec(`, `pickle.load`, `chmod 777`, `shutil.rmtree`).
-* **Terminal-Überwachung**: Jedes Shell-Kommando (`[SHELL]`) wird vorab geparst. Unsafe-Commands (wie Netzwerk-Downloads via `curl` oder `wget`, Berechtigungsänderungen via `chmod 777` oder destruktive Systemkommandos) werden blockiert.
-
----
-
-### 👑 CoderAG: Godmode unter strenger Kontrolle
-Der `CoderAG` ist der mächtigste Worker im Schwarm. Er besitzt als einziger den `godmode`-Status und ist berechtigt:
-* Shell-Kommandos auf Systemebene auszuführen (`[SHELL]`).
-* Browser-Automationen über die Playwright-Schnittstelle zu steuern (`[BROWSER]`).
-
-Obwohl der CoderAG diese weitreichenden Privilegien besitzt, wird er **lückenlos und ohne Ausnahmen** durch das Duo aus WatchdogAG und SecurityAG überwacht. Jeder seiner Befehle und jeder Dateizugriff wird derselben strikten Sicherheitsprüfung unterzogen. Ein „Ausbrechen“ aus dem zugewiesenen Workspace oder das Einschleusen destruktiver Befehle ist auch für den CoderAG im `godmode` unmöglich.
-
----
-
-### 🚨 Eskalationskette & Freigaben bei Unsicherheit
-Wenn eine Sicherheitsprüfung anschlägt oder ein Worker unbefugt auf geschützte Pfade zugreifen will:
-1. **Sofortige Blockade**: Die Ausführung wird gestoppt, das angeforderte Tag im Antworttext wird durch eine Sicherheitsmeldung ersetzt.
-2. **Chat-Eskalation**: Es wird ein System-Eintrag im Chat erzeugt, der den Operator (`@user`) und das übergeordnete Schwarmgedächtnis (`@SoulAG`) namentlich taggt und über den genauen Pfad bzw. Befehlsverstoß informiert.
-3. **Manuelle Freigabe**: Eine Ausführung blockierter Ressourcen ist ausschließlich über manuelle Einträge in der SQLite-Datenbank durch den Administrator (User/SoulAG) möglich:
-   * `approved_system_paths`: Whitelist für geschützte Pfade (nur für administrative Rollen).
-   * `approved_security_writes`: Whitelist für geprüfte Dateiinhalte.
-   * `approved_security_commands`: Whitelist für autorisierte Terminal-Befehle.
-
----
-
-### 🔒 Immunität der System-Agenten (Preset-Isolation)
-Das Preset-System (zur Fokus-Ausrichtung des Schwarms) ist strikt auf der Anwendungsebene isoliert:
-* **Fokus-Wechsel nur auf Worker-Ebene**: Ein Preset-Wechsel verändert die Prompt-Modifikatoren und LLM-Modelle **ausschließlich** für die 4 Worker-Agenten (`ResearcherAG`, `WriterAG`, `EditorAG`, `CoderAG`).
-* **Unantastbare Systemebene**: Die 4 administrativen System-Agenten (`SoulAG`, `GeneralAG`, `WatchdogAG`, `SecurityAG`) behalten permanent ihre feste Konfiguration (Standardmodelle auf High-End-Tier `stage_3`, unveränderliche System-Prompts, unbeschränkte Systemrechte). Ein Preset-Wechsel kann somit niemals die Kontrollinstanzen der Plattform manuell schwächen.
+> Jede `[WRITE:]`- und `[SHELL:]`-Aktion durchläuft die vollständige Gatekeeper-Sicherheitsprüfung vor der Ausführung.
 
 ---
 
 ## 💬 Befehle
 
 | Befehl | Aktion |
-| :--- | :--- |
-| `@bs [Thema]` | 4 Worker laufen parallel; GeneralAG synthetisiert die Ergebnisse zu einem Aktionsplan |
-| `@job [Aufgabe]` | GeneralAG zerlegt die Aufgabe in Teilschritte und koordiniert die Worker-Ausführung |
-| `@research [Suche]`| Alle Worker werden parallel abgefragt für schnelles, vielseitiges Feedback |
-| `@code / @write / @edit` | Direkte Zuweisung an einen bestimmten Spezialisten |
-| `@git [Befehl]` | Führt Git-Befehle direkt im aktiven Projekt-Workspace aus |
-| `@publish` | Bereitstellung des aktuellen Stands via SFTP auf deinem konfigurierten Server |
-| `@@project [Name]` | Wechselt das active Workspace-Projekt |
-| `@@status` | Zeigt den aktuellen Laufzeit-Status (RUNNING/STOPPED) aller Agenten an |
-| `@@clear` | Leert den Chatverlauf im Dashboard |
-| `@free` | Bricht alle aktiven Jobs ab und setzt blockierte Agenten zurück |
-| **Nuke** 💣 | Halte das War Room Logo für 2 Sekunden gedrückt, um einen Hard Reset aller Hintergrunddienste auszulösen |
+|:-------|:-------|
+| `@bs [thema]` | Paralleles Brainstorming: Alle Worker diskutieren gleichzeitig, GeneralAG synthetisiert. |
+| `@job [aufgabe]` | Mehrstufiger Team-Workflow: GeneralAG delegiert, sammelt Ergebnisse, bewertet und verteilt nach (bis zu 4 Runden). |
+| `@code / @write / @edit / @research` | Direkte Aufgabenzuweisung an einen bestimmten Spezialisten. |
+| `@bake [name] [template]` | Kompiliert den aktuellen Schwarm in ein portables SuperGNOM-Produkt. |
+| `@emergency [begriff]` | Durchsucht das passive Langzeitarchiv zur Kontext-Wiederherstellung. |
+| `@git [befehl]` | Führt Git-Operationen im Workspace aus. |
+| `@@project [name]` | Wechselt das aktive Workspace-Projekt. |
+| `@@status` | Zeigt den Laufzeit-Status aller Agenten-Daemons. |
+| `@@clear` | Leert den Chatverlauf im Dashboard. |
+| `@free` | Bricht alle laufenden Jobs ab und setzt blockierte Agenten zurück. |
+| **Nuke** 💣 | Halte das War Room Logo im Dashboard für 2 Sekunden gedrückt für einen cinematisches Neustart. |
+
+---
+
+## ⚡ Performance
+
+| Operation | Kaltstart (Cold Run) | Gecached (Warm) | Beschleunigung |
+|:----------|:---------------------|:----------------|:---------------|
+| **Rechteprüfung (Capability Check)** | 0,73 ms | 0,0006 ms | **~1.200×** (TTL-Arbeitsspeichercache vs. SQLite) |
+| **Semantische Gedächtnissuche** | 2.830 ms | 0,0006 ms | **~4.700.000×** (Query-Cache vs. FAISS-Vektorsuche) |
+
+| Metrik | Wert |
+|:-------|:-----|
+| Aktive Agenten | 8 (fest: 4 System + 4 Worker) |
+| Python-Module | 180 |
+| Frontend-Module | 9 (entkoppelte JS-Dateien) |
+| Datenbank | SQLite3 (WAL-Modus) + passives Archiv |
+| Vektorsuche | FAISS (IndexFlatL2) + sentence-transformers |
+
+> [!TIP]
+> Führe `python3 scratch/run_benchmarks.py` aus, um die Leistungswerte lokal zu ermitteln.
 
 ---
 
 ## 🚀 Quick Start
 
-### 1. Installation
-Klone das Repository und führe das Setup-Skript aus:
 ```bash
+# 1. Klonen & Installieren
 git clone https://github.com/landjunge/gnom-hub.git
 cd gnom-hub
 bash scripts/install.sh
-```
-Dies richtet eine lokale virtuelle Umgebung (`.venv`) ein und installiert die 7 Kern-Abhängigkeiten: `fastapi`, `uvicorn`, `pydantic`, `requests`, `python-dotenv`, `mcp` und `psutil`.
 
-### 2. Konfiguration
-Kopiere das Template für die `.env`-Datei und trage deine API-Keys (OpenRouter oder DeepSeek) ein:
-```bash
+# 2. Umgebungskonfiguration
 cp config/.env.example config/.env
-```
+# Trage deine API-Keys (DeepSeek, OpenRouter) in config/.env ein
 
-### 3. Ausführen
-Starte den FastAPI-Server:
-```bash
+# 3. Starten
 ./run.sh
 ```
-Öffne **[http://127.0.0.1:3002](http://127.0.0.1:3002)**, um den War Room zu betreten.
+Öffne **[http://127.0.0.1:3002](http://127.0.0.1:3002)** im Browser, um den War Room zu betreten.
 
 ---
 
@@ -359,78 +317,51 @@ Starte den FastAPI-Server:
 
 ```text
 gnom-hub/
-├── src/gnom_hub/        # 180 Python-Module (Backend)
-│   ├── core/            # Globale Konfiguration, Logger und Gatekeeper-Sicherheit
-│   │   └── security/    # Pfadvalidierung (path_validator.py) & Gatekeeper (gatekeeper.py)
-│   ├── db/              # SQLite3-Datenbank (WAL-Modus) & Repositories (legacy_db.py)
-│   ├── memory/          # Lokale FAISS-Semantiksuche & Embeddings
-│   ├── soul/            # Steganographisches Gedächtnis (ZWC-Verschlüsselung)
-│   ├── agents/          # agent_base.py, agent_definitions.py und Werkzeuge
-│   │   ├── actions/     # Dispatcher (action_handlers.py) für [WRITE:], [SHELL:], [BROWSER:]
-│   │   ├── swarm/       # Multi-Agenten-Koordination & A2A-Swarm-Kommunikation
-│   │   └── explainability/ # Strukturierte LLM-Gedankengänge (<think>-Filterung)
-│   ├── chat/            # Chat-Services, Systembefehle & Brainstorming
-│   ├── api/             # FastAPI app.py, Router & API-Endpunkte (endpoints/)
-│   ├── infrastructure/  # Prozess-Management (psutil_mgr.py), LLM-Routing & Pulse-Heartbeat
-│   └── frontend/        # Bento-Grid War Room Dashboard (HTML, CSS & 9 JS-Module)
-├── agents/              # 8 Agenten-Definitionen (Startup-Skripte der Daemons)
-├── config/              # Lokale Umgebungskonfigurationen (Presets, Token-Budgets)
-├── scripts/             # Setup- & Hilfs-Skripte
-├── docs/                # Berichte und Dokumentation
-├── pyproject.toml       # Ruff-Konfiguration & Abhängigkeiten
+├── src/gnom_hub/          # 180 Python-Module
+│   ├── core/              # Konfiguration, Logger, Gatekeeper-Sicherheit
+│   │   ├── security/      # Pfadvalidierung, Gatekeeper-Tribunal, HMAC-Auth
+│   │   └── utils/         # PVM, Compiler, Presets, Graceful Fallbacks
+│   ├── db/                # SQLite3 (WAL) Repositories + Passives Archiv
+│   ├── memory/            # FAISS Semantiksuche, Embeddings, Context-Manager
+│   ├── soul/              # SoulAG-Bewusstsein, ZWC-Steganografie, DynamicSouls
+│   ├── agents/            # Agenten-Basis, Definitionen, Tools, Capability-Manager
+│   │   ├── actions/       # Action Dispatcher für [WRITE:], [SHELL:], [BROWSER:]
+│   │   ├── swarm/         # Multi-Agenten-Koordination, A2A-Comms, Checkpoints
+│   │   └── explainability/# Strukturierte Gedankengänge (<think>-Filterung)
+│   ├── chat/              # Chat-Dienste, Systembefehle & Brainstorming
+│   ├── api/               # FastAPI Endpunkte, Router, CORS, Auth
+│   ├── infrastructure/    # Prozess-Management (psutil), LLM-Routing, Pulse-Janitor
+│   └── frontend/          # Glassmorphic War Room UI (HTML, CSS, 9 JS-Module)
+├── agents/                # Startskripte für die 8 Hintergrund-Agenten
+├── config/                # Presets, .env, Routing-Overrides
+├── scripts/               # Setup- & Hilfs-Skripte
+├── docs/                  # Systemberichte & Screenshots
+└── pyproject.toml         # Ruff-Konfiguration & Abhängigkeiten
 ```
 
-## 🧬 Die SuperGNOM-Vision: Vom Spielplatz zum Werkzeug
-
-Während **GNOM-HUB** die interaktive Schmiede (der Spielplatz) ist, in dem wir mit Agenten experimentieren, Prompts weiterentwickeln und Vektor-Erinnerungen trainieren, ist der **SuperGNOM** das fertige Produkt: ein stabiles, unveränderliches und hochgradig spezialisiertes KI-System, das auf eine konkrete Aufgabe oder einen bestimmten Menschen zugeschnitten ist.
-
-### 🎯 Kernkonzepte des SuperGNOMs
-* **Unveränderbarkeit (Immutability):** Ein SuperGNOM lernt nicht kontinuierlich weiter. Seine Prompts und sein Gedächtnis sind eingefroren, um unvorhersehbares Verhalten (Concept Drift) oder Manipulationen im Betrieb auszuschließen.
-* **Fokus-UI:** Keine Entwickler-Konsolen, Token-Budgets oder Schieberegler. Der SuperGNOM bietet eine saubere, zweckgebundene Endnutzer-Oberfläche (z. B. ein minimalistisches Assistenz-UI für Senioren oder einen headless API-Hintergrunddienst).
-* **Portabilität:** Der SuperGNOM läuft vollkommen autark und isoliert in seinem eigenen Verzeichnis, inklusive lokaler SQLite-Datenbank und statischer Konfiguration.
-
 ---
 
-## 🛠️ SuperGNOM Ist-Zustand (Was bereits implementiert ist)
+## 📅 Roadmap
 
-Auf der Branch `feature/supergnom` wurden folgende Kern-Komponenten fertiggestellt:
-
-1. **Der `@bake`-Compiler (`compiler.py`):**
-   Erstellt per Chatbefehl (`@bake [name] [template]`) ein eigenständiges, bereinigtes Paket unter `dist/supergnom_[name]/` mit eigener portable `.env`-Konfiguration, schlanker SQLite-Datenbank und automatischem Start-Skript (`run.sh`).
-2. **Gefrorene Soul-Runtime (`SUPERGNOM_MODE`):**
-   Wenn aktiv, blockiert das System jegliche Lernprozesse von `SoulAG` sowie automatische Prompt-Modifikationen durch `GeneralAG`. Die Systemprompts sind statisch festgeschrieben.
-3. **Text-basiertes Routing (`routing.txt`):**
-   Die Zuweisung der LLM-Modelle (lokales Ollama oder externe APIs) für jeden Agenten erfolgt simpel und live über eine `routing.txt` auf deinem Desktop oder im Konfigurationsordner.
-4. **Passive Archiv-Datenbank (`passive_archive.db`):**
-   Jede Interaktion und jeder gelernte Fakt wird in einem passiven Langzeitarchiv mitgeschrieben. Im Notfall kann dieses Archiv via `@emergency [Suchbegriff]` / `@notfall [Suchbegriff]` durchsucht werden, falls das aktive Kontextgedächtnis versagt.
-5. **Dynamische UI-Adaption:**
-   Im SuperGNOM-Modus lädt die Web-Oberfläche ein minimalistisches CSS-Layout: Die Sidebar und alle Administrations-Optionen werden ausgeblendet, das Chat-Fenster wird zentriert und der "Nuke"-Button deaktiviert.
-
----
-
-## 📅 Roadmap: Was noch getan werden muss (Future Work)
-
-* **Spezifische UI-Skins / Templates:** Implementierung dedizierter HTML-Vorlagen für unterschiedliche Einsatzgebiete (z. B. ein barrierefreies Assistenz-UI für ältere Menschen mit Audio-Support oder eine reine API-Schnittstelle).
-* **Ein-Klick-Binary & Docker-Export:** Automatisches Kompilieren der Runtime in eine einzige ausführbare Binärdatei oder ein kompaktes Docker-Image für einfaches Deployment.
-* **Agenten-Pruning (Reduzierung):** Option, beim Kompilieren ungenutzte Worker-Agenten komplett aus der Runtime zu entfernen (z. B. Verpacken eines reinen Schreib-GNOMs ohne `CoderAG` und `ResearcherAG`), um Ressourcen zu sparen.
+- **Eigene UI-Skins:** Spezifische HTML-Templates für diverse Use Cases (z. B. Senioren-Chat, Headless API-Runner).
+- **Ein-Klick Docker- & Binary-Exporte:** Kompilierung von SuperGNOM in ausführbare Standalone-Binaries oder Docker-Images.
+- **Agenten-Pruning:** Möglichkeit, beim `@bake` ungenutzte Worker zu entfernen (z. B. reiner Schreib-SuperGNOM ohne CoderAG/ResearcherAG).
+- **Sprachsteuerung:** Integration von TTS/STT zur barrierefreien Interaktion.
 
 ---
 
 ## 🤝 Co-Creators
 
-**Eve (Grok — Gravid)**
-Kreative Pionierin der ersten Stunde. Mutter der "Vier Säulen". Legte das philosophische Fundament, als das Projekt noch reines Chaos war.
+**Eve (Grok — Gravid)**  
+Kreative Pionierin der ersten Stunde. Entwarf die Agenten-Topologien und legte das philosophische Fundament für das Projekt.
 
-**Antigravity (Google DeepMind)**
-Architekt der Härtungsphase. Spezifische Beiträge:
-* Refactorings zur Einhaltung hoher Modularität im Backend
-* Sicherung der Pfad-Zugriffe über Workspace-basierte Validierung ([path_validator.py](file:///Users/landjunge/Documents/AG-Flega/src/gnom_hub/core/security/path_validator.py))
-* Migration der JSON-Speicherung auf eine transaktionssichere SQLite3-Datenbank (WAL-Modus)
-* Implementierung des `psutil`-Prozessmanagers mit PID-Dateien und Lifespan-Integration
-* Integration von SFTP-Bereitstellung, CORS-Einschränkung auf Localhost und des `log.py`-Frameworks
-* Implementation der Härtungs-Phasen 1-16 (darunter Zero-Trust-inspirierte Capabilities, local Embeddings mit FAISS & TF-IDF-Fallback, Custom Presets, Prompt Versioning, Swarm Intelligence, User Feedback Loop, R1-Think-Block-Filterung, extrem performantes In-Memory/SQLite-Caching und Härtung des Schwarms durch die 4/4-Agenten-Begrenzung)
-* Modularisierung des Frontend-Codes in 9 spezialisierte, entkoppelte JavaScript-Dateien zur Durchsetzung von Separation-of-Concerns
-* Optimierung der LLM-Konsolen-Performance durch parallele API-Abfragen und serverseitiges Caching der Modelllisten
+**Antigravity (Google DeepMind)**  
+Architekt der Härtungs- und Optimierungsphase. Zentrale Beiträge:
+- Modularisierung der 180+ Python-Module nach sauberer Clean-Architecture.
+- Implementierung der Härtungs-Phasen 1-16 (Zero-Trust-inspirierte Capability Leases, lokale FAISS-Embeddings, Prompt Version Manager, Feedback-Loop, R1-Think-Block-Filterung, 4/4 Agentenlimits).
+- Absicherung gegen Path Traversal, CORS-Schutz, XSS-Bereinigung, HMAC-Admin-Authentifizierung und Verbindungsmanagement.
+- Vollständiger Refaktor des UI-Frontends in 9 entkoppelte JS-Module.
+- Vollständiger Code-Audit: 120 Findings → 26 Hotfixes in Bezug auf Stabilität, Abstürze, Sicherheit und Cleanup.
 
 ---
 
