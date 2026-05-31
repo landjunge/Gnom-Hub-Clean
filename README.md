@@ -1,7 +1,7 @@
 # 🧠 GNOM-HUB
 
 > **8 Agents. ~8350 Lines. 180 Modules. Zero tolerance for bloat.**
-> *A local-first multi-agent orchestration playground with a defensive zero-trust architecture and a modularized War Room dashboard.*
+> *A local-first multi-agent orchestration playground with defensive sandbox-barriers and a modularized War Room dashboard.*
 
 [![License](https://img.shields.io/badge/License-Private_Use-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](#)
@@ -163,7 +163,7 @@ Gnom-Hub development phases:
 *   **⚡ Phase 14: Versioning & Graceful Degradation**
     *   Prompt Version Manager with rollbacks for prompt evolution.
     *   Active fallback routing when workers are offline/blocked.
-*   **🛡️ Phase 15: Zero-Trust Capabilities & FAISS**
+*   **🛡️ Phase 15: Zero-Trust-Inspired Capabilities & FAISS**
     *   Local FAISS semantic vector search (`sentence-transformers`).
     *   In-memory Capability Leases (TTL cache) to bypass redundant security checks.
 *   **🛡️ Phase 16: System Hardening & Guarding**
@@ -360,7 +360,7 @@ Architect of the hardening phase. Key contributions:
 * Migrated JSON storage layers into a transaction-safe local SQLite3 database (WAL mode).
 * Implemented the `psutil` process manager with PID files and Lifespan hooks.
 * Added SFTP deployments, CORS protections, and custom presets support.
-* Implemented Phase 1-16 hardening tasks (Zero-Trust Leases, local FAISS embeddings, prompt version manager, user feedback loop, R1 think blocks filter, and strict 4/4 agent limits).
+* Implemented Phase 1-16 hardening tasks (Zero-Trust-inspired Capability Leases, local FAISS embeddings, prompt version manager, user feedback loop, R1 think blocks filter, and strict 4/4 agent limits).
 * Modularized the monolithic web dashboard script into 9 decoupled static JS modules to enforce proper separation of concerns.
 * Optimized LLM console dashboard loading latencies by parallelizing backend requests and caching model lookups.
 

@@ -1,7 +1,7 @@
 # 🧠 GNOM-HUB
 
 > **8 Agenten. ~8350 Zeilen. 180 Module. Null Toleranz für Bloat.**
-> *Ein lokales Multi-Agenten-Orchestrierungssystem mit defensiver Zero-Trust-Architektur und modularisiertem War Room Dashboard.*
+> *Ein lokales Multi-Agenten-Orchestrierungssystem mit defensiven Sandbox-Sicherheitsbarrieren und modularisiertem War Room Dashboard.*
 
 [![License](https://img.shields.io/badge/Lizenz-Private_Use-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](#)
@@ -153,9 +153,9 @@ Die Entwicklungsschritte im Überblick:
 *   **⚡ Phase 14: Versionierung & Fallbacks**
     *   Versionierung von System-Prompts bei Evolution mit Rollback-Funktion.
     *   Automatisches Rerouting blockierter Aufgaben an Ersatz-Agenten.
-*   **🛡️ Phase 15: Zero-Trust Leases & FAISS**
-    *   Lokale Vektorsuche via FAISS und `sentence-transformers`.
-    *   Temporäre Berechtigungen (TTL-Leases) beschleunigen sich wiederholende Zugriffe.
+*   **🛡️ Phase 15: Zero-Trust-inspirierte Rechteprüfung & FAISS**
+    *   Lokale semantische Vektorsuche mittels FAISS (`sentence-transformers`).
+    *   In-Memory Capability Leases (TTL Cache) zur Vermeidung redundanter Rechteprüfungen.
 *   **🛡️ Phase 16: Systemhärtung & Wächter**
     *   GeneralAG darf keine Dateien schreiben oder Befehle ausführen.
     *   Strikte Einhaltung des 4/4 Agenten-Limits und paralleler UI-Ladevorgang (`Promise.all`).
@@ -428,7 +428,7 @@ Architekt der Härtungsphase. Spezifische Beiträge:
 * Migration der JSON-Speicherung auf eine transaktionssichere SQLite3-Datenbank (WAL-Modus)
 * Implementierung des `psutil`-Prozessmanagers mit PID-Dateien und Lifespan-Integration
 * Integration von SFTP-Bereitstellung, CORS-Einschränkung auf Localhost und des `log.py`-Frameworks
-* Implementation der Härtungs-Phasen 1-16 (darunter Zero-Trust Capabilities, local Embeddings mit FAISS & TF-IDF-Fallback, Custom Presets, Prompt Versioning, Swarm Intelligence, User Feedback Loop, R1-Think-Block-Filterung, extrem performantes In-Memory/SQLite-Caching und Härtung des Schwarms durch die 4/4-Agenten-Begrenzung)
+* Implementation der Härtungs-Phasen 1-16 (darunter Zero-Trust-inspirierte Capabilities, local Embeddings mit FAISS & TF-IDF-Fallback, Custom Presets, Prompt Versioning, Swarm Intelligence, User Feedback Loop, R1-Think-Block-Filterung, extrem performantes In-Memory/SQLite-Caching und Härtung des Schwarms durch die 4/4-Agenten-Begrenzung)
 * Modularisierung des Frontend-Codes in 9 spezialisierte, entkoppelte JavaScript-Dateien zur Durchsetzung von Separation-of-Concerns
 * Optimierung der LLM-Konsolen-Performance durch parallele API-Abfragen und serverseitiges Caching der Modelllisten
 
