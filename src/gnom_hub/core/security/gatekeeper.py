@@ -21,48 +21,35 @@ def wait_for_decision(agent_name, action_type, detail, content, rule) -> bool:
     
     # 1. Determine blocker agent and style
     blocker_name = "WatchdogAG"
-    blocker_sys = "Du bist WatchdogAG. Erkläre kurz, präzise und bestimmt in deutscher Sprache (max 2 Sätze), gegen welche Workspace- oder Dateiregel die Aktion verstößt (z.B. Zugriff auf geschützte Systemdatei, Überschreiten des Zeilenlimits)."
+    blocker_sys = "Du bist WatchdogAG. Erkläre kurz, präzise und bestimmt in deutscher Sprache in genau 1 Satz, gegen welche Workspace- oder Dateiregel die Aktion verstößt."
     blocker_color = "#FFA500"
     blocker_rgb = "255, 165, 0"
     
     if "security" in rule.lower() or "gefahr" in rule.lower() or "sicherheits" in rule.lower():
         blocker_name = "SecurityAG"
-        blocker_sys = "Du bist SecurityAG. Erkläre kurz, präzise und bestimmt in deutscher Sprache (max 2 Sätze), welches konkrete Sicherheitsrisiko diese Aktion birgt (z.B. nicht autorisierter Systembefehl, potenzielle Schadsoftware, unsichere Paketquelle)."
+        blocker_sys = "Du bist SecurityAG. Erkläre kurz, präzise und bestimmt in deutscher Sprache in genau 1 Satz, welches konkrete Sicherheitsrisiko diese Aktion birgt."
         blocker_color = "#FF69B4"
         blocker_rgb = "255, 105, 180"
         
     # 2. Query blocker explanation
     try:
-        blocker_prompt = f"Erkläre kurz (max 2 Sätze) warum die Aktion von {agent_name} ({action_type}: {detail}) blockiert wurde. Grund/Regel: {rule}."
+        blocker_prompt = f"Erkläre in genau 1 Satz, warum die Aktion von {agent_name} ({action_type}: {detail}) blockiert wurde. Regel: {rule}."
         blocker_explanation = router.ask_router(blocker_prompt, sys=blocker_sys, agent_name=blocker_name).content
     except Exception as e:
-        blocker_explanation = f"Aktion blockiert aufgrund von Regelverletzung: {rule} ({e})"
+        blocker_explanation = f"Blockiert wegen: {rule}"
         
-    # 3. Query SoulAG for context/assessment
-    try:
-        soul_prompt = (
-            f"Der Worker {agent_name} versucht die Aktion '{action_type}: {detail}' auszuführen, "
-            f"die von {blocker_name} blockiert wurde.\n"
-            f"Gibt es im Gedächtnis des Schwarms relevante Vorlieben, Einstellungen oder Kontext des Users zu dieser Datei/diesem Befehl?\n"
-            f"Antworte in deutscher Sprache und fasse die Fakten und deine Einschätzung in max 2 Sätzen zusammen."
-        )
-        soul_assessment = router.ask_router(soul_prompt, sys="Du bist SoulAG. Analysiere das Problem und gib eine kurze Einschätzung.", agent_name="SoulAG").content
-    except Exception as e:
-        soul_assessment = f"Keine Einschätzung von SoulAG verfügbar: {e}"
-        
-    # 4. Query GeneralAG for coordination recommendation
+    # 3. Query GeneralAG for coordination recommendation
     try:
         general_prompt = (
             f"Die Aktion von {agent_name} ({action_type}: {detail}) wurde blockiert.\n"
-            f"Einschätzung von {blocker_name}: '{blocker_explanation}'\n"
-            f"Einschätzung von SoulAG: '{soul_assessment}'\n"
-            f"Nimm als Orchestrator Stellung dazu und empfehle dem User in deutscher Sprache kurz (max 2 Sätze) eine Vorgehensweise."
+            f"Begründung: '{blocker_explanation}'\n"
+            f"Gib dem User in genau 1 Satz eine kurze Empfehlung zur Vorgehensweise."
         )
-        general_statement = router.ask_router(general_prompt, sys="Du bist GeneralAG. Triff eine kurze Empfehlung.", agent_name="GeneralAG").content
+        general_statement = router.ask_router(general_prompt, sys="Du bist GeneralAG. Triff eine kurze Empfehlung in genau 1 Satz.", agent_name="GeneralAG").content
     except Exception as e:
-        general_statement = "Empfehlung: Bitte prüfe die Berechtigungen oder passe den Code an."
+        general_statement = "Bitte passe den Pfad oder Befehl im Workspace an."
 
-    # 5. Register the pending decision
+    # 4. Register the pending decision
     pending = get_state_value("pending_decisions", {})
     pending[decision_id] = {
         "agent_name": agent_name,
@@ -74,44 +61,35 @@ def wait_for_decision(agent_name, action_type, detail, content, rule) -> bool:
     }
     set_state_value("pending_decisions", pending)
     
-    # 6. Build HTML content for Showbox slide with agent colors and pulsing frame trigger
+    # 5. Build HTML content for Showbox slide (Compact version - no scroll)
     html_content = (
-        f"<div style='padding: 20px; font-family: sans-serif; color: #fff; background: rgba(10, 10, 15, 0.95); height: 100%; box-sizing: border-box; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1);'>"
-        f"  <h2 style='color: #ff3333; margin: 0; display: flex; align-items: center; gap: 10px; font-size: 1.3rem; text-transform: uppercase; letter-spacing: 1px;'>"
-        f"    <span style='font-size: 1.6rem;'>🛑</span> CRITICAL: System-Blockade"
-        f"  </h2>"
-        f"  <div style='font-size: 0.95rem; color: rgba(255,255,255,0.7); margin-bottom: 5px;'>"
-        f"    <strong>Aktion:</strong> <code style='background: rgba(255,255,255,0.15); padding: 3px 8px; border-radius: 4px; color: #fff; font-family: monospace;'>{action_type}: {detail}</code> durch <strong style='color: #fff;'>{agent_name}</strong>"
-        f"  </div>"
-        f"  <div style='border-left: 4px solid {blocker_color}; background: rgba({blocker_rgb}, 0.08); padding: 12px; border-radius: 4px;'>"
-        f"    <div style='color: {blocker_color}; font-weight: bold; font-size: 0.85rem; text-transform: uppercase; margin-bottom: 4px; display: flex; align-items: center; gap: 5px;'>"
-        f"      🛡️ {blocker_name}"
+        f"<div style='padding: 14px; font-family: sans-serif; color: #fff; background: rgba(10, 10, 15, 0.95); height: 100%; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);'>"
+        f"  <div>"
+        f"    <h2 style='color: #ff3333; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px; font-size: 1.15rem; text-transform: uppercase; letter-spacing: 1px;'>"
+        f"      🛑 System-Blockade: {blocker_name}"
+        f"    </h2>"
+        f"    <div style='font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-bottom: 10px; line-height: 1.3;'>"
+        f"      <strong>{agent_name}</strong>: <code style='background: rgba(255,255,255,0.12); padding: 2px 6px; border-radius: 4px; color: #00e5ff; font-family: monospace; font-size: 0.8rem;'>{action_type}: {detail}</code>"
         f"    </div>"
-        f"    <div style='font-size: 0.9rem; line-height: 1.45;'>{blocker_explanation}</div>"
-        f"  </div>"
-        f"  <div style='border-left: 4px solid #FF0000; background: rgba(255, 0, 0, 0.08); padding: 12px; border-radius: 4px;'>"
-        f"    <div style='color: #FF0000; font-weight: bold; font-size: 0.85rem; text-transform: uppercase; margin-bottom: 4px; display: flex; align-items: center; gap: 5px;'>"
-        f"      🧠 SoulAG (Gedächtnis)"
+        f"    <div style='background: rgba({blocker_rgb}, 0.05); border-left: 3px solid {blocker_color}; padding: 8px 10px; border-radius: 4px; font-size: 0.82rem; line-height: 1.35; margin-bottom: 8px;'>"
+        f"      {blocker_explanation}"
         f"    </div>"
-        f"    <div style='font-size: 0.9rem; line-height: 1.45;'>{soul_assessment}</div>"
-        f"  </div>"
-        f"  <div style='border-left: 4px solid #00FFFF; background: rgba(0, 255, 255, 0.08); padding: 12px; border-radius: 4px;'>"
-        f"    <div style='color: #00FFFF; font-weight: bold; font-size: 0.85rem; text-transform: uppercase; margin-bottom: 4px; display: flex; align-items: center; gap: 5px;'>"
-        f"      👑 GeneralAG (Koordinator)"
+        f"    <div style='background: rgba(255, 255, 255, 0.03); border-left: 3px solid #00FFFF; padding: 6px 10px; border-radius: 4px; font-size: 0.8rem; line-height: 1.3; color: #94a3b8;'>"
+        f"      💡 <em>Empfehlung:</em> {general_statement}"
         f"    </div>"
-        f"    <div style='font-size: 0.9rem; line-height: 1.45;'>{general_statement}</div>"
         f"  </div>"
-        f"  <div style='display: flex; gap: 15px; margin-top: 10px;'>"
+        f"  <div style='display: flex; gap: 10px; margin-top: 10px;'>"
         f"    <button onclick=\"window.api('POST', '/chat', {{content: '@@approve_decision {decision_id}'}}).then(() => {{ this.disabled=true; this.innerText='Erlaubt'; }})\" "
-        f"            style='flex: 1; background: #28a745; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.95rem; transition: background 0.2s;'> "
-        f"      Ja, Aktion erlauben"
+        f"            style='flex: 1; background: #28a745; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; transition: background 0.2s;'>"
+        f"      Ja, erlauben"
         f"    </button>"
         f"    <button onclick=\"window.api('POST', '/chat', {{content: '@@reject_decision {decision_id}'}}).then(() => {{ this.disabled=true; this.innerText='Abgelehnt'; }})\" "
-        f"            style='flex: 1; background: #dc3545; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.95rem; transition: background 0.2s;'> "
-        f"      Nein, blockiert lassen"
+        f"            style='flex: 1; background: #dc3545; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; transition: background 0.2s;'>"
+        f"      Nein, blockieren"
         f"    </button>"
         f"  </div>"
         f"</div>"
+    )
     )
     
     # 7. Save and set active showbox presentation with GeneralAG as sender
@@ -173,8 +151,17 @@ def verify_write(agent, fn, content, wd, perms) -> bool:
         add_chat_message("default", "WatchdogAG", "watchdogag", "chat", f"🛑 [BLOCKADE] GeneralAG hat keine Berechtigung, Dateien zu schreiben oder zu editieren.")
         return False
     if check_capability(name, "WRITE", fn): return True
+    if role in ["soul", "watchdog", "security"]: return True
     
+    # 1. CHECK APPROVED LIST FIRST!
+    approved_writes = get_state_value("approved_security_writes", []) or []
+    if fn in approved_writes: return True
     p = _safe(wd, fn, perms)
+    if p:
+        real_p = os.path.realpath(p)
+        approved_paths = [os.path.realpath(os.path.join(wd, a)) for a in approved_writes]
+        if real_p in approved_paths: return True
+
     if not p:
         return wait_for_decision(name, "WRITE", fn, content, "Pfad liegt außerhalb des zulässigen Workspaces")
         
@@ -183,11 +170,6 @@ def verify_write(agent, fn, content, wd, perms) -> bool:
     if is_security_block(agent, fn, content, wd, perms):
         return wait_for_decision(name, "WRITE", fn, content, "Gefährliche Code-Muster erkannt (z.B. rm -rf, eval, subprocess)")
         
-    if role in ["soul", "watchdog", "security"]: return True
-    p = _safe(wd, fn, perms)
-    approved = [os.path.realpath(os.path.join(wd, a)) for a in (get_state_value("approved_security_writes", []) or [])]
-    if p and os.path.realpath(p) in approved: return True
-    
     # Safe Workspace Writes Auto-Approval:
     # If the path is safe (in workspace), not worker-blocked, and has no dangerous security patterns,
     # we automatically grant capability and approve without slow LLM queries.
@@ -230,7 +212,9 @@ def is_command_safe_and_whitelisted(cmd: str):
         # 2. Strict Whitelist of Allowed Base Executables
         allowed_execs = {
             "python3", "python", "pytest", "git", "pip", "pip3",
-            "npm", "npx", "node", "ls", "echo", "cat", "tail"
+            "npm", "npx", "node", "ls", "echo", "cat", "tail",
+            "find", "mkdir", "cp", "rm", "wc", "cd", "which", 
+            "touch", "chmod", "mv", "grep", "pwd", "clear"
         }
         
         if exec_name not in allowed_execs:
@@ -278,7 +262,7 @@ def is_command_safe_and_whitelisted(cmd: str):
                         return False, f"NPM Paket '{pkg}' ist nicht als sicher vordefiniert."
                         
         elif exec_name == "git":
-            allowed_git_subcmds = {"status", "log", "diff", "commit", "add", "checkout", "reset", "init", "config"}
+            allowed_git_subcmds = {"status", "log", "diff", "commit", "add", "checkout", "reset", "init", "config", "push"}
             if not args_tokens or args_tokens[0] not in allowed_git_subcmds:
                 return False, f"Git Subbefehl '{args_tokens[0] if args_tokens else ''}' ist nicht autorisiert."
                 
@@ -292,9 +276,35 @@ def verify_cmd(agent, cmd):
         return False
     if check_capability(name, "SHELL", cmd): return True
     if role in ["soul", "watchdog", "security"]: return True
-    if any(p in cmd.lower() for p in ["src/gnom_hub", "config/", "scripts/", "run.sh", "index.html", ".env"]):
-        return wait_for_decision(name, "SHELL", cmd, "", "Befehl greift auf geschützte Systemdateien/Pfade zu")
     if cmd in (get_state_value("approved_security_commands", []) or []): return True
+    
+    # Resolves paths in command relative to workspace to avoid false positives on workspace files
+    from gnom_hub.chat.brainstorm.brainstorm_helpers import get_workspace_dir
+    wd = get_workspace_dir()
+    
+    import re
+    from gnom_hub.core.config import WORKSPACE_DIR
+    real_wd = os.path.realpath(str(WORKSPACE_DIR))
+    
+    # Clean workspace paths out of the command for system path checks
+    cmd_lower = cmd.lower()
+    tokens = cmd.split()
+    cleaned_tokens = []
+    for token in tokens:
+        clean_token = token.strip("\";'()&|><")
+        if "/" in clean_token or "." in clean_token:
+            try:
+                abs_path = os.path.realpath(os.path.join(wd, clean_token) if not os.path.isabs(clean_token) else clean_token)
+                if abs_path == real_wd or abs_path.startswith(real_wd + os.sep):
+                    cleaned_tokens.append("[safe_workspace_path]")
+                    continue
+            except Exception:
+                pass
+        cleaned_tokens.append(token)
+    cleaned_cmd = " ".join(cleaned_tokens).lower()
+    
+    if any(p in cleaned_cmd for p in ["src/gnom_hub", "config/", "scripts/", "run.sh", "index.html", ".env"]):
+        return wait_for_decision(name, "SHELL", cmd, "", "Befehl greift auf geschützte Systemdateien/Pfade zu")
     
     # Smart Rules Engine: Auto-approve whitelisted commands
     is_safe, block_reason = is_command_safe_and_whitelisted(cmd)

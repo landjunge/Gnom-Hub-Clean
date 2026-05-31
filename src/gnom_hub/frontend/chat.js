@@ -39,40 +39,31 @@ function buildChatHintsHTML() {
       <span><strong>@@</strong> System-level command (e.g. @@project, @@status, @@git)</span>
     </div>
     <div class="chat-hints">
-      <span data-tooltip="Brainstorm: Activate the swarm for complex ideas.">@bs</span>
-      <span data-tooltip="Research: Start an autonomous research job.">@research</span>
-      <span data-tooltip="Job Task: Distribute background tasks to agents.">@job</span>
-      <span data-tooltip="Free: Clear active jobs from an agent.">@free</span>
-      <span data-tooltip="Worker: Query all non-system agents.">@worker</span>
-      <span data-tooltip="System: Query all system-level agents.">@system</span>
-      <span data-tooltip="All: Query all online agents.">@all</span>
-      <span data-tooltip="Project: (e.g. @@project netzwerkpunkt, @@project delete netzwerkpunkt)">@@project</span>
-      <span data-tooltip="Clear: (@@clear chat, @@clear @project, @@clear all agents)">@@clear</span>
-      <span data-tooltip="Status: Get system and agent status.">@@status</span>
-      <span data-tooltip="Git: Run git commands (e.g. @@git status)">@@git</span>
-      <span data-tooltip="Coffee break: (Animation)">/coffee</span>
-      <span data-tooltip="UFO Event: (Animation)">/ufo</span>
-      <span data-tooltip="Ghost: (Animation)">/ghost</span>
+      <span data-help-title="🧠 Brainstorming (@bs)" data-help="Der @bs Befehl aktiviert den gesamten Schwarm für komplexe Brainstorming- und Planungsaufgaben. Mehrere Agenten diskutieren und arbeiten zusammen, um eine optimale Lösung zu erarbeiten." data-tooltip="Brainstorm: Activate the swarm for complex ideas.">@bs</span>
+      <span data-help-title="🔍 Research (@research)" data-help="Der @research Befehl startet einen autonomen Forschungs- und Recherche-Job. Der ResearcherAG sucht im Web und in lokalen Dokumenten nach Fakten und bereitet diese übersichtlich auf." data-tooltip="Research: Start an autonomous research job.">@research</span>
+      <span data-help-title="📋 Job Task (@job)" data-help="Der @job Befehl verteilt Aufgaben an Hintergrund-Agenten. Ideal, um parallele Arbeitsschritte zu koordinieren und auszuführen." data-tooltip="Job Task: Distribute background tasks to agents.">@job</span>
+      <span data-help-title="🧹 Free Agent (@free)" data-help="Der @free Befehl bricht alle aktuell laufenden Hintergrundprozesse und Aufgaben eines bestimmten Agenten ab und setzt ihn wieder in den Standby-Zustand." data-tooltip="Free: Clear active jobs from an agent.">@free</span>
+      <span data-help-title="👷 Worker (@worker)" data-help="Mit dem @worker Befehl sprichst du gezielt alle ausführenden Worker-Agenten (CoderAG, WriterAG, ResearcherAG, EditorAG) an." data-tooltip="Worker: Query all non-system agents.">@worker</span>
+      <span data-help-title="⚙️ System (@system)" data-help="Mit dem @system Befehl sprichst du die koordinierenden System-Agenten (GeneralAG, SoulAG, WatchdogAG) an." data-tooltip="System: Query all system-level agents.">@system</span>
+      <span data-help-title="🌐 All (@all)" data-help="Der @all Befehl sendet deine Nachricht an alle online verfügbaren Agenten im System gleichzeitig." data-tooltip="All: Query all online agents.">@all</span>
+      <span data-help-title="📂 Project Management (@@project)" data-help="Verwalte deine Projekte im Hub. Nutze '@@project <name>' um ein Projekt zu erstellen oder zu wechseln, und '@@project delete <name>' zum Löschen." data-tooltip="Project: (e.g. @@project netzwerkpunkt, @@project delete netzwerkpunkt)">@@project</span>
+      <span data-help-title="🗑️ Clear Hub (@@clear)" data-help="Löscht ausgewählte Verläufe oder Daten: '@@clear chat' leert den Chatverlauf, '@@clear all agents' setzt alle Agenten-Speicher zurück." data-tooltip="Clear: (@@clear chat, @@clear @project, @@clear all agents)">@@clear</span>
+      <span data-help-title="📊 System Status (@@status)" data-help="Ruft den aktuellen Systemstatus ab. Zeigt CPU-, RAM-, Docker- und Netzwerkmetriken sowie den Zustand der Agenten." data-tooltip="Status: Get system and agent status.">@@status</span>
+      <span data-help-title="🐙 Git Integration (@@git)" data-help="Ermöglicht das Ausführen von Git-Befehlen direkt im Hub-Arbeitsverzeichnis, z.B. '@@git status', '@@git log' oder '@@git commit'." data-tooltip="Git: Run git commands (e.g. @@git status)">@@git</span>
+      <span data-help-title="☕ Kaffeepause (/coffee)" data-help="Löst eine gemütliche Kaffeepausen-Animation im War Room aus. Perfekt für kurze Verschnaufpausen." data-tooltip="Coffee break: (Animation)">/coffee</span>
+      <span data-help-title="🛸 UFO-Sichtung (/ufo)" data-help="Fliegt ein UFO über deinen Bildschirm? Dieser Animationsbefehl sorgt für außerirdische Abwechslung." data-tooltip="UFO Event: (Animation)">/ufo</span>
+      <span data-help-title="👻 Geisterstunde (/ghost)" data-help="Ruft einen geheimnisvollen Geist herbei, der durch dein Dashboard schwebt." data-tooltip="Ghost: (Animation)">/ghost</span>
     </div>`;
 }
 
 function buildWarRoomHTML() {
-  const ttsChecked = document.getElementById('tts-enabled')?.checked ?? true;
-  const thoughtTtsActive = window.thoughtTtsEnabled ?? true;
+  const ttsChecked = localStorage.getItem('ttsEnabled') !== 'false';
   return `<div class="panel" id="war-room">
     <h2 style="display:flex; align-items:center; justify-content:space-between; width: 100%;">
       <div style="display:flex; align-items:center; gap: 8px;">
         War Room 
-        <span id="project-indicator" style="font-size:0.75rem; color:var(--text-muted); background:rgba(255,255,255,0.05); padding:3px 8px; border-radius:12px; margin-left:10px; border:1px solid rgba(255,255,255,0.1);">MAIN HUB</span>
+        <span id="project-indicator" style="font-size:0.75rem; color:var(--text-muted); background:rgba(255,255,255,0.05); padding:3px 8px; border-radius:12px; margin-left:10px; border:1px solid rgba(255,255,255,0.1);" data-help-title="📂 Aktives Projekt" data-help="Gibt das aktuell ausgewählte Projekt im Hub an. Alle generierten Dateien und Shell-Befehle werden in diesem Verzeichnis ausgeführt.">MAIN HUB</span>
         <button id="project-help-btn" onclick="const e=document.getElementById('project-explanation'); e.style.display = e.style.display==='none' ? 'block' : 'none';" style="display:none; margin-left:8px; padding:3px 8px; font-size:0.7rem; border-radius:12px; border:1px solid var(--green); background:rgba(57,255,20,0.1); color:var(--green); cursor:pointer;">ℹ️ Info</button>
-      </div>
-      <div style="display:flex; align-items:center; gap:6px;">
-        <span style="font-size: 0.65rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Ansicht:</span>
-        <select id="info-level-select" onchange="changeInfoLevel(this.value)" style="background: rgba(0,229,255,0.1); border: 1px solid rgba(0,229,255,0.3); color: var(--cyan); border-radius: 6px; padding: 2px 6px; font-size: 0.65rem; cursor: pointer; outline: none; font-weight: bold; font-family: sans-serif;">
-          <option value="detailed" ${window.infoLevel === 'detailed' ? 'selected' : ''}>Detailliert</option>
-          <option value="compact" ${window.infoLevel === 'compact' ? 'selected' : ''}>Kompakt</option>
-          <option value="minimal" ${window.infoLevel === 'minimal' ? 'selected' : ''}>Minimal</option>
-        </select>
       </div>
     </h2>
     <div id="project-explanation" style="display:none; font-size:0.8rem; color:#fff; background:rgba(61,220,132,0.1); border-left:3px solid var(--green); padding:10px 14px; margin-bottom:12px; border-radius:4px; line-height:1.5;"></div>
@@ -80,18 +71,15 @@ function buildWarRoomHTML() {
     <!-- Split chat layout -->
     <div id="chat-split-container">
       <!-- Top Pane: Thinking Processes -->
-      <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--cyan); display: flex; align-items: center; justify-content: space-between; font-weight: bold; margin-bottom: -4px;">
+      <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--cyan); display: flex; align-items: center; justify-content: space-between; font-weight: bold; margin-bottom: -4px;" data-help-title="🧠 Denkprozess-Fenster" data-help="Hier werden die 'Gedankengänge' (Chain of Thought) der Agenten live eingeblendet, während sie an einer Lösung arbeiten. So bleibt die Entscheidungsfindung transparent.">
         <span>🧠 Denkprozesse & Logik</span>
-        <button id="thought-tts-btn" onclick="toggleThoughtTTS()" style="background: ${thoughtTtsActive ? 'rgba(57,255,20,0.15)' : 'rgba(0,229,255,0.1)'}; border: 1px solid ${thoughtTtsActive ? 'rgba(57,255,20,0.4)' : 'rgba(0,229,255,0.3)'}; color: ${thoughtTtsActive ? 'var(--green)' : 'var(--cyan)'}; border-radius: 12px; padding: 2px 8px; font-size: 0.62rem; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s ease;">
-          ${thoughtTtsActive ? '🔊 TTS An' : '🔇 TTS Aus'}
-        </button>
       </div>
-      <div id="thought-display"></div>
+      <div id="thought-display" data-help-title="🧠 Denkprozesse & Logik" data-help="Dieses Fenster zeigt dir live die interne Logik und Lösungsfindung der Agenten. Schalte oben auf 'Kompakt' oder 'Minimal', um die Anzeige anzupassen oder auszublenden."></div>
       
       <!-- Splitter / Separator -->
       <div style="display: flex; align-items: center; gap: 8px;">
         <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.08);"></div>
-        <span style="font-size: 0.65rem; color: var(--text-muted); white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px;">Chat Verlauf</span>
+        <span style="font-size: 0.65rem; color: var(--text-muted); white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px;" data-help-title="💬 Chat-Verlauf" data-help="Zeigt den Dialogverlauf zwischen dir und den Agenten sowie die Systemmeldungen.">Chat Verlauf</span>
         <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.08);"></div>
       </div>
       
@@ -100,13 +88,26 @@ function buildWarRoomHTML() {
     </div>
     
     <div class="chat-bar">
-      <div class="chat-input-wrap">
+      <div class="chat-input-wrap" data-help-title="✍️ Chat-Eingabefeld" data-help="Tippe hier deine Fragen, Befehle oder Nachrichten ein. Nutze '@' für Agenten (z.B. @bs, @researcherag) und '@@' für Systemkommandos (z.B. @@status).">
         <div class="ac-dropdown" id="ac-dropdown"></div>
         <textarea id="chat-input" placeholder="@bs @research @idea …" oninput="onChatInput(this)" onkeydown="onChatKey(event)"></textarea>
       </div>
-      <button class="btn-primary" onclick="sendChat()" style="padding:0 20px;">Send</button>
+      <button class="btn-primary" onclick="sendChat()" style="padding:0 20px;" data-help-title="✉️ Chat absenden" data-help="Sende deine eingetippte Anweisung an den Schwarm ab, um die Bearbeitung zu starten.">Send</button>
       <input type="checkbox" id="tts-enabled" style="display:none;" ${ttsChecked ? 'checked' : ''}>
-      <button id="mic-btn" class="btn-mic" onclick="toggleSTT()" title="Voice Input" style="padding:0 14px;">Rec</button>
+      
+      <button id="tts-toggle-btn" class="btn-mic" onclick="toggleMainTTS()" title="Sprachausgabe (TTS)" style="padding:0 14px; margin-right: 6px; background: ${ttsChecked ? 'rgba(57,255,20,0.15)' : 'rgba(0,229,255,0.1)'}; border: 1px solid ${ttsChecked ? 'rgba(57,255,20,0.4)' : 'rgba(0,229,255,0.3)'}; color: ${ttsChecked ? 'var(--green)' : 'var(--cyan)'}; font-weight: bold;" data-help-title="🗣️ Sprachausgabe (TTS)" data-help="Schaltet das Vorlesen der Chat-Antworten ein oder aus. Der Vorleseton passt sich dem Charakter des jeweiligen Agenten an.">
+        ${ttsChecked ? '🔊 TTS' : '🔇 TTS'}
+      </button>
+      
+      <button id="stop-tts-btn" class="btn-mic btn-danger" onclick="stopTTS()" title="Sprachausgabe stoppen" style="padding:0 14px; margin-right: 6px; display:none; font-weight: bold; background: rgba(220, 20, 60, 0.2); border: 1px solid rgba(220, 20, 60, 0.4); color: var(--red);" data-help-title="🛑 Sprachausgabe stoppen" data-help="Stoppt das aktuelle Vorlesen sofort und löscht alle weiteren Nachrichten aus der Sprach-Warteschlange.">Stop</button>
+      
+      <button id="mic-btn" class="btn-mic" onclick="toggleSTT()" title="Voice Input" style="padding:0 14px; margin-right: 6px;" data-help-title="🎙️ Diktierfunktion (Rec)" data-help="Aktiviert die Spracheingabe über das Mikrofon. Sprich deine Befehle frei ein. Klicke erneut zum Beenden der Aufnahme.">Rec</button>
+      
+      <select id="chat-info-level-select" onchange="changeInfoLevel(this.value)" style="background: rgba(0,229,255,0.15); border: 1px solid rgba(0,229,255,0.3); color: var(--cyan); border-radius: 6px; padding: 0 10px; height: 38px; font-size: 0.75rem; cursor: pointer; outline: none; font-weight: bold; font-family: sans-serif; transition: all 0.2s; margin-left: 2px;" data-help-title="📊 Ansichts-Detailstufe" data-help="Passe die Detailtiefe der Agenten-Antworten und Logs an:<br><br>• <b>Detailliert:</b> Voller Denkprozess und ungekürzte Nachrichten.<br>• <b>Kompakt:</b> Zusammenfassung mit optionalem Aufklapp-Button.<br>• <b>Minimal:</b> Nur die allerwichtigsten Kerninfos, Denkfenster ausgeblendet.">
+        <option value="detailed" ${window.infoLevel === 'detailed' ? 'selected' : ''}>🧠 Detailliert</option>
+        <option value="compact" ${window.infoLevel === 'compact' ? 'selected' : ''}>💬 Kompakt</option>
+        <option value="minimal" ${window.infoLevel === 'minimal' ? 'selected' : ''}>🔇 Minimal</option>
+      </select>
     </div>
     ${buildChatHintsHTML()}
   </div>`;
@@ -242,9 +243,9 @@ function handleShowboxLoadCommand(m, ta) {
 
 function handleChatCommands(msg, ta) {
   const m = msg.toLowerCase();
-  if (m === '@tts on') { const cb = document.getElementById('tts-enabled'); if (cb) cb.checked = true; ta.value = ''; toast('🗣️ TTS Aktiviert', 'success'); return true; }
-  if (m === '@tts off') { const cb = document.getElementById('tts-enabled'); if (cb) cb.checked = false; stopTTS(); ta.value = ''; toast('🔇 TTS Deaktiviert', 'info'); return true; }
-  if (m === '@tts') { const cb = document.getElementById('tts-enabled'); if (cb) { cb.checked = !cb.checked; if (!cb.checked) stopTTS(); toast(cb.checked ? '🗣️ TTS Aktiviert' : '🔇 TTS Deaktiviert', cb.checked ? 'success' : 'info'); } ta.value = ''; return true; }
+  if (m === '@tts on') { const cb = document.getElementById('tts-enabled'); if (cb) { cb.checked = true; localStorage.setItem('ttsEnabled', 'true'); } ta.value = ''; toast('🗣️ TTS Aktiviert', 'success'); return true; }
+  if (m === '@tts off') { const cb = document.getElementById('tts-enabled'); if (cb) { cb.checked = false; localStorage.setItem('ttsEnabled', 'false'); } stopTTS(); ta.value = ''; toast('🔇 TTS Deaktiviert', 'info'); return true; }
+  if (m === '@tts') { const cb = document.getElementById('tts-enabled'); if (cb) { cb.checked = !cb.checked; localStorage.setItem('ttsEnabled', cb.checked ? 'true' : 'false'); if (!cb.checked) stopTTS(); toast(cb.checked ? '🗣️ TTS Aktiviert' : '🔇 TTS Deaktiviert', cb.checked ? 'success' : 'info'); } ta.value = ''; return true; }
   if (m === '/ufo') { if (window.showUfoAttack) window.showUfoAttack(); return true; }
   if (m === '/ghost') { if (window.showGhost) window.showGhost(); return true; }
   if (m === '/coffee') { if (window.showCoffeeBreak) window.showCoffeeBreak(); return true; }
@@ -394,9 +395,15 @@ function changeInfoLevel(level) {
   window.infoLevel = level;
   localStorage.setItem('infoLevel', level);
   
+  // Synchronize both select dropdowns (header and chat bar)
+  const headerSelect = document.getElementById('info-level-select');
+  const chatSelect = document.getElementById('chat-info-level-select');
+  if (headerSelect) headerSelect.value = level;
+  if (chatSelect) chatSelect.value = level;
+  
   const thoughtEl = document.getElementById('thought-display');
   const headerEl = document.querySelector('#chat-split-container > div:first-child');
-  const splitterEl = document.querySelector('#chat-split-container > div:nth-child(2)');
+  const splitterEl = document.querySelector('#chat-split-container > div:nth-child(3)');
   const splitContainer = document.getElementById('chat-split-container');
   const chatDisplay = document.getElementById('chat-display');
 
@@ -424,6 +431,30 @@ function changeInfoLevel(level) {
   
   window._lastChatData = null;
   refreshChat();
+}
+
+function toggleMainTTS() {
+  const cb = document.getElementById('tts-enabled');
+  if (!cb) return;
+  cb.checked = !cb.checked;
+  localStorage.setItem('ttsEnabled', cb.checked ? 'true' : 'false');
+  const btn = document.getElementById('tts-toggle-btn');
+  if (btn) {
+    if (cb.checked) {
+      btn.innerHTML = '🔊 TTS';
+      btn.style.background = 'rgba(57,255,20,0.15)';
+      btn.style.borderColor = 'rgba(57,255,20,0.4)';
+      btn.style.color = 'var(--green)';
+      toast('🗣️ TTS Aktiviert', 'success');
+    } else {
+      btn.innerHTML = '🔇 TTS';
+      btn.style.background = 'rgba(0,229,255,0.1)';
+      btn.style.borderColor = 'rgba(0,229,255,0.3)';
+      btn.style.color = 'var(--cyan)';
+      stopTTS();
+      toast('🔇 TTS Deaktiviert', 'info');
+    }
+  }
 }
 
 function toggleThoughtTTS() {
@@ -617,11 +648,12 @@ async function refreshChat() {
         // Render thought entry
         thoughtHTML += renderThoughtMessageHTML(sender, thought, timestamp);
         
-        // Speak thought if new and thought TTS is enabled
+        // Speak thought if new and main TTS is enabled, and view is not minimal
         if (!window._spokenThoughtIds.has(thoughtId)) {
-          if (window.thoughtTtsEnabled) {
+          const ttsChecked = localStorage.getItem('ttsEnabled') !== 'false';
+          if (ttsChecked && window.infoLevel !== 'minimal') {
             let speakThought = thought;
-            if (window.infoLevel === 'compact' || window.infoLevel === 'minimal') {
+            if (window.infoLevel === 'compact') {
               speakThought = thought.split(/[.!?]/)[0].trim() + ".";
             }
             speak(`${sender} denkt: ${speakThought}`, sender);
@@ -734,7 +766,7 @@ function getVoiceForAgent(agentName, lang) {
 }
 
 async function speak(text, agentId = '') {
-  if (!document.getElementById('tts-enabled')?.checked) return;
+  if (localStorage.getItem('ttsEnabled') === 'false') return;
   _ttsQ.push({ text, agentId });
   if (_ttsBusy) return;
   _ttsBusy = true;

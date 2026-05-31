@@ -4,6 +4,7 @@ from gnom_hub.core.config import WORKSPACE_DIR
 from gnom_hub.infrastructure.process.sandbox_exec import run_sandboxed
 
 def is_docker_running():
+    if os.getenv("GNOM_DISABLE_DOCKER") == "1": return False
     try: return subprocess.run(["docker", "ps"], capture_output=True, timeout=2).returncode == 0
     except: return False
 

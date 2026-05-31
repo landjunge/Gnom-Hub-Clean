@@ -153,3 +153,83 @@ def handle_diagnose(q):
     task = "Führe eine Selbstdiagnose deiner Systemumgebung und Berechtigungen durch. Versuche testweise eine Datei zu schreiben und einen harmlosen Shell-Befehl auszuführen, um zu prüfen, ob dir Schreibrechte (WRITE) oder Terminalrechte (SHELL) fehlen. Prüfe auch die Verfügbarkeit von Programmen wie 'git' und 'docker'. Melde alle fehlenden Berechtigungen oder Tools SOFORT als Warnung über die Showbox!"
     dispatch(task, target="all")
     return {"status": "ok"}
+
+def handle_help(q):
+    help_html_slides = [
+        # Slide 1: Welcome & UI
+        (
+            "<div style='padding: 30px; color: #f1f3f9; font-family: sans-serif; height: 100%; display: flex; flex-direction: column; justify-content: center;'>"
+            "<h1 style='color: #00e5ff; font-size: 2.5rem; font-family: Orbitron, sans-serif; margin-bottom: 24px; text-shadow: 0 0 15px rgba(0, 229, 255, 0.5);'>🧠 GNOM-HUB CLI & UI ANLEITUNG</h1>"
+            "<p style='font-size: 1.25rem; line-height: 1.7; margin-bottom: 24px; color: #8b9bb4;'>"
+            "Willkommen in der Showbox. Hier findest du alle Steuerungsoptionen für dein offline Agenten-Team."
+            "</p>"
+            "<ul style='font-size: 1.15rem; line-height: 2.0; margin-left: 24px; color: #f1f3f9;'>"
+            "<li><strong>War Room (Mitte):</strong> Chat-Eingabe und Anzeige der Denkprozesse.</li>"
+            "<li><strong>Showbox (Rechts):</strong> Render-Fläche für Entwürfe, Genehmigungen und Web-Previews.</li>"
+            "<li><strong>Workspace (Tab 2):</strong> Lokale Dateiübersicht und Sandboxes.</li>"
+            "<li><strong>Metrics (Tab 3):</strong> Bento-Grid mit Token- und RAM-Statistiken.</li>"
+            "<li><strong>LLM Config (Tab 4):</strong> Schieberegler für Agentenverhaltensweisen.</li>"
+            "</ul>"
+            "</div>"
+        ),
+        # Slide 2: The 8 Agents
+        (
+            "<div style='padding: 30px; color: #f1f3f9; font-family: sans-serif; height: 100%; display: flex; flex-direction: column; justify-content: center;'>"
+            "<h1 style='color: #39ff14; font-size: 2.5rem; font-family: Orbitron, sans-serif; margin-bottom: 24px; text-shadow: 0 0 15px rgba(57, 255, 20, 0.5);'>🤖 ROLLENPROFILE DER 8 GNOME</h1>"
+            "<div style='display: grid; grid-template-columns: 1fr 1fr; gap: 30px; font-size: 1.1rem; line-height: 1.6;'>"
+            "<div>"
+            "<h3 style='color: #ff007f; font-size: 1.3rem; margin-bottom: 12px; font-family: Orbitron, sans-serif;'>System-Layer (Administrativ)</h3>"
+            "<ul style='margin-left: 20px;'>"
+            "<li><strong>GeneralAG:</strong> Delegiert Aufgaben exklusiv an die 4 Worker.</li>"
+            "<li><strong>SoulAG:</strong> Verwaltet Langzeitgedächtnis und injiziert Kontext.</li>"
+            "<li><strong>WatchdogAG:</strong> Blockiert unbefugte Dateizugriffe und Systemänderungen.</li>"
+            "<li><strong>SecurityAG:</strong> Scannt Codes und pip-Pakete vor Ausführung.</li>"
+            "</ul>"
+            "</div>"
+            "<div>"
+            "<h3 style='color: #00e5ff; font-size: 1.3rem; margin-bottom: 12px; font-family: Orbitron, sans-serif;'>Worker-Layer (Ausführend)</h3>"
+            "<ul style='margin-left: 20px;'>"
+            "<li><strong>CoderAG:</strong> Schreibt Scripte, Codes und Web-UIs.</li>"
+            "<li><strong>WriterAG:</strong> Erstellt Texte, Newsletter und Dokumentationen.</li>"
+            "<li><strong>ResearcherAG:</strong> Recherchiert im Netz und crawlt Webseiten.</li>"
+            "<li><strong>EditorAG:</strong> Lektoriert Entwürfe und refaktoriert Programmierungen.</li>"
+            "</ul>"
+            "</div>"
+            "</div>"
+            "</div>"
+        ),
+        # Slide 3: Commands & @-Tags
+        (
+            "<div style='padding: 30px; color: #f1f3f9; font-family: sans-serif; height: 100%; display: flex; flex-direction: column; justify-content: center;'>"
+            "<h1 style='color: #ff007f; font-size: 2.5rem; font-family: Orbitron, sans-serif; margin-bottom: 24px; text-shadow: 0 0 15px rgba(255, 0, 127, 0.5);'>⚙️ CHAT-KOMMANDOS (COMMANDS)</h1>"
+            "<table style='width: 100%; border-collapse: collapse; font-size: 1.1rem; line-height: 1.8; text-align: left;'>"
+            "<tr><td style='padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.08); color: #00e5ff;'><strong>@AgentName -&gt; Aufgabe</strong></td><td style='padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.08);'>Zuweisung über GeneralAG (z.B. <code>@coderag -&gt; baue WebUI</code>)</td></tr>"
+            "<tr><td style='padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.08); color: #00e5ff;'><strong>@@diagnose</strong></td><td style='padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.08);'>Triggert die Selbstdiagnose aller Gnome live im Panel.</td></tr>"
+            "<tr><td style='padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.08); color: #00e5ff;'><strong>@@status</strong></td><td style='padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.08);'>Listet die aktiven Jobs und Stati aller Gnome auf.</td></tr>"
+            "<tr><td style='padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.08); color: #00e5ff;'><strong>@tts on / off / toggle</strong></td><td style='padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.08);'>Schaltet Sprachausgabe (TTS) global an oder aus.</td></tr>"
+            "<tr><td style='padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.08); color: #00e5ff;'><strong>@@clear</strong></td><td style='padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.08);'>Löscht den Verlauf des aktuellen Chats.</td></tr>"
+            "<tr><td style='padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.08); color: #00e5ff;'><strong>@@help / @@hilfe</strong></td><td style='padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.08);'>Öffnet diese interaktive Anleitung direkt in deiner Showbox!</td></tr>"
+            "</table>"
+            "</div>"
+        ),
+        # Slide 4: Baking & SuperGNOM
+        (
+            "<div style='padding: 30px; color: #f1f3f9; font-family: sans-serif; height: 100%; display: flex; flex-direction: column; justify-content: center;'>"
+            "<h1 style='color: #00e5ff; font-size: 2.5rem; font-family: Orbitron, sans-serif; margin-bottom: 24px; text-shadow: 0 0 15px rgba(0, 229, 255, 0.5);'>🏭 @bake & PORTABLE PRODUKTE</h1>"
+            "<p style='font-size: 1.25rem; line-height: 1.7; margin-bottom: 20px; color: #8b9bb4;'>"
+            "Nachdem du deinen Agentenschwarm evolviert hast, kannst du ihn einfrieren und kompilieren:"
+            "</p>"
+            "<ul style='font-size: 1.15rem; line-height: 2.0; margin-left: 24px; color: #f1f3f9;'>"
+            "<li><strong>Befehl:</strong> <code>@@bake [Name] [Template]</code> (z.B. <code>@@bake meine_app chat</code>)</li>"
+            "<li><strong>Kompilierung:</strong> Erzeugt einen standfesten, standalone-lauffähigen Ordner in <code>dist/</code>.</li>"
+            "<li><strong>Integritätsschutz:</strong> Prompts werden festgeschrieben, geschützt vor Drifts und Manipulationen.</li>"
+            "</ul>"
+            "</div>"
+        )
+    ]
+    
+    import json
+    slides_json = json.dumps(help_html_slides)
+    _post_chat("System", f"📖 **Gnom-Hub Handbuch geladen:** Die vollständige Anleitung wurde direkt in deine Showbox übertragen! <SHOWBOX:1>{slides_json}</SHOWBOX>")
+    return {"status": "ok"}
+

@@ -1,10 +1,13 @@
-import os; from pathlib import Path; from dotenv import load_dotenv; load_dotenv()
+import os; from pathlib import Path; from dotenv import load_dotenv
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
+CONFIG_DIR = PROJECT_ROOT / "config"
+load_dotenv(CONFIG_DIR / ".env")
 
 HOME = Path(os.getenv("GNOM_HUB_HOME", Path.home() / ".gnom-hub"))
 GNOM_HUB_HOME = HOME
 DATA_DIR, RUN_DIR = HOME / "data", HOME / "run"
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
-WORKSPACE_DIR, FRONTEND_DIR, CONFIG_DIR = PROJECT_ROOT / "gnom_workspace", PROJECT_ROOT / "src" / "gnom_hub" / "frontend", PROJECT_ROOT / "config"
+WORKSPACE_DIR, FRONTEND_DIR = PROJECT_ROOT / "gnom_workspace", PROJECT_ROOT / "src" / "gnom_hub" / "frontend"
 TOKENS_FILE, DB_PATH = CONFIG_DIR / ".gnom-hub-tokens.json", DATA_DIR / "gnomhub.db"
 
 for d in (DATA_DIR, RUN_DIR, WORKSPACE_DIR, CONFIG_DIR): d.mkdir(parents=True, exist_ok=True)

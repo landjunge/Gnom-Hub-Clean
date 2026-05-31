@@ -678,13 +678,13 @@
     }
     
     bodyEl.innerHTML = `
-      <div class="interactive-help-box" style="padding: 12px; background: rgba(0, 150, 255, 0.08); border: 1px solid rgba(0, 150, 255, 0.22); border-radius: 8px; animation: fadeIn 0.2s ease;">
-        <h4 style="margin: 0 0 8px 0; font-size: 0.85rem; color: var(--cyan); display: flex; align-items: center; gap: 6px;">
+      <div class="interactive-help-box" style="padding: 24px 20px; background: rgba(0, 229, 255, 0.08); border: 2px solid rgba(0, 229, 255, 0.25); border-radius: 12px; animation: fadeIn 0.2s ease; width: 90%; height: 90%; display: flex; flex-direction: column; justify-content: center; box-sizing: border-box; box-shadow: 0 0 20px rgba(0, 229, 255, 0.15); margin: auto;">
+        <h4 style="margin: 0 0 14px 0; font-size: 1.3rem; color: var(--cyan); display: flex; align-items: center; gap: 8px; font-weight: 700; text-shadow: 0 0 10px rgba(0, 229, 255, 0.4); text-transform: none; letter-spacing: 0.5px;">
           💡 ${title}
         </h4>
-        <p style="margin: 0; font-size: 0.78rem; line-height: 1.45; color: rgba(255,255,255,0.9); font-weight: normal; white-space: normal; text-transform: none; word-break: break-word;">
+        <div style="margin: 0; font-size: 1.05rem; line-height: 1.55; color: #ffffff; font-weight: normal; white-space: normal; text-transform: none; word-break: break-word; text-align: left; overflow-y: auto; flex: 1; padding-right: 6px;">
           ${text}
-        </p>
+        </div>
       </div>
     `;
   };

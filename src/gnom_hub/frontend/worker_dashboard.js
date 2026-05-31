@@ -36,7 +36,16 @@ function renderAgentList(filter = '') {
       const c = agentColor(a.name);
       const dur = (2.5 + Math.random() * 2.0).toFixed(2);
       const dly = (-(Math.random() * 6.0)).toFixed(2);
-      return `<div class="agent-card ${stClass} ${a.id === selectedId ? 'active' : ''}" id="card-${a.id}" onclick="handleWorkerClick('${a.id}')" ondblclick="handleWorkerDblClick('${a.id}', '${a.status}')" style="--agent-color:${c}; --dur:${dur}s; --delay:${dly}s;">
+      
+      let statusLabel = 'Offline';
+      if (a.status === 'busy') statusLabel = 'Beschäftigt (Busy) 🟡';
+      else if (a.status === 'paused') statusLabel = 'Pausiert 🟠';
+      else if (a.status === 'online') statusLabel = 'Online 🟢';
+      
+      const helpTitle = `${a.name} (${statusLabel})`;
+      const helpText = typeof getAgentHelpText === 'function' ? getAgentHelpText(a.name, a.description) : (a.description || 'Ein Agent im Gnom-Hub.');
+      
+      return `<div class="agent-card ${stClass} ${a.id === selectedId ? 'active' : ''}" id="card-${a.id}" onclick="handleWorkerClick('${a.id}')" ondblclick="handleWorkerDblClick('${a.id}', '${a.status}')" style="--agent-color:${c}; --dur:${dur}s; --delay:${dly}s;" data-help-title="${helpTitle.replace(/"/g, '&quot;')}" data-help="${helpText.replace(/"/g, '&quot;')}">
         <h3><span>${a.name}</span>${roleIcon}</h3>
         <div class="desc">${a.description || '–'}</div>
         <div class="meta">${a.port ? `<span class="badge port">:${a.port}</span>` : ''}${role ? `<span class="badge role ${role}">${role}</span>` : ''}</div>

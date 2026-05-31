@@ -9,6 +9,15 @@ class BaseAgent:
         from gnom_hub.agents.tool_registry import format_tools_prompt
         t_p = format_tools_prompt(get_soul(name), name)
         self.sys = (self.sys + "\n\n" + t_p) if self.sys else t_p
+        
+        # Injektion der geistigen Denkprozess-Richtlinie fuer die Showbox-Anzeige
+        think_guideline = (
+            "\n\n[WICHTIGE GEISTIGE RICHTLINIE]\n"
+            "Beginne JEDE Antwort zwingend mit einem ausfuehrlichen Denkprozess in <think>...</think>-Tags.\n"
+            "Darin musst du deine logischen Schritte, deine Planung, deine Intentions-Abwaegungen und "
+            "deine Gedanken dokumentieren. Erst NACH dem schliessenden </think> folgt deine eigentliche Antwort."
+        )
+        self.sys += think_guideline
     def _req(self, method, p, j=None):
         try:
             r = getattr(requests, method)(f"{HUB_URL}{p}", json=j, timeout=10)
@@ -49,7 +58,12 @@ class BaseAgent:
                                 processed = process_actions(r.content, {"name": self.n}, perms, False, wd)
                                 import re
                                 think_match = re.search(r'(<think>[\s\S]*?</think>)', r.answer)
-                                think_prefix = think_match.group(1) + "\n\n" if think_match else ""
+                                if think_match:
+                                    think_prefix = think_match.group(1) + "\n\n"
+                                else:
+                                    # Fallback-Denkprozess aus der reasoning_chain generieren
+                                    steps_str = "\n".join(f"- {step}" for step in r.reasoning_chain)
+                                    think_prefix = f"<think>\n🧠 [Denkprozess & Logik fuer {self.n}]\n{steps_str}\n</think>\n\n"
                                 self._req("post", "/api/chat", {"content": think_prefix + processed, "sender": self.n})
                         except Exception as e: print(f"[{self.n}] Error: {e}")
                 finally:

@@ -2230,21 +2230,9 @@
     }
 
     body.senior-mode .chat-hints,
-    body.senior-mode #chat-split-container > div:first-child, /* Hide thinking panel header */
-    body.senior-mode #thought-display, /* Hide thinking panel */
-    body.senior-mode #chat-split-container > div:nth-child(3), /* Hide splitter */
     body.senior-mode .chat-hints-wrap,
     body.senior-mode .copy-btn {
       display: none !important;
-    }
-
-    body.senior-mode #chat-split-container {
-      height: auto !important;
-    }
-
-    body.senior-mode #chat-split-container #chat-display {
-      flex: none !important;
-      height: 65vh !important;
     }
 
     /* 2. Headless Mode Overrides */
@@ -2763,13 +2751,13 @@
     </div>
   </div>
 
-  <script src="/static/core.js"></script>
-  <script src="/static/system_dashboard.js"></script>
-  <script src="/static/worker_dashboard.js"></script>
-  <script src="/static/worker_sidebar.js"></script>
-  <script src="/static/chat.js"></script>
-  <script src="/static/workspace.js"></script>
-  <script src="/static/dashboard.js"></script>
+  <script src="/static/core.js?v=3"></script>
+  <script src="/static/system_dashboard.js?v=3"></script>
+  <script src="/static/worker_dashboard.js?v=3"></script>
+  <script src="/static/worker_sidebar.js?v=3"></script>
+  <script src="/static/chat.js?v=3"></script>
+  <script src="/static/workspace.js?v=3"></script>
+  <script src="/static/dashboard.js?v=3"></script>
   <script>
     // ── Init Bootstrap ──
     (async () => {

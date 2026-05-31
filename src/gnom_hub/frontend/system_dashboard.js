@@ -50,7 +50,16 @@ function updateLamps(hubAgents) {
       const dur = (2.5 + Math.random() * 2.0).toFixed(2);
       const dly = (-(Math.random() * 6.0)).toFixed(2);
       const col = agentColor(a.name);
-      return `<div class="sys-agent-card" data-ag="${a.name}" title="${a.name}" onclick="handleAgentClick('${a.name}')" ondblclick="handleAgentDblClick('${a.name}')" style="--agent-color:${col};--dur:${dur}s;--delay:${dly}s">${a.name}</div>`;
+      
+      let statusLabel = 'Offline';
+      if (a.status === 'busy') statusLabel = 'Beschäftigt (Busy) 🟡';
+      else if (a.status === 'paused') statusLabel = 'Pausiert 🟠';
+      else if (a.status === 'online') statusLabel = 'Online 🟢';
+      
+      const helpTitle = `${a.name} (${statusLabel})`;
+      const helpText = typeof getAgentHelpText === 'function' ? getAgentHelpText(a.name, '') : `${a.name} System-Agent.`;
+      
+      return `<div class="sys-agent-card" data-ag="${a.name}" title="${a.name}" onclick="handleAgentClick('${a.name}')" ondblclick="handleAgentDblClick('${a.name}')" style="--agent-color:${col};--dur:${dur}s;--delay:${dly}s" data-help-title="${helpTitle.replace(/"/g, '&quot;')}" data-help="${helpText.replace(/"/g, '&quot;')}">${a.name}</div>`;
     }).join('');
     _lastInternals = names;
   }
