@@ -37,9 +37,9 @@ We analyzed **12+ leading multi-agent frameworks** (CrewAI, AutoGen/AG2, LangGra
 |:--|:--------|:-------------|:------------|
 | 🏭 | **`@bake` Compiler** | Compiles your evolved swarm into an immutable, portable SuperGNOM product with frozen prompts and SHA-256 integrity manifest | ❌ No equivalent exists anywhere |
 | 🛡️ | **3-Agent Security Tribunal** | Every dangerous action triggers a multi-agent deliberation: WatchdogAG explains the violation, SoulAG provides memory context, GeneralAG recommends — rendered as interactive Approve/Reject cards in the Showbox | ❌ Others have simple pause/resume HITL at best |
-| 🧬 | **Steganographic Memory (ZWC)** | Agent identity metadata is encoded as invisible zero-width Unicode characters with error-correcting codes — invisible fingerprints in every message | ❌ Nothing comparable in any framework |
-| 🎛️ | **5-Axis Live Agent Tuning** | Per-agent personality, creativity, response style, memory strength, and risk tolerance sliders with immediate effect — plus custom prompt suffix injection | ❌ No framework offers real-time behavior sliders |
-| 📐 | **40-Line Code Rule** | WatchdogAG enforces that every function written by agents must stay under 40 lines. EditorAG auto-refactors violations | ❌ No framework has agent-enforced code standards |
+| 🧬 | **Steganographic Tracing (ZWC)** | Experimental security/audit proof-of-concept: agent metadata is embedded as invisible zero-width Unicode fingerprints in output texts | ❌ Nothing comparable in any framework |
+| 🎛 | **5-Axis Live Agent Tuning** | Per-agent personality, creativity, response style, memory strength, and risk tolerance sliders with immediate effect — plus custom prompt suffix injection | ❌ No framework offers real-time behavior sliders |
+| 📐 | **40-Line Code Guideline** | WatchdogAG checks a standard 40-line guideline for functions, allowing exceptions with comment justifications. EditorAG refactors violations | ❌ No framework has agent-enforced code standards |
 | 🔄 | **Prompt Version Manager** | Every prompt change is versioned with SHA-256 IDs, parent-child chains, and performance scores from user feedback. Auto-rollback when quality drops below 95% of the parent version | ❌ No "git for prompts" with auto-rollback exists |
 | 🚨 | **Emergency Archive** | A secondary transaction-safe database mirrors all interactions. `@emergency [term]` recovers context when primary memory is lost | ❌ Not a feature anywhere |
 | 🔒 | **Fixed 4+4 Topology** | Hard-coded 8-agent limit prevents uncontrolled spawning. Every agent has a clear, auditable role | ❌ Every competitor allows unlimited agents |
@@ -58,7 +58,7 @@ We analyzed **12+ leading multi-agent frameworks** (CrewAI, AutoGen/AG2, LangGra
 | **Compile to Product** | ✅ @bake | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | **Prompt Versioning** | ✅ + Rollback | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | **Live Agent Tuning UI** | ✅ 5 Sliders | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **Steganographic Identity** | ✅ ZWC+ECC | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **Steganographic Tracing** | ✅ ZWC+ECC (Exp.) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 
 > [!NOTE]
 > Most frameworks are excellent tools for building cloud-scale agent pipelines. Gnom-Hub intentionally targets a different niche: **a local, transparent, security-first forge** where you evolve a small team of agents and compile them into a stable product.
@@ -134,7 +134,7 @@ graph TD
 |:------|:-----|:---------------|
 | **SoulAG** | Central consciousness & memory | Extracts facts from conversations, injects top-k relevant memories via FAISS semantic search, runs evolution rules |
 | **GeneralAG** | Coordinator & orchestrator | Splits `@job` tasks, delegates via `@AgentName`, synthesizes brainstorm results. **Cannot write files or run commands** |
-| **WatchdogAG** | Codebase guardian | Enforces 40-line rule, validates workspace paths, triggers Gatekeeper blockades |
+| **WatchdogAG** | Codebase guardian | Checks 40-line guideline, validates workspace paths, triggers Gatekeeper blockades |
 | **SecurityAG** | Security scanner | Detects dangerous patterns (`eval`, `rm -rf`, `subprocess`), validates pip packages against PyPI |
 
 ### Worker Agents (Sandboxed)
@@ -218,7 +218,7 @@ The Showbox is a unique multi-channel display for agent output:
 - **Priority-weighted results** (high=1.3×, low=0.7× boost) with 0.70 similarity threshold
 - **Per-agent scoped indices** prevent "role contamination" between workers
 - **Graceful fallback** to TF-IDF cosine similarity if FAISS isn't installed
-- **~4,700,000× speedup** on cached queries vs cold FAISS search
+- **Sub-millisecond latency** on cached queries vs cold FAISS search (which runs local encoder model inference)
 
 ### SoulAG Learning Loop
 1. SoulAG monitors all chat messages for relevant information
@@ -233,8 +233,8 @@ The Showbox is a unique multi-channel display for agent output:
 - Auto-rollback when a new version scores <95% of the parent version
 - **All learning is disabled in SuperGNOM mode** — behavior stays frozen
 
-### Steganographic Identity (ZWC)
-Agent metadata is encoded as invisible **zero-width Unicode characters** in message text using base64 → binary → ZWC encoding with 3-bit majority-vote error correction. Every message carries an invisible agent fingerprint that survives copy-paste.
+### Steganographic Tracing (ZWC)
+*Experimental security/audit feature:* Agent metadata is encoded as invisible **zero-width Unicode characters** in message text using base64 → binary → ZWC encoding with 3-bit majority-vote error correction. Every message carries an invisible agent fingerprint that survives copy-paste, designed for provenance tracking.
 
 ---
 
@@ -276,11 +276,14 @@ Agents interact with the system by generating markdown-like tags in their LLM ou
 
 ## ⚡ Performance
 
-| Operation | Cold Run | Cached | Speedup |
-|:----------|:---------|:-------|:--------|
-| **Capability Check** | 0.73 ms | 0.0006 ms | **~1,200×** (TTL cache vs SQLite) |
-| **Semantic Search** | 2,830 ms | 0.0006 ms | **~4,700,000×** (Query cache vs FAISS) |
+To avoid performance bottlenecks in tight agent interaction loops, Gnom-Hub uses in-memory caches and pre-computed lookups. This bypasses slow database queries and embedding generation on every step:
 
+| Operation | Database / Inference (Cold) | Memory / Cache (Warm) | Purpose / Mitigation |
+|:----------|:----------------------------|:----------------------|:---------------------|
+| **Capability Check** | 0.73 ms (SQLite DB read) | 0.0006 ms (TTL Cache) | Prevents checking permissions via DB on every single action handler call |
+| **Semantic Search** | 2,830.0 ms (FAISS & model)  | 0.0006 ms (Query Cache) | Avoids calling local embedding models (sentence-transformers) on repeat queries |
+
+### General System Metrics
 | Metric | Value |
 |:-------|:------|
 | Active Agents | 8 (fixed: 4 System + 4 Worker) |

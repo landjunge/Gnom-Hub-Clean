@@ -37,9 +37,9 @@ Wir haben **mehr als 12 führende Multi-Agenten-Frameworks** analysiert (CrewAI,
 |:--|:--------|:---------------|:-------------|
 | 🏭 | **`@bake`-Compiler** | Kompiliert deinen evolvierten Schwarm in ein unveränderbares, portables SuperGNOM-Produkt mit eingefrorenen Prompts und SHA-256 Integritätsmanifest. | ❌ Kein Äquivalent vorhanden |
 | 🛡️ | **3-Agenten-Tribunal** | Jede riskante Aktion löst eine Multi-Agenten-Beratung aus: WatchdogAG erklärt den Verstoß, SoulAG liefert Kontext, GeneralAG empfiehlt – visualisiert als interaktive Genehmigungskarten in der Showbox. | ❌ Höchstens simple Pause/Resume-HITL-Schnittstellen |
-| 🧬 | **Steganografischer Speicher** | Agenten-Metadaten werden als unsichtbare Zero-Width-Unicode-Zeichen (ZWC) mit Fehlerkorrekturcodes in Chat-Antworten eingebettet – unsichtbare Fingerabdrücke in jeder Nachricht. | ❌ Nichts Vergleichbares in anderen Systemen |
+| 🧬 | **Steganografisches Tracing (ZWC)** | Experimentelles Sicherheits-/Audit-Proof-of-Concept: Agenten-Metadaten werden als unsichtbare Zero-Width-Unicode-Fingerabdrücke in Ausgabetexte eingebettet. | ❌ Nichts Vergleichbares in anderen Systemen |
 | 🎛️ | **5-Achsen-Live-Tuning** | Live-Regler für Persönlichkeit, Detailgrad, Gedächtnisstärke, Kreativität (Temperatur) und Risikobereitschaft der Worker-Agenten mit sofortiger Wirkung sowie Custom-Suffix-Injektion. | ❌ Keine Echtzeit-Einstellungsregler vorhanden |
-| 📐 | **40-Zeilen-Code-Regel** | WatchdogAG erzwingt, dass jede von Agenten geschriebene Funktion/Methode unter 40 Zeilen bleibt. EditorAG strukturiert Code bei Verstößen automatisch um. | ❌ Keine agenten-erzwungenen Qualitätsstandards |
+| 📐 | **40-Zeilen-Richtlinie** | WatchdogAG prüft einen Standard-Richtwert von 40 Zeilen pro Funktion, erlaubt begründete Ausnahmen (z. B. für die Lesbarkeit). EditorAG refaktoriert unbegründete Verstößen. | ❌ Keine agenten-erzwungenen Qualitätsstandards |
 | 🔄 | **Prompt Version Manager (PVM)** | Jede Prompt-Änderung wird mit SHA-256-IDs, Parent-Child-Verbindungen und Performance-Metriken aus User-Feedback versioniert. Automatischer Rollback, wenn die Bewertung unter 95% des Vorgängers fällt. | ❌ Kein "Git für Prompts" mit Auto-Rollback vorhanden |
 | 🚨 | **Notfall-Archiv** | Eine transaktionssichere passive Backup-Datenbank spiegelt alle Interaktionen. `@emergency [Begriff]` stellt Kontext wieder her, falls das Hauptgedächtnis ausfällt. | ❌ Nirgends als Standard-Feature implementiert |
 | 🔒 | **Feste 4+4 Topologie** | Hardcodiertes Limit auf exakt 8 Agenten verhindert unkontrolliertes Spawnen. Jede Rolle ist präzise definiert und transparent auditierbar. | ❌ Unbegrenztes Spawnen von Agenten ist Standard |
@@ -58,7 +58,7 @@ Wir haben **mehr als 12 führende Multi-Agenten-Frameworks** analysiert (CrewAI,
 | **Kompilierung zum Produkt** | ✅ @bake | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | **Prompt-Versionierung** | ✅ + Rollback | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | **Live-Tuning-UI (Regler)** | ✅ 5 Regler | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **Steganografische Identität** | ✅ ZWC + ECC | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **Steganografisches Tracing** | ✅ ZWC+ECC (Exp.) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 
 > [!NOTE]
 > Die meisten Frameworks eignen sich hervorragend für den Bau von Cloud-Skalierungs-Pipelines. Gnom-Hub fokussiert sich bewusst auf eine andere Nische: **Eine lokale, transparente, sicherheitsorientierte Schmiede**, um ein kleines, eingespieltes Team zu trainieren und in ein stabiles Produkt zu gießen.
@@ -134,7 +134,7 @@ graph TD
 |:------|:-----|:---------------------|
 | **SoulAG** | Zentrales Bewusstsein & Gedächtnis | Extrahiert Fakten aus Chats, injiziert relevante Erinnerungen via FAISS semantischer Suche und steuert die Evolutions-Regeln. |
 | **GeneralAG** | Koordinator & Orchestrator | Zerlegt `@job`-Aufgaben, delegiert via `@AgentenName` und synthetisiert Brainstorm-Ergebnisse. **Kann keine Dateien schreiben oder Shell-Befehle ausführen.** |
-| **WatchdogAG** | Codebase-Wächter | Erzwingt die 40-Zeilen-Regel, validiert Workspace-Pfade und löst Gatekeeper-Sperren aus. |
+| **WatchdogAG** | Codebase-Wächter | Prüft 40-Zeilen-Richtlinie, validiert Workspace-Pfade und löst Gatekeeper-Sperren aus. |
 | **SecurityAG** | Sicherheits-Scanner | Erkennt unsichere Code-Muster (`eval`, `rm -rf`, `subprocess`) und validiert externe Pakete live gegen die PyPI-API. |
 
 ### Worker-Agenten (Sandboxed)
@@ -218,7 +218,7 @@ Die Showbox im Dashboard dient als visuelles Ausgabemedium für die Zwischenerge
 - **Prioritätsgewichtung** (Faktor 1.3× für hohe Wichtigkeit, 0.7× für niedrige) mit einer Ähnlichkeitsschwelle von 0,70.
 - **Isolierte Vektor-Indizes** je Worker-Agent verhindern eine gegenseitige Rollenverseuchung (Faktenleaks).
 - **Automatisches TF-IDF-Fallback** berechnet die Kosinus-Ähnlichkeit, falls FAISS lokal nicht installiert ist.
-- **~4.700.000x Beschleunigung** bei gecachten Anfragen im Vergleich zum Kaltstart der Vektorsuche.
+- **Latenz im Sub-Millisekundenbereich** bei gecachten Anfragen im Vergleich zum Kaltstart der Vektorsuche (welcher lokale Modell-Inferenz ausführt).
 
 ### SoulAG Lernschleife
 1. SoulAG liest alle Chat-Nachrichten im Hintergrund mit.
@@ -233,8 +233,8 @@ Die Showbox im Dashboard dient als visuelles Ausgabemedium für die Zwischenerge
 - Fällt der Score einer neuen Version unter 95% der Vorgängerversion, wird ein **automatischer Rollback** durchgeführt.
 - **Im SuperGNOM-Modus ist die Lernschleife vollständig deaktiviert** (Statische Prompts).
 
-### Steganografische Identität (ZWC)
-Die Identität des sendenden Agenten wird als unsichtbare **Zero-Width Unicode-Zeichenkette** direkt im Chat-Text codiert (Base64 → Binär → ZWC-Zeichen). Ein integrierter 3-Bit-Mehrheitsentscheid-Fehlerkorrekturcode sichert den Fingerabdruck gegen Verluste beim Kopieren und Einfügen.
+### Steganografisches Tracing (ZWC)
+*Experimentelles Sicherheits-/Audit-Feature:* Die Identität des sendenden Agenten wird als unsichtbare **Zero-Width Unicode-Zeichenkette** direkt im Chat-Text codiert (Base64 → Binär → ZWC-Zeichen). Ein integrierter 3-Bit-Mehrheitsentscheid-Fehlerkorrekturcode sichert den Fingerabdruck gegen Verluste beim Kopieren und Einfügen zwecks Herkunftsnachweis.
 
 ---
 
@@ -276,11 +276,14 @@ Agenten fordern Werkzeuge über strukturierte Markdown-Tags an:
 
 ## ⚡ Performance
 
-| Operation | Kaltstart (Cold Run) | Gecached (Warm) | Beschleunigung |
-|:----------|:---------------------|:----------------|:---------------|
-| **Rechteprüfung (Capability Check)** | 0,73 ms | 0,0006 ms | **~1.200×** (TTL-Arbeitsspeichercache vs. SQLite) |
-| **Semantische Gedächtnissuche** | 2.830 ms | 0,0006 ms | **~4.700.000×** (Query-Cache vs. FAISS-Vektorsuche) |
+Um Performance-Flaschenhälse in schnellen Agenten-Interaktionsschleifen zu vermeiden, nutzt Gnom-Hub In-Memory-Caches und vorberechnete Lookups. Dadurch werden langsame Datenbankabfragen und zeitintensive Einbettungs-Generierungen bei jedem Schritt vermieden:
 
+| Operation | Datenbank / Inferenz (Kalt) | Arbeitsspeicher / Cache (Warm) | Zweck / Abhilfe |
+|:----------|:----------------------------|:-------------------------------|:----------------|
+| **Rechteprüfung (Capability)** | 0,73 ms (SQLite-DB-Abfrage) | 0,0006 ms (TTL-Cache) | Verhindert DB-Abfragen bei jedem einzelnen Aufruf des Action-Handlers |
+| **Semantische Gedächtnissuche** | 2.830,0 ms (FAISS & Modell) | 0,0006 ms (Query-Cache) | Vermeidet wiederholte Aufrufe lokaler Einbettungsmodelle (sentence-transformers) |
+
+### Allgemeine System-Metriken
 | Metrik | Wert |
 |:-------|:-----|
 | Aktive Agenten | 8 (fest: 4 System + 4 Worker) |
