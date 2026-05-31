@@ -57,8 +57,8 @@ function buildChatHintsHTML() {
 }
 
 function buildWarRoomHTML() {
-  const ttsChecked = document.getElementById('tts-enabled')?.checked ?? false;
-  const thoughtTtsActive = window.thoughtTtsEnabled ?? false;
+  const ttsChecked = document.getElementById('tts-enabled')?.checked ?? true;
+  const thoughtTtsActive = window.thoughtTtsEnabled ?? true;
   return `<div class="panel" id="war-room">
     <h2 style="display:flex; align-items:center;">War Room <span id="project-indicator" style="font-size:0.75rem; color:var(--text-muted); background:rgba(255,255,255,0.05); padding:3px 8px; border-radius:12px; margin-left:10px; border:1px solid rgba(255,255,255,0.1);">MAIN HUB</span>
       <button id="project-help-btn" onclick="const e=document.getElementById('project-explanation'); e.style.display = e.style.display==='none' ? 'block' : 'none';" style="display:none; margin-left:8px; padding:3px 8px; font-size:0.7rem; border-radius:12px; border:1px solid var(--green); background:rgba(57,255,20,0.1); color:var(--green); cursor:pointer;">ℹ️ Info</button>
@@ -374,7 +374,7 @@ function cleanNormalChatMessage(safe) {
   return safe;
 }
 
-window.thoughtTtsEnabled = false;
+window.thoughtTtsEnabled = true;
 
 function toggleThoughtTTS() {
   window.thoughtTtsEnabled = !window.thoughtTtsEnabled;
