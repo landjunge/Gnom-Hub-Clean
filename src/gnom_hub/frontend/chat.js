@@ -70,9 +70,16 @@ function buildWarRoomHTML() {
       <!-- Top Pane: Thinking Processes -->
       <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--cyan); display: flex; align-items: center; justify-content: space-between; font-weight: bold; margin-bottom: -4px;">
         <span>🧠 Denkprozesse & Logik</span>
-        <button id="thought-tts-btn" onclick="toggleThoughtTTS()" style="background: ${thoughtTtsActive ? 'rgba(57,255,20,0.15)' : 'rgba(0,229,255,0.1)'}; border: 1px solid ${thoughtTtsActive ? 'rgba(57,255,20,0.4)' : 'rgba(0,229,255,0.3)'}; color: ${thoughtTtsActive ? 'var(--green)' : 'var(--cyan)'}; border-radius: 12px; padding: 2px 8px; font-size: 0.62rem; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s ease;">
-          ${thoughtTtsActive ? '🔊 TTS An' : '🔇 TTS Aus'}
-        </button>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <select id="info-level-select" onchange="changeInfoLevel(this.value)" style="background: rgba(0,229,255,0.1); border: 1px solid rgba(0,229,255,0.3); color: var(--cyan); border-radius: 6px; padding: 1px 4px; font-size: 0.62rem; cursor: pointer; outline: none; font-weight: bold; font-family: sans-serif;">
+            <option value="detailed" ${window.infoLevel === 'detailed' ? 'selected' : ''}>Detailliert</option>
+            <option value="compact" ${window.infoLevel === 'compact' ? 'selected' : ''}>Kompakt</option>
+            <option value="minimal" ${window.infoLevel === 'minimal' ? 'selected' : ''}>Minimal</option>
+          </select>
+          <button id="thought-tts-btn" onclick="toggleThoughtTTS()" style="background: ${thoughtTtsActive ? 'rgba(57,255,20,0.15)' : 'rgba(0,229,255,0.1)'}; border: 1px solid ${thoughtTtsActive ? 'rgba(57,255,20,0.4)' : 'rgba(0,229,255,0.3)'}; color: ${thoughtTtsActive ? 'var(--green)' : 'var(--cyan)'}; border-radius: 12px; padding: 2px 8px; font-size: 0.62rem; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s ease;">
+            ${thoughtTtsActive ? '🔊 TTS An' : '🔇 TTS Aus'}
+          </button>
+        </div>
       </div>
       <div id="thought-display"></div>
       
@@ -109,6 +116,7 @@ function showWarRoom() {
     renderAgentList(searchInput ? searchInput.value : '');
   }
   document.getElementById('content').innerHTML = buildWarRoomHTML();
+  if (typeof changeInfoLevel === 'function') changeInfoLevel(window.infoLevel);
   updateProjectIndicator();
   refreshChat();
 }
@@ -375,6 +383,43 @@ function cleanNormalChatMessage(safe) {
 }
 
 window.thoughtTtsEnabled = true;
+window.infoLevel = localStorage.getItem('infoLevel') || 'detailed';
+
+function changeInfoLevel(level) {
+  window.infoLevel = level;
+  localStorage.setItem('infoLevel', level);
+  
+  const thoughtEl = document.getElementById('thought-display');
+  const headerEl = document.querySelector('#chat-split-container > div:first-child');
+  const splitterEl = document.querySelector('#chat-split-container > div:nth-child(2)');
+  const splitContainer = document.getElementById('chat-split-container');
+  const chatDisplay = document.getElementById('chat-display');
+
+  if (thoughtEl && headerEl && splitterEl) {
+    if (level === 'minimal') {
+      thoughtEl.style.setProperty('display', 'none', 'important');
+      headerEl.style.setProperty('display', 'none', 'important');
+      splitterEl.style.setProperty('display', 'none', 'important');
+      if (splitContainer) splitContainer.style.setProperty('height', 'auto', 'important');
+      if (chatDisplay) {
+        chatDisplay.style.setProperty('flex', 'none', 'important');
+        chatDisplay.style.setProperty('height', '65vh', 'important');
+      }
+    } else {
+      thoughtEl.style.setProperty('display', 'flex', 'important');
+      headerEl.style.setProperty('display', 'flex', 'important');
+      splitterEl.style.setProperty('display', 'flex', 'important');
+      if (splitContainer) splitContainer.style.setProperty('height', '62vh', 'important');
+      if (chatDisplay) {
+        chatDisplay.style.setProperty('flex', '1.5', 'important');
+        chatDisplay.style.setProperty('height', 'auto', 'important');
+      }
+    }
+  }
+  
+  window._lastChatData = null;
+  refreshChat();
+}
 
 function toggleThoughtTTS() {
   window.thoughtTtsEnabled = !window.thoughtTtsEnabled;
@@ -400,7 +445,16 @@ function toggleThoughtTTS() {
 function renderThoughtMessageHTML(sender, content, timestamp) {
   const c = agentColor(sender);
   const time = timestamp ? new Date(timestamp).toLocaleTimeString() : '';
-  const safeContent = esc(content).replace(/\n/g, '<br>');
+  
+  let displayContent = content;
+  if (window.infoLevel === 'compact') {
+    const lines = content.split('\n');
+    if (lines.length > 2 || content.length > 120) {
+      displayContent = lines.slice(0, 2).join('\n').substring(0, 120).trim() + ' ... (Gedanken komprimiert)';
+    }
+  }
+  
+  const safeContent = esc(displayContent).replace(/\n/g, '<br>');
   return `<div class="thought-msg" style="border-left: 3px solid ${c}; background: rgba(0, 229, 255, 0.015); border: 1px solid rgba(255, 255, 255, 0.04); border-radius: var(--radius-sm); padding: 8px 10px; margin-bottom: 6px;">
     <div style="display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px;">
       <span><strong style="color: ${c}">${esc(sender)}</strong> <span style="background: rgba(0, 229, 255, 0.12); color: var(--cyan); padding: 1px 5px; border-radius: 4px; font-size: 0.55rem; font-weight: bold; margin-left: 4px; letter-spacing: 0.3px;">THINKING</span></span>
@@ -471,8 +525,23 @@ function renderChatMessageHTML(m, overrideContent) {
   handleShowboxTrigger(showData, name);
 
   safe = cleanNormalChatMessage(safe);
-  safe = safe.replace(/\[SOUL:\s*([\s\S]*?)\]/g, '<div style="font-size:0.6rem; color:var(--bg-surface); opacity:0.5; margin-top:4px;">[SOUL: $1]</div>');
-  safe = safe.replace(/\n/g, '<br>');
+  
+  if ((window.infoLevel === 'compact' || window.infoLevel === 'minimal') && !isUser && rawContent.length > 150) {
+    const brief = rawContent.substring(0, 150).trim();
+    const fullEsc = esc(rawContent).replace(/\n/g, '<br>');
+    safe = `<div class="compact-view-wrapper">
+        <span class="brief-text" style="color: rgba(255,255,255,0.85);">${esc(brief)}...</span>
+        <details style="display: inline; cursor: pointer; outline: none;">
+          <summary style="font-size: 0.65rem; color: var(--cyan); display: inline-block; padding: 2.5px 7px; border: 1px solid rgba(0, 229, 255, 0.25); border-radius: 4px; margin-left: 6px; font-weight: bold; font-family: sans-serif; user-select: none;">Mehr anzeigen</summary>
+          <div style="margin-top: 10px; padding: 10px; border-left: 2px solid var(--cyan); background: rgba(0,229,255,0.02); color: rgba(255,255,255,0.9); font-size: 0.76rem; line-height: 1.45; border-radius: 4px; font-family: monospace;">
+            ${fullEsc}
+          </div>
+        </details>
+      </div>`;
+  } else {
+    safe = safe.replace(/\[SOUL:\s*([\s\S]*?)\]/g, '<div style="font-size:0.6rem; color:var(--bg-surface); opacity:0.5; margin-top:4px;">[SOUL: $1]</div>');
+    safe = safe.replace(/\n/g, '<br>');
+  }
 
   // Collapsible Thoughts for SuperGNOM Mode
   let thoughtsHTML = "";
@@ -546,7 +615,11 @@ async function refreshChat() {
         // Speak thought if new and thought TTS is enabled
         if (!window._spokenThoughtIds.has(thoughtId)) {
           if (window.thoughtTtsEnabled) {
-            speak(`${sender} denkt: ${thought}`, sender);
+            let speakThought = thought;
+            if (window.infoLevel === 'compact' || window.infoLevel === 'minimal') {
+              speakThought = thought.split(/[.!?]/)[0].trim() + ".";
+            }
+            speak(`${sender} denkt: ${speakThought}`, sender);
           }
           window._spokenThoughtIds.add(thoughtId);
         }
@@ -574,6 +647,9 @@ async function refreshChat() {
         if (speechText === "🛑 CRITICAL: System-Blockade") {
           speak(speechText, sender);
         } else {
+          if (window.infoLevel === 'compact' || window.infoLevel === 'minimal') {
+            speechText = speechText.split(/[.!?]/)[0].trim() + ".";
+          }
           speak(`${sender} sagt: ${speechText}`, sender);
         }
       }
