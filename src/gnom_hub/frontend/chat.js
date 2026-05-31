@@ -440,7 +440,30 @@ function renderChatMessageHTML(m, overrideContent) {
   const contentToUse = overrideContent !== undefined ? overrideContent : (m.content || "");
   const { rawContent, showBoxFound, showData } = parseShowboxInMsg(contentToUse, mid);
   let safe = esc(rawContent);
-  if (showBoxFound) {
+  
+  if (showBoxFound && showData) {
+    let slides = showData;
+    if (showData && !Array.isArray(showData) && Array.isArray(showData.slides)) {
+      slides = showData.slides;
+    }
+    if (slides && Array.isArray(slides) && slides.length > 0) {
+      if (document.body.classList.contains('supergnom-mode')) {
+        safe += `
+          <div class="inline-showbox-container" style="margin-top: 12px; border: 1px solid var(--glass-border); border-radius: var(--radius); background: rgba(16, 20, 32, 0.4); padding: 15px; overflow: hidden; backdrop-filter: blur(8px);">
+            <div style="font-size: 0.72rem; color: var(--cyan); text-transform: uppercase; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+              🖥️ Visuelle Ausgabe / Entwurf
+            </div>
+            <div class="inline-showbox-body" style="font-size: 0.85rem; color: #fff; max-height: 400px; overflow-y: auto;">
+              ${slides[0]}
+            </div>
+          </div>
+        `;
+      } else {
+        const targetText = (showData && showData._targetIdx !== undefined) ? ` Button ${showData._targetIdx + 1}` : '';
+        safe += `<div style="color:var(--cyan);font-size:0.8em;margin-top:8px;">[ 🎬 Showbox Triggered${targetText} ]</div>`;
+      }
+    }
+  } else if (showBoxFound) {
     const targetText = (showData && showData._targetIdx !== undefined) ? ` Button ${showData._targetIdx + 1}` : '';
     safe += `<div style="color:var(--cyan);font-size:0.8em;margin-top:8px;">[ 🎬 Showbox Triggered${targetText} ]</div>`;
   }
@@ -450,8 +473,26 @@ function renderChatMessageHTML(m, overrideContent) {
   safe = cleanNormalChatMessage(safe);
   safe = safe.replace(/\[SOUL:\s*([\s\S]*?)\]/g, '<div style="font-size:0.6rem; color:var(--bg-surface); opacity:0.5; margin-top:4px;">[SOUL: $1]</div>');
   safe = safe.replace(/\n/g, '<br>');
+
+  // Collapsible Thoughts for SuperGNOM Mode
+  let thoughtsHTML = "";
+  const { thoughts } = extractThoughtsAndClean(m.content || "");
+  if (document.body.classList.contains('supergnom-mode') && !isUser && thoughts && thoughts.length > 0) {
+    thoughtsHTML = `
+      <details class="agent-thoughts-block" style="margin-bottom: 12px; border: 1px solid rgba(0, 229, 255, 0.15); border-radius: var(--radius-sm); background: rgba(0, 229, 255, 0.02); overflow: hidden;">
+        <summary style="cursor: pointer; padding: 6px 12px; font-size: 0.72rem; color: var(--cyan); font-weight: 600; list-style: none; display: flex; align-items: center; gap: 6px; user-select: none;">
+          <span class="thoughts-arrow" style="transition: transform 0.2s; display: inline-block;">▶</span> 🧠 Denkprozess anzeigen
+        </summary>
+        <div style="padding: 10px 12px; font-size: 0.72rem; line-height: 1.45; color: rgba(255, 255, 255, 0.75); border-top: 1px solid rgba(0, 229, 255, 0.08); font-family: monospace; white-space: pre-wrap; word-break: break-word; max-height: 200px; overflow-y: auto;">
+          ${thoughts.map(t => esc(t)).join('<br><br>')}
+        </div>
+      </details>
+    `;
+  }
+
   return `<div class="chat-msg ${isUser ? 'user' : 'agent'}" style="border-left-color:${c};">
     <div class="chat-meta"><span class="agent-name" style="color:${nameColor}">${esc(name)}</span><span><button class="copy-btn" onclick="copyMsg('${mid}')" title="Copy">📋</button><button class="copy-btn del-btn" onclick="deleteChatMsg('${mid}')" title="Delete">🗑</button>${time}</span></div>
+    ${thoughtsHTML}
     <div class="mem-content" id="msg-${mid}">${safe}</div></div>`;
 }
 

@@ -14,8 +14,27 @@
 🇬🇧 **English (README.md)** • 🇩🇪 **[Deutsch (README.de.md)](README.de.md)**
 
 ---
+### 📸 Visual Showcase / Screenshots
 
-<img src="docs/warroom_real_full.png" alt="War Room – Overview" width="100%">
+<details open>
+<summary><b>Gnom-Hub Interface Showcase</b></summary>
+
+| **1. War Room (Dashboard)** | **2. Workspace** |
+|:---:|:---:|
+| <img src="docs/screenshot_warroom.png" alt="War Room" width="100%"> | <img src="docs/screenshot_workspace.png" alt="Workspace" width="100%"> |
+| The central hub of your multi-agent forge, displaying agent activity, real-time logs, and decision overlays. | The file explorer for your local workspaces where code files, previews, and sandboxes are managed. |
+
+| **3. Bento Dashboard (Metrics)** | **4. LLM Config (Global & Keys)** |
+|:---:|:---:|
+| <img src="docs/screenshot_dashboard.png" alt="Metrics Dashboard" width="100%"> | <img src="docs/screenshot_llm_global.png" alt="LLM Configuration" width="100%"> |
+| A high-fidelity Bento-grid monitoring system for tokens, response times, and CPU/RAM resource usage. | Key manager to bind individual agents to model configurations (OpenAI, OpenRouter, Ollama, etc.). |
+
+| **5. LLM Config (Agent Sliders)** | **6. Help Center** |
+|:---:|:---:|
+| <img src="docs/screenshot_llm_behavior.png" alt="5-Axis Tuning Sliders" width="100%"> | <img src="docs/screenshot_help.png" alt="Help Center" width="100%"> |
+| Live 5-axis sliders to calibrate worker personality, detail level, temperature, risk tolerance, and prompts. | Built-in interactive documentation and walkthrough manuals for agents and commands. |
+
+</details>
 
 ---
 
@@ -24,6 +43,16 @@
 Gnom-Hub is a **local-first multi-agent orchestrator** with a fixed 4+4 agent topology, a built-in glassmorphic War Room dashboard, and a unique compilation pipeline that "bakes" evolved agent swarms into frozen, portable AI products called **SuperGNOMs**.
 
 Unlike cloud-dependent frameworks that let you spawn unlimited agents, Gnom-Hub enforces **conscious minimalism**: exactly 8 agents with clear roles, defensive security gates, and full transparency. Everything runs on your machine — no cloud orchestration, no API lock-in, no uncontrolled agent explosion.
+
+---
+
+## 🚀 Concrete Local Showcases
+
+To understand Gnom-Hub's power in practice, here are three real-world local workloads it handles seamlessly without sending your sensitive codebase or interactions to the cloud:
+
+1. **Local Codebase Governance & Refactoring**: Evolve a workflow where CoderAG analyzes local repositories, WatchdogAG validates code style compliance against strict guidelines (e.g. the 40-line guideline), and EditorAG automatically refactors violations — all locally.
+2. **Zero-Trust Web Research**: Run deep-dive web crawling via a sandboxed Playwright browser environment. SecurityAG inspects dependencies in real-time, verifying PyPI packages for known CVEs before any script is executed.
+3. **Local DevOps & Build Assistance**: Let the swarm run test suites locally, verify Docker sandbox environments, and execute `@bake` to package the fully-optimized agent definitions and memories into a self-contained portable SuperGNOM binary/appliance.
 
 ---
 
@@ -39,7 +68,6 @@ We analyzed **12+ leading multi-agent frameworks** (CrewAI, AutoGen/AG2, LangGra
 | 🛡️ | **3-Agent Security Tribunal** | Every dangerous action triggers a multi-agent deliberation: WatchdogAG explains the violation, SoulAG provides memory context, GeneralAG recommends — rendered as interactive Approve/Reject cards in the Showbox | ❌ Others have simple pause/resume HITL at best |
 | 🧬 | **Steganographic Tracing (ZWC)** | Experimental security/audit proof-of-concept: agent metadata is embedded as invisible zero-width Unicode fingerprints in output texts | ❌ Nothing comparable in any framework |
 | 🎛 | **5-Axis Live Agent Tuning** | Per-agent personality, creativity, response style, memory strength, and risk tolerance sliders with immediate effect — plus custom prompt suffix injection | ❌ No framework offers real-time behavior sliders |
-| 📐 | **40-Line Code Guideline** | WatchdogAG checks a standard 40-line guideline for functions, allowing exceptions with comment justifications. EditorAG refactors violations | ❌ No framework has agent-enforced code standards |
 | 🔄 | **Prompt Version Manager** | Every prompt change is versioned with SHA-256 IDs, parent-child chains, and performance scores from user feedback. Auto-rollback when quality drops below 95% of the parent version | ❌ No "git for prompts" with auto-rollback exists |
 | 🚨 | **Emergency Archive** | A secondary transaction-safe database mirrors all interactions. `@emergency [term]` recovers context when primary memory is lost | ❌ Not a feature anywhere |
 | 🔒 | **Fixed 4+4 Topology** | Hard-coded 8-agent limit prevents uncontrolled spawning. Every agent has a clear, auditable role | ❌ Every competitor allows unlimited agents |
@@ -62,6 +90,17 @@ We analyzed **12+ leading multi-agent frameworks** (CrewAI, AutoGen/AG2, LangGra
 
 > [!NOTE]
 > Most frameworks are excellent tools for building cloud-scale agent pipelines. Gnom-Hub intentionally targets a different niche: **a local, transparent, security-first forge** where you evolve a small team of agents and compile them into a stable product.
+
+### 🪶 The Anti-Bloat Story (Gnom-Hub vs. Heavyweight Frameworks)
+
+Most multi-agent orchestrators are monolithic, bringing along massive dependency trees and hundreds of files. Gnom-Hub values conscious, ultra-slim design:
+
+| Feature / Metric | GNOM-HUB | CrewAI / AutoGen / LangGraph |
+| :--- | :--- | :--- |
+| **Codebase Volume** | **~1,800 lines** of core code (easy to audit in 10 mins) | **>100,000 lines** of complex nested classes |
+| **Setup Time** | **< 1 minute** (native Python, zero complex configuration) | **> 10 minutes** (heavy installs, Docker prerequisites) |
+| **Swarm Topology** | **Fixed 8-Agent topology** (extremely stable) | Dynamic, arbitrary spawning (susceptible to runaway loops) |
+| **Local-First Focus** | **100% offline capability** out-of-the-box | Built to nudge users towards enterprise cloud subscriptions |
 
 ---
 

@@ -14,8 +14,27 @@
 🇬🇧 **[English (README.md)](README.md)** • 🇩🇪 **Deutsch (README.de.md)**
 
 ---
+### 📸 Visuelle Galerie / Screenshots
 
-<img src="docs/warroom_real_full.png" alt="War Room – Gesamtübersicht" width="100%">
+<details open>
+<summary><b>Gnom-Hub Benutzeroberfläche</b></summary>
+
+| **1. War Room (Dashboard)** | **2. Workspace** |
+|:---:|:---:|
+| <img src="docs/screenshot_warroom.png" alt="War Room" width="100%"> | <img src="docs/screenshot_workspace.png" alt="Workspace" width="100%"> |
+| Der zentrale Kontrollraum deiner Multi-Agenten-Schmiede mit Live-Logs, Aktivitäts-Status und Freigaben. | Die Datei-Ansicht für deine lokalen Arbeitsverzeichnisse mit Code-Editoren und Sandboxes. |
+
+| **3. Bento Dashboard (Metriken)** | **4. LLM-Konfig (Global & Keys)** |
+|:---:|:---:|
+| <img src="docs/screenshot_dashboard.png" alt="Metrik-Dashboard" width="100%"> | <img src="docs/screenshot_llm_global.png" alt="LLM-Konfiguration" width="100%"> |
+| Hochauflösendes Bento-Grid-Monitoring für Token-Verbrauch, Antwortzeiten und Systemressourcen (CPU/RAM). | Schlüssel-Manager, um einzelne Agenten an Modelle (OpenAI, OpenRouter, Ollama etc.) zu binden. |
+
+| **5. LLM-Konfig (5-Achsen-Regler)** | **6. Help Center** |
+|:---:|:---:|
+| <img src="docs/screenshot_llm_behavior.png" alt="5-Achsen-Live-Regler" width="100%"> | <img src="docs/screenshot_help.png" alt="Help Center" width="100%"> |
+| Live-Regler zur Kalibrierung von Persönlichkeit, Detailgrad, Temperatur, Risikobereitschaft und Prompts. | Integriertes Dokumentationszentrum mit vollständigen Anleitungen und Befehlserklärungen. |
+
+</details>
 
 ---
 
@@ -24,6 +43,16 @@
 Gnom-Hub ist ein **lokaler Multi-Agenten-Orchestrator** mit einer festen Topologie von 4+4 Agenten, einem integrierten glassmorphen **War Room Dashboard** und einer einzigartigen Kompilierungs-Pipeline, die evolvierte Agentenschwärme in eingefrorene, portable KI-Produkte namens **SuperGNOMs** "backt" (`@bake`).
 
 Im Gegensatz zu cloud-abhängigen Frameworks, bei denen unbegrenzt Agenten gestartet werden können, setzt Gnom-Hub auf **bewussten Minimalismus**: exakt 8 Agenten mit klaren Rollen, defensiven Sicherheitsbarrieren und voller Transparenz. Alles läuft auf deiner Maschine – keine Cloud-Orchestrierung, kein API-Lock-in, kein unkontrollierter Agenten-Sprawl.
+
+---
+
+## 🚀 Konkrete lokale Anwendungsfälle (Showcases)
+
+Um die Stärke von Gnom-Hub in der Praxis zu verstehen, sind hier drei reale, lokale Workflows, die komplett offline auf deiner Maschine laufen, ohne sensible Daten oder Code an die Cloud zu senden:
+
+1. **Lokale Codebase-Governance & Refactoring**: Trainiere einen Workflow, bei dem CoderAG lokale Repositories analysiert, WatchdogAG die Einhaltung strenger Qualitätsrichtlinien (z. B. das Limit von maximal 40 Zeilen pro Funktion) überprüft und EditorAG Verstöße automatisch refaktoriert – vollkommen lokal.
+2. **Zero-Trust Web-Recherche**: Führe tiefgehende Web-Scraping-Aufgaben in einer isolierten Playwright-Browserumgebung aus. SecurityAG analysiert Abhängigkeiten in Echtzeit und gleicht PyPI-Pakete vor der Code-Ausführung mit bekannten Sicherheitslücken (CVEs) ab.
+3. **Lokaler DevOps- & Build-Assistent**: Der Schwarm führt Test-Suiten aus, validiert Docker-Sandbox-Konfigurationen und nutzt das `@bake`-Kompilierungs-Kommando, um die optimierten Agenten-Prompts und das extrahierte Gedächtnis in ein portables, sofort startbares SuperGNOM-Produkt zu verpacken.
 
 ---
 
@@ -39,7 +68,6 @@ Wir haben **mehr als 12 führende Multi-Agenten-Frameworks** analysiert (CrewAI,
 | 🛡️ | **3-Agenten-Tribunal** | Jede riskante Aktion löst eine Multi-Agenten-Beratung aus: WatchdogAG erklärt den Verstoß, SoulAG liefert Kontext, GeneralAG empfiehlt – visualisiert als interaktive Genehmigungskarten in der Showbox. | ❌ Höchstens simple Pause/Resume-HITL-Schnittstellen |
 | 🧬 | **Steganografisches Tracing (ZWC)** | Experimentelles Sicherheits-/Audit-Proof-of-Concept: Agenten-Metadaten werden als unsichtbare Zero-Width-Unicode-Fingerabdrücke in Ausgabetexte eingebettet. | ❌ Nichts Vergleichbares in anderen Systemen |
 | 🎛️ | **5-Achsen-Live-Tuning** | Live-Regler für Persönlichkeit, Detailgrad, Gedächtnisstärke, Kreativität (Temperatur) und Risikobereitschaft der Worker-Agenten mit sofortiger Wirkung sowie Custom-Suffix-Injektion. | ❌ Keine Echtzeit-Einstellungsregler vorhanden |
-| 📐 | **40-Zeilen-Richtlinie** | WatchdogAG prüft einen Standard-Richtwert von 40 Zeilen pro Funktion, erlaubt begründete Ausnahmen (z. B. für die Lesbarkeit). EditorAG refaktoriert unbegründete Verstößen. | ❌ Keine agenten-erzwungenen Qualitätsstandards |
 | 🔄 | **Prompt Version Manager (PVM)** | Jede Prompt-Änderung wird mit SHA-256-IDs, Parent-Child-Verbindungen und Performance-Metriken aus User-Feedback versioniert. Automatischer Rollback, wenn die Bewertung unter 95% des Vorgängers fällt. | ❌ Kein "Git für Prompts" mit Auto-Rollback vorhanden |
 | 🚨 | **Notfall-Archiv** | Eine transaktionssichere passive Backup-Datenbank spiegelt alle Interaktionen. `@emergency [Begriff]` stellt Kontext wieder her, falls das Hauptgedächtnis ausfällt. | ❌ Nirgends als Standard-Feature implementiert |
 | 🔒 | **Feste 4+4 Topologie** | Hardcodiertes Limit auf exakt 8 Agenten verhindert unkontrolliertes Spawnen. Jede Rolle ist präzise definiert und transparent auditierbar. | ❌ Unbegrenztes Spawnen von Agenten ist Standard |
@@ -62,6 +90,17 @@ Wir haben **mehr als 12 führende Multi-Agenten-Frameworks** analysiert (CrewAI,
 
 > [!NOTE]
 > Die meisten Frameworks eignen sich hervorragend für den Bau von Cloud-Skalierungs-Pipelines. Gnom-Hub fokussiert sich bewusst auf eine andere Nische: **Eine lokale, transparente, sicherheitsorientierte Schmiede**, um ein kleines, eingespieltes Team zu trainieren und in ein stabiles Produkt zu gießen.
+
+### 🪶 Die Anti-Bloat-Story (Gnom-Hub im Vergleich zu Schwergewichten)
+
+Die meisten Multi-Agenten-Frameworks sind extrem überladen, bringen massive Abhängigkeitsbäume mit und bestehen aus Hunderttausenden Zeilen Code. Gnom-Hub setzt auf ein bewusst schlankes, minimalistisches Design:
+
+| Kriterium / Feature | GNOM-HUB | CrewAI / AutoGen / LangGraph |
+| :--- | :--- | :--- |
+| **Code-Volumen** | **~1.800 Zeilen** Kern-Code (in 10 Min. komplett auditierbar) | **>100.000 Zeilen** verschachtelte Klassen & Abstraktionen |
+| **Setup-Zeit** | **< 1 Minute** (nativ mit Python, kein komplexes Setup) | **> 10 Minuten** (schwere Installationen, oft Docker-Pflicht) |
+| **Schwarm-Topologie** | **Feste 8-Agenten-Topologie** (extrem stabil) | Beliebiges, dynamisches Spawnen (anfällig für Endlosschleifen) |
+| **Offline-Fähigkeit** | **100% lokal first** (Out-of-the-box offline nutzbar) | Stark auf Cloud-Nutzung und Enterprise-Abos ausgelegt |
 
 ---
 

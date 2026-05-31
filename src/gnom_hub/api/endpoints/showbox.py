@@ -1,5 +1,5 @@
 import json
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Response
 from pydantic import BaseModel
 from gnom_hub.core.config import FRONTEND_DIR
 from gnom_hub.db import (
@@ -36,9 +36,9 @@ def get_themes():
         presentations.sort(key=get_order_key)
         slides_list = [p["slides"] for p in presentations]
         js_content = f"window.showboxes = {json.dumps(slides_list, indent=2)};"
-        return {"content": js_content}
+        return Response(content=js_content, media_type="application/javascript")
     except Exception as e:
-        return {"content": f"// Error: {e}"}
+        return Response(content=f"// Error: {e}", media_type="application/javascript")
 
 @router.post("/api/showbox/themes")
 def save_themes(data: ThemesData):

@@ -206,24 +206,30 @@ async function showLLMConfig() {
   selectedId = null;
   document.getElementById('content').innerHTML = `
     <div class="panel" id="llm-panel" style="height:calc(100vh - 91px); box-sizing:border-box; display:flex; flex-direction:column; padding:15px 20px; background:rgba(10, 15, 30, 0.4); border:1px solid var(--glass-border); margin-bottom:0; overflow:hidden;">
-
       
-      <div class="llm-container" style="flex:1; min-height:0; display:grid; grid-template-columns:1fr 1.5fr; gap:20px; overflow:hidden;">
+      <!-- Tab Bar -->
+      <div style="display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px; flex-shrink: 0;">
+        <button class="settings-tab-btn" id="tab-btn-global" onclick="switchSettingsTab('global')" style="font-family: inherit; font-size: 0.58rem; font-weight: 600; padding: 5px 12px; border-radius: 6px; border: 1px solid var(--glass-border); background: rgba(0, 150, 255, 0.15); color: #fff; cursor: pointer; transition: var(--transition);" data-help="Verwalte globale Optionen, Systemsprache, Docker-Browser-Modus und API-Schlüssel." data-help-title="Global & API Keys">🔑 Global & API Keys</button>
+        <button class="settings-tab-btn" id="tab-btn-behavior" onclick="switchSettingsTab('behavior')" style="font-family: inherit; font-size: 0.58rem; font-weight: 500; padding: 5px 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08); background: transparent; color: var(--text-dim); cursor: pointer; transition: var(--transition);" data-help="Passe das Verhalten (Personality, Creativity etc.), die System-Prompts und das Gedächtnis einzelner Agenten an." data-help-title="Agenten-Verhalten & Soul">🧠 Agenten-Verhalten & Soul</button>
+      </div>
+
+      <!-- Tab 1: Global & API Keys Content wrapper -->
+      <div class="llm-container" id="settings-tab-global-content" style="flex:1; min-height:0; display:grid; grid-template-columns:1fr 1.5fr; gap:20px; overflow:hidden;">
         <!-- Left Column: Settings Modules -->
         <div style="display:flex; flex-direction:column; gap:15px; overflow-y:auto; padding-right:5px; height:100%; scrollbar-width:thin;">
           <!-- Module 1: API Keys -->
           <div class="llm-card" style="flex-shrink:0;">
             <div class="llm-card-header">
               <h3 class="llm-card-title">🔑 API Keys & Authentication</h3>
-              <label style="display:flex; align-items:center; gap:5px; font-size:0.75rem; color:var(--text-dim); cursor:pointer;">
+              <label style="display:flex; align-items:center; gap:5px; font-size:0.75rem; color:var(--text-dim); cursor:pointer;" data-help="Zeigt oder verbirgt die API-Schlüssel im Eingabefeld." data-help-title="Schlüssel anzeigen">
                 <input type="checkbox" id="toggle-show-keys" onchange="toggleKeysVisibility(this.checked)" class="llm-toggle-input">
                 <span>Anzeigen</span>
               </label>
             </div>
             <span class="llm-card-description">Füge deine API-Schlüssel ein (ein Schlüssel pro Zeile, z.B. <code>OPENAI_API_KEY=sk-...</code>).</span>
-            <textarea id="llm-keys-input" rows="2" class="llm-input-area" placeholder="Einfügen per Cmd+V oder manuell eingeben..."></textarea>
+            <textarea id="llm-keys-input" rows="2" class="llm-input-area" placeholder="Einfügen per Cmd+V oder manuell eingeben..." data-help="Trage hier deine Provider-Schlüssel ein (z.B. OPENROUTER_API_KEY=sk-... oder OLLAMA_BASE_URL=...). Ein Eintrag pro Zeile." data-help-title="API-Keys Textfeld"></textarea>
             <div class="llm-btn-group">
-              <button class="btn-primary" id="save-keys-btn" onclick="saveAndTestKeys()" style="flex:1;">Verifizieren & Speichern</button>
+              <button class="btn-primary" id="save-keys-btn" onclick="saveAndTestKeys()" style="flex:1;" data-help="Speichert deine eingetragenen Schlüssel und testet direkt die Verbindung zu den Providern." data-help-title="Schlüssel verifizieren">Verifizieren & Speichern</button>
             </div>
             <div id="llm-keys-status" style="font-size:0.78rem; max-height:85px; overflow-y:auto; display:flex; flex-direction:column; gap:4px; padding:6px; border-radius:8px; background:rgba(0,0,0,0.18); scrollbar-width:thin;"></div>
           </div>
@@ -234,7 +240,7 @@ async function showLLMConfig() {
               <h3 class="llm-card-title">👥 Agenten-Gangs</h3>
             </div>
             <span class="llm-card-description">Wähle eine vordefinierte Team-Spezialisierung aus, um die Rollenverteilung und Prompts im Schwarm anzupassen.</span>
-            <select id="preset-select" onchange="changePreset(this.value)" class="llm-input-area" style="cursor:pointer;"></select>
+            <select id="preset-select" onchange="changePreset(this.value)" class="llm-input-area" style="cursor:pointer;" data-help="Lade ein Preset, um alle Systemprompts und das Zusammenspiel der Agenten auf einen Themenschwerpunkt einzustellen." data-help-title="Gangs & Presets"></select>
           </div>
           
           <!-- Module 3: Global Options -->
@@ -246,17 +252,17 @@ async function showLLMConfig() {
               <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
                 <span style="font-size:0.8rem; color:var(--text-dim);">Systemsprache</span>
                 <div style="display:flex; gap:6px; width:120px;">
-                  <button class="btn-primary" id="lang-btn-de" onclick="setSystemLanguage('de')" style="flex:1; padding:4px 0; font-size:0.75rem;">DE</button>
-                  <button class="btn-primary" id="lang-btn-en" onclick="setSystemLanguage('en')" style="flex:1; padding:4px 0; font-size:0.75rem;">EN</button>
+                  <button class="btn-primary" id="lang-btn-de" onclick="setSystemLanguage('de')" style="flex:1;" data-help="Stellt die Sprache des Hubs und der Agenten-Prompts auf Deutsch." data-help-title="Sprache: DE">DE</button>
+                  <button class="btn-primary" id="lang-btn-en" onclick="setSystemLanguage('en')" style="flex:1;" data-help="Stellt die Sprache des Hubs und der Agenten-Prompts auf Englisch." data-help-title="Sprache: EN">EN</button>
                 </div>
               </div>
-              <div class="llm-toggle-row">
+              <div class="llm-toggle-row" data-help="Gibt erstellte Webseiten direkt per FTP auf deinem Webspace live frei." data-help-title="Auto-Deploy">
                 <label for="auto-deploy-checkbox" class="llm-toggle-label">
                   <span>🌐 Auto-Deploy Webseiten</span>
                 </label>
                 <input type="checkbox" id="auto-deploy-checkbox" onchange="toggleFtpAutoDeploy(this.checked)" class="llm-toggle-input">
               </div>
-              <div class="llm-toggle-row">
+              <div class="llm-toggle-row" data-help="Führt Playwright-Webrecherche-Befehle in einer isolierten Docker-Sandbox aus." data-help-title="Docker-Playwright">
                 <label for="browser-docker-checkbox" class="llm-toggle-label">
                   <span>🐳 Browser in Docker ausführen</span>
                 </label>
@@ -270,7 +276,7 @@ async function showLLMConfig() {
             <div class="llm-card-header">
               <h3 class="llm-card-title">📊 Systemumgebung</h3>
             </div>
-            <div id="system-info-panel" class="llm-system-info">
+            <div id="system-info-panel" class="llm-system-info" data-help="Echtzeit-Metriken deiner lokalen CPU-, RAM- und Thread-Auslastung." data-help-title="Systemumgebung">
               Lade System-Informationen...
             </div>
           </div>
@@ -281,7 +287,7 @@ async function showLLMConfig() {
           <div class="llm-card-header" style="flex-shrink:0;">
             <h3 class="llm-card-title">⚡ Agenten-Routing & LLM-Zuweisung</h3>
             <div style="display:flex; gap:6px; align-items:center;">
-              <button class="btn-primary" onclick="autoRouteAllAgents()" style="font-size:0.75rem; padding:4px 10px;">⚡ Auto-Route</button>
+              <button class="btn-primary" onclick="autoRouteAllAgents()" data-help="Verteilt alle Agenten basierend auf verfügbaren APIs automatisch und kosteneffizient auf die besten LLM-Modelle." data-help-title="Auto-Route ausführen">⚡ Auto-Route</button>
             </div>
           </div>
           <span class="llm-card-description" style="flex-shrink:0;">Mappe jeden Agenten im System auf einen spezifischen Provider und ein LLM-Modell. Nutze Auto-Routing für eine kosteneffiziente, ausgewogene Zuweisung basierend auf deinen hinterlegten Keys.</span>
@@ -294,13 +300,111 @@ async function showLLMConfig() {
             <div id="routing-progress-percentage" style="color:#00e5ff; font-family:monospace; font-weight:bold;">0%</div>
           </div>
           
-          <div id="llm-agents-list" style="flex:1; overflow-y:auto; padding-right:5px; scrollbar-width:thin;">
+          <div id="llm-agents-list" style="flex:1; overflow-y:auto; padding-right:5px; scrollbar-width:thin;" data-help="Hier kannst du manuell einstellen, mit welchem Provider und welchem LLM-Modell jeder einzelne Agent antworten soll." data-help-title="LLM-Zuweisung">
             Lade Agenten-Zuweisungen...
           </div>
           
           <div id="routing-insights-panel" style="margin-top:10px; display:none; flex-shrink:0;"></div>
         </div>
       </div>
+
+      <!-- Tab 2: Agenten-Verhalten & Soul Content wrapper -->
+      <div id="settings-tab-behavior-content" style="display: none; flex: 1; min-height: 0; grid-template-columns: 1fr 1.2fr; gap: 20px; overflow: hidden; height: 100%;">
+        <!-- Left Column: Agent Selection & Sliders -->
+        <div style="display: flex; flex-direction: column; gap: 15px; overflow-y: auto; padding-right: 5px; height: 100%; scrollbar-width: thin;">
+          <div class="llm-card" style="flex-shrink: 0;">
+            <div class="llm-card-header">
+              <h3 class="llm-card-title">🤖 Agenten-Auswahl</h3>
+            </div>
+            <span class="llm-card-description">Wähle einen Agenten aus, um seine Charaktereigenschaften und Prompts anzupassen.</span>
+            <select id="settings-agent-select" class="llm-input-area" style="cursor: pointer; font-weight: 500;" onchange="changeSettingsAgent(this.value)" data-help="Wähle einen Agenten aus der Liste, um seine Regler (Creativity, Risk etc.) und sein Gedächtnis anzupassen." data-help-title="Agent auswählen">
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+          
+          <!-- Sliders and config card -->
+          <div class="llm-card" id="settings-sliders-card" style="display: none; flex-shrink: 0;">
+            <div class="llm-card-header">
+              <h3 class="llm-card-title">⚙️ Regler & Modell-Zuweisung</h3>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 10px;">
+              <div class="slider-group" data-help="Beeinflusst den Tonfall des Agenten von formal und geschäftsmäßig (1) bis locker und informell (5)." data-help-title="Regler: Personality">
+                <label style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 6px; font-weight: 500;">
+                  <span>Personality</span>
+                  <span id="settings-label-personality" style="color: var(--cyan); font-weight: bold;">-</span>
+                </label>
+                <input type="range" id="settings-opt-personality" min="1" max="5" value="3" oninput="updateSettingsSliderLabel('personality', this.value)" style="cursor: pointer;">
+              </div>
+              
+              <div class="slider-group" data-help="Steuert die Länge und Detailtiefe der Antworten von sehr präzise/knapp (1) bis sehr detailliert (5)." data-help-title="Regler: Response Style">
+                <label style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 6px; font-weight: 500;">
+                  <span>Response Style</span>
+                  <span id="settings-label-response" style="color: var(--cyan); font-weight: bold;">-</span>
+                </label>
+                <input type="range" id="settings-opt-response" min="1" max="5" value="3" oninput="updateSettingsSliderLabel('response', this.value)" style="cursor: pointer;">
+              </div>
+              
+              <div class="slider-group" data-help="Bestimmt, wie viele Fakten und Erinnerungen (top-k) SoulAG bei Anfragen in den Kontext lädt." data-help-title="Regler: Memory Strength">
+                <label style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 6px; font-weight: 500;">
+                  <span>Memory Strength</span>
+                  <span id="settings-label-memory" style="color: var(--cyan); font-weight: bold;">-</span>
+                </label>
+                <input type="range" id="settings-opt-memory" min="1" max="5" value="3" oninput="updateSettingsSliderLabel('memory', this.value)" style="cursor: pointer;">
+              </div>
+              
+              <div class="slider-group" data-help="Regelt die LLM-Temperatur: Niedrig (1) für logischen, stabilen Code; Hoch (5) für kreative Lösungswege." data-help-title="Regler: Creativity">
+                <label style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 6px; font-weight: 500;">
+                  <span>Creativity</span>
+                  <span id="settings-label-creativity" style="color: var(--cyan); font-weight: bold;">-</span>
+                </label>
+                <input type="range" id="settings-opt-creativity" min="1" max="5" value="3" oninput="updateSettingsSliderLabel('creativity', this.value)" style="cursor: pointer;">
+              </div>
+              
+              <div class="slider-group" data-help="Steuert die Entscheidungsfreudigkeit und Risikobereitschaft des Agenten bei der Befehlsausführung." data-help-title="Regler: Risk Tolerance">
+                <label style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 6px; font-weight: 500;">
+                  <span>Risk Tolerance</span>
+                  <span id="settings-label-risk" style="color: var(--cyan); font-weight: bold;">-</span>
+                </label>
+                <input type="range" id="settings-opt-risk" min="1" max="5" value="3" oninput="updateSettingsSliderLabel('risk', this.value)" style="cursor: pointer;">
+              </div>
+              
+              <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 6px;" data-help="Diese Anweisung wird dauerhaft an das System-Prompt des Agenten angehängt (z.B. 'Schreibe Code nur in Python')." data-help-title="System Prompt Suffix">
+                <label style="font-size: 0.8rem; font-weight: 500; display: flex; justify-content: space-between;">
+                  <span>Custom System Prompt Suffix</span>
+                  <span style="opacity: 0.5; font-size: 0.7rem;">Ergänzt System-Instruktionen</span>
+                </label>
+                <textarea id="settings-opt-custom-prompt" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.12); color: #fff; border-radius: 6px; padding: 8px; font-family: monospace; font-size: 0.75rem; resize: vertical; outline: none; min-height: 100px;" placeholder="Prompt-Erweiterung eingeben..."></textarea>
+              </div>
+              
+              <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px;">
+                <button class="btn-primary" style="flex: 1;" id="settings-save-behavior-btn" data-help="Speichert alle Reglerwerte und Prompt-Erweiterungen für diesen Agenten." data-help-title="Speichern">Speichern</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Right Column: Soul & Memories -->
+        <div class="llm-card" id="settings-memories-card" style="display: none; height: 100%; flex-direction: column; overflow: hidden;" data-help="Durchsuche und verwalte die im FAISS-Vektorindex hinterlegten Langzeitgedächtnis-Fakten des Agenten." data-help-title="Agenten-Gedächtnis">
+          <div class="llm-card-header" style="flex-shrink: 0; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center;">
+            <h3 class="llm-card-title">🧠 Gedächtnis & Soul Facts</h3>
+            <button class="btn-danger" id="settings-clear-memories-btn" data-help="Löscht das gesamte Vektorgedächtnis dieses Agenten unwiderruflich aus der Datenbank." data-help-title="Alle löschen">Alle löschen</button>
+          </div>
+          
+          <div style="padding: 10px 0; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+            <textarea id="settings-new-mem" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.12); color: #fff; border-radius: 6px; padding: 8px; font-size: 0.78rem; resize: none; min-height: 48px; outline: none;" placeholder="Neuen Eintrag für Langzeitgedächtnis hinzufügen..." data-help="Schreibe hier einen Fakt oder eine Anweisung auf, die dieser Agent dauerhaft im Gedächtnis behalten soll." data-help-title="Neues Wissen"></textarea>
+            <button class="btn-primary" style="align-self: flex-end;" id="settings-add-mem-btn" data-help="Speichert den Text dauerhaft im Langzeitgedächtnis des Agenten." data-help-title="Wissen hinzufügen">Hinzufügen</button>
+          </div>
+          
+          <div style="padding: 8px 0; flex-shrink: 0;">
+            <input id="settings-search-mem" style="width: 100%; padding: 6px 10px; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; color: #fff; font-size: 0.78rem; outline: none;" placeholder="Suchen in Erinnerungen..." data-help="Filtere die gelernten Fakten des Agenten live nach Suchbegriffen." data-help-title="Fakten durchsuchen">
+          </div>
+          
+          <div id="settings-mem-list" style="flex: 1; overflow-y: auto; padding-right: 5px; display: flex; flex-direction: column; gap: 6px; scrollbar-width: thin;">
+            <div class="empty">Bitte lade einen Agenten.</div>
+          </div>
+        </div>
+      </div>
+
     </div>
   `;
   loadLLMConfig();
@@ -1405,4 +1509,240 @@ async function testAgentLLM(aName) {
     }
   }
   localStorage.setItem('gnom_tested_agent_status', JSON.stringify(window.testedAgentStatus));
+}
+
+// ── Settings Hub / Behavior Tab Handlers ──
+
+window.switchSettingsTab = function(tab) {
+  document.querySelectorAll('.settings-tab-btn').forEach(btn => {
+    btn.style.background = 'transparent';
+    btn.style.borderColor = 'rgba(255,255,255,0.08)';
+    btn.style.color = 'var(--text-dim)';
+  });
+  
+  const activeBtn = document.getElementById('tab-btn-' + tab);
+  if (activeBtn) {
+    activeBtn.style.background = 'rgba(0, 150, 255, 0.15)';
+    activeBtn.style.borderColor = 'var(--glass-border)';
+    activeBtn.style.color = '#fff';
+  }
+  
+  if (tab === 'global') {
+    document.getElementById('settings-tab-global-content').style.display = 'grid';
+    document.getElementById('settings-tab-behavior-content').style.display = 'none';
+  } else {
+    document.getElementById('settings-tab-global-content').style.display = 'none';
+    document.getElementById('settings-tab-behavior-content').style.display = 'grid';
+    loadSettingsAgentsList();
+  }
+};
+
+async function loadSettingsAgentsList() {
+  const select = document.getElementById('settings-agent-select');
+  if (!select) return;
+  
+  const res = await api('GET', '/agents');
+  const systemAgents = [
+    { id: 'soulag', name: 'SoulAG', description: 'Gedächtnis-Agent' },
+    { id: 'generalag', name: 'GeneralAG', description: 'Koordinator' },
+    { id: 'securityag', name: 'SecurityAG', description: 'Sicherheits-Agent' },
+    { id: 'watchdogag', name: 'WatchdogAG', description: 'Regel-Wächter' }
+  ];
+  
+  const activeAgents = Array.isArray(res) ? res : (res?.agents || []);
+  const allList = [...activeAgents];
+  systemAgents.forEach(sys => {
+    if (!allList.find(a => a.name.toLowerCase() === sys.name.toLowerCase())) {
+      allList.push(sys);
+    }
+  });
+
+  const currentVal = select.value;
+  select.innerHTML = '<option value="">-- Wähle einen Agenten --</option>' + 
+    allList.map(a => `<option value="${a.id || a.name.toLowerCase()}">${a.name} (${a.description || 'System-Agent'})</option>`).join('');
+    
+  if (currentVal && allList.find(a => (a.id || a.name.toLowerCase()) === currentVal)) {
+    select.value = currentVal;
+  }
+}
+
+window.changeSettingsAgent = async function(agentId) {
+  const slidersCard = document.getElementById('settings-sliders-card');
+  const memoriesCard = document.getElementById('settings-memories-card');
+  if (!agentId) {
+    if (slidersCard) slidersCard.style.display = 'none';
+    if (memoriesCard) memoriesCard.style.display = 'none';
+    return;
+  }
+  
+  if (slidersCard) slidersCard.style.display = 'block';
+  if (memoriesCard) memoriesCard.style.display = 'flex';
+  
+  try {
+    const settings = await api('GET', `/agents/${agentId}/settings`);
+    if (settings) {
+      document.getElementById('settings-opt-personality').value = settings.personality ?? 3;
+      document.getElementById('settings-opt-response').value = settings.response_style ?? 3;
+      document.getElementById('settings-opt-memory').value = settings.memory_strength ?? 3;
+      document.getElementById('settings-opt-creativity').value = settings.creativity ?? 3;
+      document.getElementById('settings-opt-risk').value = settings.risk_tolerance ?? 3;
+      document.getElementById('settings-opt-custom-prompt').value = settings.custom_prompt ?? '';
+      
+      updateSettingsSliderLabel('personality', settings.personality ?? 3);
+      updateSettingsSliderLabel('response', settings.response_style ?? 3);
+      updateSettingsSliderLabel('memory', settings.memory_strength ?? 3);
+      updateSettingsSliderLabel('creativity', settings.creativity ?? 3);
+      updateSettingsSliderLabel('risk', settings.risk_tolerance ?? 3);
+    }
+  } catch (err) {
+    console.error('Error loading settings in Settings Hub:', err);
+  }
+  
+  const saveBtn = document.getElementById('settings-save-behavior-btn');
+  if (saveBtn) {
+    saveBtn.onclick = () => saveSettingsAgentBehavior(agentId);
+  }
+  
+  const clearMemBtn = document.getElementById('settings-clear-memories-btn');
+  if (clearMemBtn) {
+    clearMemBtn.onclick = () => clearSettingsMemory(agentId);
+  }
+  
+  const addMemBtn = document.getElementById('settings-add-mem-btn');
+  if (addMemBtn) {
+    addMemBtn.onclick = () => addSettingsMemory(agentId);
+  }
+  
+  const searchInput = document.getElementById('settings-search-mem');
+  if (searchInput) {
+    searchInput.value = '';
+    searchInput.oninput = (e) => searchSettingsMem(agentId, e.target.value);
+  }
+  
+  loadSettingsAgentMemory(agentId);
+};
+
+window.updateSettingsSliderLabel = function(type, val) {
+  const v = parseInt(val);
+  let txt = '';
+  if (type === 'personality') {
+    const map = { 1: 'Formal (1)', 2: 'Eher formal (2)', 3: 'Ausgeglichen (3)', 4: 'Locker (4)', 5: 'Sehr locker (5)' };
+    txt = map[v] || v;
+  } else if (type === 'response') {
+    const map = { 1: 'Sehr knapp (1)', 2: 'Knapp (2)', 3: 'Ausgeglichen (3)', 4: 'Ausführlich (4)', 5: 'Sehr ausführlich (5)' };
+    txt = map[v] || v;
+  } else if (type === 'memory') {
+    const map = { 1: 'Minimal (top_k: 2)', 2: 'Gering (top_k: 4)', 3: 'Standard (top_k: 8)', 4: 'Stark (top_k: 12)', 5: 'Maximum (top_k: 16)' };
+    txt = map[v] || v;
+  } else if (type === 'creativity') {
+    const map = { 1: 'Konservativ (temp: 0.1)', 2: 'Fokussiert (temp: 0.4)', 3: 'Ausgeglichen (temp: 0.7)', 4: 'Kreativ (temp: 0.9)', 5: 'Wild (temp: 1.2)' };
+    txt = map[v] || v;
+  } else if (type === 'risk') {
+    const map = { 1: 'Sehr vorsichtig (1)', 2: 'Vorsichtig (2)', 3: 'Ausgeglichen (3)', 4: 'Mutig (4)', 5: 'Sehr mutig (5)' };
+    txt = map[v] || v;
+  }
+  const el = document.getElementById('settings-label-' + type);
+  if (el) el.innerText = txt;
+};
+
+async function saveSettingsAgentBehavior(agentId) {
+  const personality = parseInt(document.getElementById('settings-opt-personality').value);
+  const response_style = parseInt(document.getElementById('settings-opt-response').value);
+  const memory_strength = parseInt(document.getElementById('settings-opt-memory').value);
+  const creativity = parseInt(document.getElementById('settings-opt-creativity').value);
+  const risk_tolerance = parseInt(document.getElementById('settings-opt-risk').value);
+  const custom_prompt = document.getElementById('settings-opt-custom-prompt').value;
+  try {
+    const res = await fetch(API + `/agents/${agentId}/settings`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ personality, response_style, memory_strength, creativity, risk_tolerance, custom_prompt })
+    });
+    if (res.ok) {
+      toast('Einstellungen erfolgreich gespeichert!', 'success');
+      changeSettingsAgent(agentId);
+    } else {
+      toast('Fehler beim Speichern der Einstellungen.', 'error');
+    }
+  } catch (err) {
+    toast('Fehler beim Speichern: ' + err.message, 'error');
+  }
+}
+
+async function loadSettingsAgentMemory(agentId) {
+  const el = document.getElementById('settings-mem-list');
+  if (!el) return;
+  const mems = await api('GET', `/agents/${agentId}/memory`);
+  renderSettingsMemories(el, mems, agentId);
+}
+
+async function searchSettingsMem(agentId, q) {
+  const el = document.getElementById('settings-mem-list');
+  if (!el) return;
+  if (!q) return loadSettingsAgentMemory(agentId);
+  const all = await api('GET', `/agents/${agentId}/memory`);
+  const filtered = (all || []).filter(m => (m.content || '').toLowerCase().includes(q.toLowerCase()));
+  renderSettingsMemories(el, filtered, agentId);
+}
+
+function renderSettingsMemories(el, mems, agentId) {
+  if (!mems || !mems.length) { el.innerHTML = '<div class="empty">Keine Einträge im Gedächtnis.</div>'; return; }
+  el.innerHTML = mems.map(m => {
+    const d = m.timestamp ? new Date(m.timestamp).toLocaleString() : '';
+    return `<div class="mem-item" id="settings-mem-${m.id}" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
+      <div class="mem-head" style="display: flex; justify-content: space-between; font-size: 0.68rem; color: var(--text-dim); margin-bottom: 6px;">
+        <span>${d}</span>
+        <div style="display: flex; gap: 6px;">
+          <button onclick="editSettingsMem('${m.id}', '${agentId}')" style="cursor: pointer; background: transparent; border: none; color: var(--cyan); padding: 0 4px;">✏</button>
+          <button onclick="deleteSettingsMem('${m.id}', '${agentId}')" style="cursor: pointer; background: transparent; border: none; color: var(--red); padding: 0 4px;">✕</button>
+        </div>
+      </div>
+      <div class="mem-content" id="settings-mc-${m.id}" style="font-size: 0.82rem; color: #fff; line-height: 1.4; white-space: pre-wrap; word-break: break-word;">${escapeHtml(m.content)}</div>
+    </div>`;
+  }).join('');
+}
+
+async function addSettingsMemory(agentId) {
+  const ta = document.getElementById('settings-new-mem');
+  const c = ta.value.trim();
+  if (!c) return;
+  await api('POST', '/memory', { agent_id: agentId, content: c });
+  ta.value = '';
+  loadSettingsAgentMemory(agentId);
+  toast('Erinnerung hinzugefügt', 'success');
+}
+
+window.editSettingsMem = function(id, agentId) {
+  const el = document.getElementById('settings-mc-' + id);
+  const old = el.innerText;
+  el.innerHTML = `<textarea id="settings-ed-${id}" style="width: 100%; min-height: 60px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.12); color: #fff; border-radius: 6px; padding: 6px; font-size: 0.8rem; outline: none; resize: vertical;">${old}</textarea>
+    <div style="margin-top:6px;display:flex;gap:6px;justify-content:flex-end">
+      <button onclick="loadSettingsAgentMemory('${agentId}')" style="padding: 3px 8px; font-size: 0.72rem; cursor: pointer;">Abbrechen</button>
+      <button class="btn-primary" onclick="saveSettingsMem('${id}', '${agentId}')" style="padding: 3px 8px; font-size: 0.72rem; cursor: pointer;">Speichern</button>
+    </div>`;
+};
+
+window.saveSettingsMem = async function(id, agentId) {
+  const c = document.getElementById('settings-ed-' + id).value;
+  await fetch(API + `/memory/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ content: c })
+  });
+  loadSettingsAgentMemory(agentId);
+  toast('Erinnerung aktualisiert', 'success');
+};
+
+window.deleteSettingsMem = async function(id, agentId) {
+  if (!confirm('Erinnerung löschen?')) return;
+  await api('DELETE', `/memory/${id}`);
+  toast('Erinnerung gelöscht', 'info');
+  loadSettingsAgentMemory(agentId);
+};
+
+async function clearSettingsMemory(agentId) {
+  if (!confirm('Wirklich das gesamte Gedächtnis des Agenten löschen?')) return;
+  await api('DELETE', `/agents/${agentId}/memory`);
+  toast('Gedächtnis vollständig gelöscht', 'warning');
+  loadSettingsAgentMemory(agentId);
 }

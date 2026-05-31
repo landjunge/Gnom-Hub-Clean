@@ -1757,18 +1757,13 @@
       animation: flash-primary 0.8s ease-out;
     }
 
-    /* ── Scrollbar global ── */
+    /* ── Scrollbar global (Hidden) ── */
     ::-webkit-scrollbar {
-      width: 5px;
+      display: none !important;
+      width: 0px !important;
     }
-
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.06);
-      border-radius: 3px;
+    * {
+      scrollbar-width: none !important;
     }
 
     @keyframes next-btn-pulse-glow {
@@ -2268,12 +2263,383 @@
       justify-content: center;
       padding: 0 !important;
     }
+
+    /* 3. SuperGNOM Mode Overrides */
+    body.supergnom-mode .sidebar {
+      display: none !important;
+    }
+
+    body.supergnom-mode .main {
+      display: flex !important;
+      justify-content: center;
+      align-items: stretch;
+      height: calc(100vh - 51px);
+    }
+
+    body.supergnom-mode .content {
+      margin-left: 0 !important;
+      width: 100% !important;
+      max-width: 900px !important;
+      height: 100% !important;
+      display: flex;
+      flex-direction: column;
+      padding: 20px 30px !important;
+      box-sizing: border-box;
+      overflow-y: hidden !important;
+    }
+
+    body.supergnom-mode .panel#war-room {
+      background: transparent !important;
+      border: none !important;
+      backdrop-filter: none !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      height: 100% !important;
+      display: flex;
+      flex-direction: column;
+    }
+
+    body.supergnom-mode #chat-split-container {
+      flex: 1;
+      height: auto !important;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-bottom: 20px;
+      min-height: 0;
+    }
+
+    body.supergnom-mode #chat-split-container > div:first-child,
+    body.supergnom-mode #thought-display,
+    body.supergnom-mode #chat-split-container > div:nth-child(3) {
+      display: none !important;
+    }
+
+    body.supergnom-mode #chat-split-container #chat-display {
+      flex: 1 !important;
+      height: auto !important;
+      background: rgba(4, 6, 12, 0.2) !important;
+      border: none !important;
+      padding: 10px 0 !important;
+      box-shadow: none !important;
+    }
+
+    body.supergnom-mode .chat-bar {
+      background: rgba(16, 20, 32, 0.6) !important;
+      backdrop-filter: blur(12px) !important;
+      border: 1px solid var(--glass-border) !important;
+      border-radius: 24px !important;
+      padding: 10px 16px !important;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+      margin-bottom: 5px;
+      flex-shrink: 0;
+    }
+
+    body.supergnom-mode .chat-input-wrap {
+      flex: 1;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+    }
+
+    body.supergnom-mode #chat-input {
+      background: transparent !important;
+      border: none !important;
+      padding: 8px 4px !important;
+      font-size: 0.95rem !important;
+      color: #fff !important;
+      resize: none !important;
+      height: 40px !important;
+      min-height: 40px !important;
+      line-height: 1.4 !important;
+    }
+
+    body.supergnom-mode #chat-input:focus {
+      outline: none !important;
+      box-shadow: none !important;
+    }
+
+    body.supergnom-mode .chat-bar button {
+      height: 38px !important;
+      border-radius: 19px !important;
+      padding: 0 20px !important;
+      font-weight: 600 !important;
+      font-size: 0.8rem !important;
+      transition: all 0.2s ease !important;
+    }
+
+    body.supergnom-mode .chat-bar button:hover {
+      transform: scale(1.03) !important;
+    }
+
+    body.supergnom-mode .chat-hints {
+      display: none !important;
+    }
+
+    body.supergnom-mode .chat-msg {
+      border-left-width: 4px !important;
+      border-radius: 12px !important;
+      background: rgba(255, 255, 255, 0.02) !important;
+      border: 1px solid rgba(255, 255, 255, 0.04) !important;
+      border-left: 4px solid var(--border-color, #5b9cf6) !important;
+      padding: 16px 20px !important;
+      margin-bottom: 12px !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+      max-width: 100% !important;
+      width: 100% !important;
+    }
+
+    body.supergnom-mode .chat-msg.user {
+      background: rgba(0, 102, 255, 0.06) !important;
+      border-left-color: var(--blue) !important;
+    }
+
+    body.supergnom-mode .chat-msg .agent-name {
+      font-size: 0.85rem !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.5px !important;
+    }
+
+    body.supergnom-mode .chat-msg .chat-meta {
+      margin-bottom: 8px !important;
+      font-size: 0.72rem !important;
+    }
+
+    body.supergnom-mode .chat-msg .mem-content {
+      font-size: 0.92rem !important;
+      line-height: 1.55 !important;
+      color: rgba(255, 255, 255, 0.9) !important;
+    }
+
+    body.supergnom-mode header {
+      background: rgba(5, 5, 10, 0.85) !important;
+      backdrop-filter: blur(12px) !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+      padding: 12px 24px !important;
+    }
+
+    body.supergnom-mode header button,
+    body.supergnom-mode header #status-lamps {
+      display: none !important;
+    }
+
+    /* SuperGNOM slide-in drawer (Artifacts panel) */
+    .supergnom-drawer {
+      position: fixed;
+      top: 51px;
+      right: -480px;
+      width: 480px;
+      max-width: 90vw;
+      height: calc(100vh - 51px);
+      background: rgba(12, 14, 24, 0.96);
+      backdrop-filter: blur(16px);
+      border-left: 1px solid var(--glass-border);
+      box-shadow: -8px 0 32px rgba(0, 0, 0, 0.5);
+      z-index: 99;
+      display: flex;
+      flex-direction: column;
+      transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .supergnom-drawer.open {
+      right: 0;
+    }
+    .supergnom-drawer-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.2);
+    }
+    .supergnom-drawer-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .supergnom-drawer-close {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 1.4rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0;
+    }
+    .supergnom-drawer-close:hover {
+      color: #fff;
+    }
+    .supergnom-drawer-body {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      color: #fff;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+    .supergnom-drawer-body pre, .supergnom-drawer-body code {
+      font-family: monospace;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+    
+    /* Drawer toggle floating button */
+    .supergnom-drawer-toggle {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 52px;
+      height: 52px;
+      border-radius: 50% !important;
+      background: linear-gradient(135deg, #0A1128, #050814) !important;
+      border: 1px solid rgba(0, 150, 255, 0.4) !important;
+      box-shadow: 0 4px 16px var(--primary-glow) !important;
+      color: #fff;
+      font-size: 1.3rem;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 98;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    .supergnom-drawer-toggle:hover {
+      transform: scale(1.08) translateY(-2px) !important;
+      border-color: rgba(0, 150, 255, 0.8) !important;
+      box-shadow: 0 6px 20px rgba(0, 150, 255, 0.6) !important;
+    }
+    .supergnom-drawer-toggle.has-unread {
+      animation: toggle-pulse 2s infinite alternate;
+    }
+    @keyframes toggle-pulse {
+      0% {
+        box-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+        border-color: rgba(0, 229, 255, 0.4);
+      }
+      100% {
+        box-shadow: 0 0 25px rgba(0, 229, 255, 0.8);
+        border-color: rgba(0, 229, 255, 1);
+      }
+    }
+
+    /* SuperGNOM Security Tribunal Modal Overlay */
+    .supergnom-tribunal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 5, 10, 0.85);
+      backdrop-filter: blur(12px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      animation: fadeIn 0.25s ease-out;
+    }
+    .supergnom-tribunal-overlay.show {
+      display: flex;
+    }
+    .supergnom-tribunal-card {
+      background: rgba(18, 22, 36, 0.98);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 30px;
+      width: 580px;
+      max-width: 90vw;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 50px rgba(255, 0, 0, 0.15);
+      animation: modalScaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes modalScaleIn {
+      from { opacity: 0; transform: scale(0.92) translateY(15px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    /* Range Slider Styling (Glassmorphism + Glow) */
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      background: transparent;
+      outline: none;
+      margin: 8px 0;
+    }
+    
+    /* Webkit (Chrome, Safari, Edge) Track */
+    input[type="range"]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 6px;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      transition: var(--transition);
+    }
+    input[type="range"]:focus::-webkit-slider-runnable-track {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(0, 229, 255, 0.2);
+    }
+    
+    /* Webkit Thumb */
+    input[type="range"]::-webkit-slider-thumb {
+      height: 16px;
+      width: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00e5ff, #0066ff);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      cursor: pointer;
+      -webkit-appearance: none;
+      margin-top: -5px;
+      box-shadow: 0 0 10px rgba(0, 229, 255, 0.6);
+      transition: transform 0.1s ease, box-shadow 0.2s;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 15px rgba(0, 229, 255, 0.9), 0 0 2px #fff;
+    }
+    input[type="range"]::-webkit-slider-thumb:active {
+      transform: scale(0.95);
+    }
+    
+    /* Firefox Track */
+    input[type="range"]::-moz-range-track {
+      width: 100%;
+      height: 6px;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
+    
+    /* Firefox Thumb */
+    input[type="range"]::-moz-range-thumb {
+      height: 16px;
+      width: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00e5ff, #0066ff);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(0, 229, 255, 0.6);
+      transition: transform 0.1s ease, box-shadow 0.2s;
+    }
+    input[type="range"]::-moz-range-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 15px rgba(0, 229, 255, 0.9), 0 0 2px #fff;
+    }
   </style>
 </head>
 
 <body>
   <header>
-    <div class="logo" onclick="showWarRoom()">
+    <div class="logo" onclick="showWarRoom()" data-help="Klicke hier, um zum War Room Dashboard zurückzukehren. Gedrückt halten (2s) löst einen NUKE-Neustart aus." data-help-title="Logo & Nuke-Taste">
       <div class="logo-mark" id="nuke-btn"
         onmousedown="nukeStart(event)" onmouseup="nukeCancel()" onmouseleave="nukeCancel()"
         ontouchstart="nukeStart(event)" ontouchend="nukeCancel()"
@@ -2285,12 +2651,12 @@
     </div>
     <div class="status-lamps" id="status-lamps"></div>
     <div class="header-right">
-      <button class="btn-primary" id="btn-back" onclick="goBackView()" title="Zurück (1 Position)" style="opacity: 0.4; pointer-events: none;" disabled>Back</button>
-      <button class="btn-primary" onclick="showWorkspace()">Workspace</button>
-      <button class="btn-primary" onclick="showDashboard()">Dashboard</button>
-      <button class="btn-primary" onclick="showLLMConfig()">LLM</button>
-      <button class="btn-primary" onclick="showHelpPage()">Help</button>
-      <button class="btn-primary" id="btn-save" onclick="globalSave()" title="Global Speichern">Save</button>
+      <button class="btn-primary" id="btn-back" onclick="goBackView()" title="Zurück (1 Position)" style="opacity: 0.4; pointer-events: none;" disabled data-help="Einen Schritt im Browserverlauf zurückgehen." data-help-title="Zurück">Back</button>
+      <button class="btn-primary" onclick="showWorkspace()" data-help="Zeigt das Arbeitsverzeichnis des Schwarms mit allen generierten Dateien, Scripts und UI-Entwürfen." data-help-title="Workspace">Workspace</button>
+      <button class="btn-primary" onclick="showDashboard()" data-help="Öffnet das Bento-Grid-Systemdashboard zur Überwachung von Agenten-Status, Token-Budgets und Antwortzeiten." data-help-title="Dashboard">Dashboard</button>
+      <button class="btn-primary" onclick="showLLMConfig()" data-help="Öffnet die LLM-Einstellungen, um API-Keys einzutragen, Provider-Presets zu wählen und Agenten-Charaktere anzupassen." data-help-title="LLM-Konfiguration">LLM</button>
+      <button class="btn-primary" onclick="showHelpPage()" data-help="Öffnet das Help Center mit der vollständigen Bedienungsanleitung und Erklärungen der Agenten." data-help-title="Help Center">Help</button>
+      <button class="btn-primary" id="btn-save" onclick="globalSave()" title="Global Speichern" data-help="Sichert den aktuellen Hub-Zustand, Einstellungen und Verlauf global." data-help-title="Backup sichern">Save</button>
     </div>
   </header>
 
@@ -2403,6 +2769,24 @@
     </div>
   </div>
   <div class="toast-container" id="toasts"></div>
+
+  <!-- SuperGNOM Mode Floating elements (only used/shown in supergnom-mode) -->
+  <button id="supergnom-drawer-btn" class="supergnom-drawer-toggle" onclick="toggleSuperGnomDrawer()" title="Visuelle Ausgaben & Entwürfe anzeigen">🖥️</button>
+  <div id="supergnom-drawer" class="supergnom-drawer">
+    <div class="supergnom-drawer-header">
+      <span class="supergnom-drawer-title" id="supergnom-drawer-title">Ausgabe / Entwurf</span>
+      <button class="supergnom-drawer-close" onclick="toggleSuperGnomDrawer()">&times;</button>
+    </div>
+    <div class="supergnom-drawer-body" id="supergnom-drawer-body">
+      Lade Inhalt...
+    </div>
+  </div>
+  
+  <div id="supergnom-tribunal-overlay" class="supergnom-tribunal-overlay">
+    <div class="supergnom-tribunal-card" id="supergnom-tribunal-card">
+      <!-- Security Blockade HTML content rendered here dynamically -->
+    </div>
+  </div>
 
   <script src="/static/core.js"></script>
   <script src="/static/system_dashboard.js"></script>

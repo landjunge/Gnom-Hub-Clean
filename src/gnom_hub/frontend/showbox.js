@@ -198,6 +198,9 @@
   function switchLayer(layerIdx, skipFlash = false) {
     if (![1, 2, 3].includes(layerIdx)) return;
 
+    originalShowboxContent = null;
+    originalActiveLayer = null;
+
     state.activeLayer = layerIdx;
 
     // Toggle active class on DOM layer elements
@@ -448,6 +451,38 @@
     // Switch view to the target layer and render
     switchLayer(targetLayer);
     renderLayerContent(targetLayer);
+
+    // SuperGNOM Mode overrides
+    if (document.body.classList.contains('supergnom-mode')) {
+      const drawerBody = document.getElementById('supergnom-drawer-body');
+      const drawerTitle = document.getElementById('supergnom-drawer-title');
+      const drawerBtn = document.getElementById('supergnom-drawer-btn');
+      const tribunalOverlay = document.getElementById('supergnom-tribunal-overlay');
+      const tribunalCard = document.getElementById('supergnom-tribunal-card');
+      
+      const slideContent = slides[0] || 'Kein Inhalt';
+      
+      if (targetLayer === LAYERS.USER) {
+        if (tribunalCard && tribunalOverlay) {
+          const match = slideContent.match(/@@approve_decision\s+([a-f0-9\-]+)/);
+          activeDecisionId = match ? match[1] : null;
+          
+          tribunalCard.innerHTML = slideContent;
+          tribunalOverlay.classList.add('show');
+        }
+      } else {
+        if (drawerBody && drawerTitle && drawerBtn) {
+          drawerTitle.textContent = pres.name || "Ausgabe / Entwurf";
+          drawerBody.innerHTML = slideContent;
+          drawerBtn.style.display = 'flex';
+          
+          const drawer = document.getElementById('supergnom-drawer');
+          if (drawer && !drawer.classList.contains('open')) {
+            drawerBtn.classList.add('has-unread');
+          }
+        }
+      }
+    }
   };
 
   // 2. window.closeShowbox
@@ -462,6 +497,35 @@
       renderLayerContent(i);
     }
     updateButtonStates();
+
+    // SuperGNOM Mode overrides
+    if (document.body.classList.contains('supergnom-mode')) {
+      const tribunalOverlay = document.getElementById('supergnom-tribunal-overlay');
+      if (tribunalOverlay) {
+        tribunalOverlay.classList.remove('show');
+      }
+      activeDecisionId = null;
+      
+      const drawerBtn = document.getElementById('supergnom-drawer-btn');
+      const drawer = document.getElementById('supergnom-drawer');
+      if (drawerBtn) {
+        drawerBtn.style.display = 'none';
+        drawerBtn.classList.remove('has-unread');
+      }
+      if (drawer) {
+        drawer.classList.remove('open');
+      }
+    }
+  };
+
+  window.toggleSuperGnomDrawer = function () {
+    const drawer = document.getElementById('supergnom-drawer');
+    const btn = document.getElementById('supergnom-drawer-btn');
+    if (!drawer) return;
+    drawer.classList.toggle('open');
+    if (drawer.classList.contains('open')) {
+      if (btn) btn.classList.remove('has-unread');
+    }
   };
 
   // 3. window.showboxToast
@@ -598,6 +662,60 @@
       nextSlide();
     }
   };
+
+  // ── Global Interactive Help Event Listeners ──
+  let originalShowboxContent = null;
+  let originalActiveLayer = null;
+
+  window.showShowboxHelp = function(title, text) {
+    const activeLayer = state.activeLayer;
+    const bodyEl = document.getElementById(`sb-layer-body-${activeLayer}`);
+    if (!bodyEl) return;
+    
+    if (originalShowboxContent === null) {
+      originalShowboxContent = bodyEl.innerHTML;
+      originalActiveLayer = activeLayer;
+    }
+    
+    bodyEl.innerHTML = `
+      <div class="interactive-help-box" style="padding: 12px; background: rgba(0, 150, 255, 0.08); border: 1px solid rgba(0, 150, 255, 0.22); border-radius: 8px; animation: fadeIn 0.2s ease;">
+        <h4 style="margin: 0 0 8px 0; font-size: 0.85rem; color: var(--cyan); display: flex; align-items: center; gap: 6px;">
+          💡 ${title}
+        </h4>
+        <p style="margin: 0; font-size: 0.78rem; line-height: 1.45; color: rgba(255,255,255,0.9); font-weight: normal; white-space: normal; text-transform: none; word-break: break-word;">
+          ${text}
+        </p>
+      </div>
+    `;
+  };
+
+  window.hideShowboxHelp = function() {
+    if (originalShowboxContent !== null && originalActiveLayer !== null) {
+      const bodyEl = document.getElementById(`sb-layer-body-${originalActiveLayer}`);
+      if (bodyEl) {
+        bodyEl.innerHTML = originalShowboxContent;
+      }
+      originalShowboxContent = null;
+      originalActiveLayer = null;
+    }
+  };
+
+  // Listen to global mouse events
+  document.addEventListener('mouseover', (e) => {
+    const el = e.target.closest('[data-help]');
+    if (el) {
+      const helpText = el.getAttribute('data-help');
+      const helpTitle = el.getAttribute('data-help-title') || 'Erklärung';
+      window.showShowboxHelp(helpTitle, helpText);
+    }
+  });
+
+  document.addEventListener('mouseout', (e) => {
+    const el = e.target.closest('[data-help]');
+    if (el) {
+      window.hideShowboxHelp();
+    }
+  });
 
   // Initialize component on document ready
   if (document.readyState === 'loading') {

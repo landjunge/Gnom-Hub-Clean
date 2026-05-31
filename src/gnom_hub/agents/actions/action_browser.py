@@ -23,10 +23,10 @@ def handle_browser(ans, ms, agent, perms, wd) -> str:
         try:
             with open(fp, "w") as f: f.write(code)
             if use_docker:
-                r = run_browser_in_sandbox(fn, net, timeout=45)
+                r = run_browser_in_sandbox(fn, net, timeout=30)
             else:
                 import sys, subprocess
-                r = subprocess.run([sys.executable, fp], capture_output=True, text=True, timeout=45)
+                r = subprocess.run([sys.executable, fp], capture_output=True, text=True, timeout=30)
             out = (r.stdout + "\n" + r.stderr).strip() or "[Browser: Keine Ausgabe]"
             ans = ans.replace(m.group(0), f"[Browser-Ausgabe:\n{out}]")
         except Exception as e:

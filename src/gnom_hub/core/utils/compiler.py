@@ -56,7 +56,11 @@ def bake_supergnom(name: str, template: str = "chat") -> str:
             except sqlite3.OperationalError:
                 pass
         try:
-            conn.execute("DELETE FROM chat WHERE id NOT IN (SELECT id FROM chat ORDER BY timestamp DESC LIMIT 1000)")
+            conn.execute("DELETE FROM chat")
+        except sqlite3.OperationalError:
+            pass
+        try:
+            conn.execute("DELETE FROM soul_memory WHERE key NOT IN ('active_preset', 'approved_system_paths', 'approved_security_writes', 'approved_security_commands')")
         except sqlite3.OperationalError:
             pass
         conn.execute("DELETE FROM state WHERE key NOT IN ('active_preset', 'agent_settings')")

@@ -20,7 +20,7 @@ def run_in_sandbox(command: str, agent=None, timeout: int = 30):
         except Exception: pass
     return run_sandboxed(command, wd, timeout=timeout)
 
-def run_browser_in_sandbox(code_path: str, net: str, timeout: int = 45):
+def run_browser_in_sandbox(code_path: str, net: str, timeout: int = 30):
     wd = os.path.abspath(str(WORKSPACE_DIR))
     if is_docker_running():
         cmd = ["docker", "run", "--rm", f"--network={net}", "--memory=512m", "-v", f"{wd}:/workspace:rw", "-w", "/workspace", "gnom-playwright:latest", "python3", code_path]
