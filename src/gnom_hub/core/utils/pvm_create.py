@@ -24,7 +24,7 @@ def create_version(agent: str, prompt: str, modifications: list) -> PromptVersio
                 conn.execute("""
                     INSERT OR REPLACE INTO prompt_versions (id, agent, base_prompt, modifications, performance_score, created_at, feedback_count, is_active, parent_id)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, (version_id, agent, prompt, json.dumps(modifications), 1.0, created_at_str, 0, 0, parent_id))
+                """, (version_id, agent, prompt, json.dumps(modifications), 1.0, created_at_str, 0, 1, parent_id))
     except Exception: pass
 
-    return PromptVersion(id=version_id, agent=agent, base_prompt=prompt, modifications=modifications, performance_score=1.0, created_at=datetime.now(timezone.utc), feedback_count=0, is_active=False, parent_id=parent_id)
+    return PromptVersion(id=version_id, agent=agent, base_prompt=prompt, modifications=modifications, performance_score=1.0, created_at=datetime.now(timezone.utc), feedback_count=0, is_active=True, parent_id=parent_id)

@@ -58,8 +58,8 @@ def get_soul(agent_name: str) -> dict:
                 if dirty:
                     with open(path, "w", encoding="utf-8") as f:
                         json.dump(data, f, indent=2, ensure_ascii=False)
+                    _commit_soul_git(agent_name, path)
                 
-                _commit_soul_git(agent_name, path)
                 return data
         except Exception as e:
             print(f"Error loading soul.json for {agent_name}: {e}")
@@ -81,11 +81,21 @@ def get_soul(agent_name: str) -> dict:
     return default_soul
 
 class DynamicSouls(dict):
+    _cache = None
+    _cache_time = 0
+    _TTL = 30  # seconds
+
     def _active_dict(self):
+        import time
+        now = time.time()
+        if DynamicSouls._cache is not None and (now - DynamicSouls._cache_time) < DynamicSouls._TTL:
+            return DynamicSouls._cache
         from gnom_hub.agents.agent_definitions import AGENT_DEFINITIONS
         res = {}
         for k in AGENT_DEFINITIONS.keys():
             res[k] = get_soul(k)
+        DynamicSouls._cache = res
+        DynamicSouls._cache_time = now
         return res
 
     def items(self): return self._active_dict().items()
@@ -112,7 +122,13 @@ def check_and_wait_breakpoint(agent_name: str, operation: str, detail: str):
                    f"Antworte `@@resume {agent_name}` im Chat oder klicke auf **Resume** im Dashboard des Agenten.")
         add_chat_message(proj, "System", "system", "chat", message)
         
+        max_wait_seconds = 300
+        start_time = time.time()
         while True:
+            if time.time() - start_time > max_wait_seconds:
+                add_chat_message(proj, "System", "system", "chat",
+                    f"⏰ [TIMEOUT] Breakpoint für {agent_name} nach 5 Minuten automatisch aufgelöst.")
+                break
             agents = get_all_agents()
             current_agent = next((a for a in agents if a["name"].lower() == agent_name.lower()), None)
             if not current_agent:

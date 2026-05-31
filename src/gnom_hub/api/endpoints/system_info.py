@@ -12,16 +12,25 @@ def get_system_info():
     except Exception: pass
     ram = f"{round(psutil.virtual_memory().total / (1024**3))} GB"
     from gnom_hub.core.config import Config
+    template = Config.get_supergnom_template()
+    is_supergnom = Config.SUPERGNOM_MODE or (template in ["senior", "headless"])
     return {
         "cpu": cpu,
         "ram": ram,
         "is_intel": "intel" in cpu.lower(),
-        "is_supergnom": Config.SUPERGNOM_MODE
+        "is_supergnom": is_supergnom,
+        "template": template
     }
 
 @router.post("/api/restart")
 def restart_server(request: Request):
     if request.headers.get("X-Hub-Secret") != _get_or_create_secret().hex():
         return {"error": "Unauthorized"}
+    import signal, threading
     subprocess.Popen([sys.executable] + sys.argv)
-    os._exit(0)
+    # Give the new process time to start, then exit cleanly
+    def _delayed_exit():
+        import time; time.sleep(1.0)
+        os.kill(os.getpid(), signal.SIGTERM)
+    threading.Thread(target=_delayed_exit, daemon=True).start()
+    return {"status": "restarting"}

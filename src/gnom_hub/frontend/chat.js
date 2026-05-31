@@ -58,12 +58,35 @@ function buildChatHintsHTML() {
 
 function buildWarRoomHTML() {
   const ttsChecked = document.getElementById('tts-enabled')?.checked ?? false;
+  const thoughtTtsActive = window.thoughtTtsEnabled ?? false;
   return `<div class="panel" id="war-room">
     <h2 style="display:flex; align-items:center;">War Room <span id="project-indicator" style="font-size:0.75rem; color:var(--text-muted); background:rgba(255,255,255,0.05); padding:3px 8px; border-radius:12px; margin-left:10px; border:1px solid rgba(255,255,255,0.1);">MAIN HUB</span>
       <button id="project-help-btn" onclick="const e=document.getElementById('project-explanation'); e.style.display = e.style.display==='none' ? 'block' : 'none';" style="display:none; margin-left:8px; padding:3px 8px; font-size:0.7rem; border-radius:12px; border:1px solid var(--green); background:rgba(57,255,20,0.1); color:var(--green); cursor:pointer;">ℹ️ Info</button>
     </h2>
     <div id="project-explanation" style="display:none; font-size:0.8rem; color:#fff; background:rgba(61,220,132,0.1); border-left:3px solid var(--green); padding:10px 14px; margin-bottom:12px; border-radius:4px; line-height:1.5;"></div>
-    <div id="chat-display"></div>
+    
+    <!-- Split chat layout -->
+    <div id="chat-split-container">
+      <!-- Top Pane: Thinking Processes -->
+      <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--cyan); display: flex; align-items: center; justify-content: space-between; font-weight: bold; margin-bottom: -4px;">
+        <span>🧠 Denkprozesse & Logik</span>
+        <button id="thought-tts-btn" onclick="toggleThoughtTTS()" style="background: ${thoughtTtsActive ? 'rgba(57,255,20,0.15)' : 'rgba(0,229,255,0.1)'}; border: 1px solid ${thoughtTtsActive ? 'rgba(57,255,20,0.4)' : 'rgba(0,229,255,0.3)'}; color: ${thoughtTtsActive ? 'var(--green)' : 'var(--cyan)'}; border-radius: 12px; padding: 2px 8px; font-size: 0.62rem; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s ease;">
+          ${thoughtTtsActive ? '🔊 TTS An' : '🔇 TTS Aus'}
+        </button>
+      </div>
+      <div id="thought-display"></div>
+      
+      <!-- Splitter / Separator -->
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.08);"></div>
+        <span style="font-size: 0.65rem; color: var(--text-muted); white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px;">Chat Verlauf</span>
+        <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.08);"></div>
+      </div>
+      
+      <!-- Bottom Pane: Normal Chat -->
+      <div id="chat-display"></div>
+    </div>
+    
     <div class="chat-bar">
       <div class="chat-input-wrap">
         <div class="ac-dropdown" id="ac-dropdown"></div>
@@ -100,7 +123,7 @@ function onChatInput(ta) {
   const all = [...BUILTIN_CMDS, ...agentNames].filter(n => n.toLowerCase().startsWith(q));
   if (!all.length || (all.length === 1 && all[0].toLowerCase() === q)) { dd.classList.remove('show'); return; }
   acIdx = -1;
-  dd.innerHTML = all.map(n => `<div class="ac-item" onmousedown="pickAc('${n}')">${BUILTIN_CMDS.includes(n) ? '@' + n : '@ ' + n}</div>`).join('');
+  dd.innerHTML = all.map(n => `<div class="ac-item" onmousedown="pickAc('${escapeHtml(n)}')">${BUILTIN_CMDS.includes(n) ? '@' + escapeHtml(n) : '@ ' + escapeHtml(n)}</div>`).join('');
   dd.classList.add('show');
 }
 
@@ -275,12 +298,19 @@ function esc(s) {
   return d.innerHTML;
 }
 
-function parseShowboxInMsg(m) {
-  let rawContent = m.content || "";
+function parseShowboxInMsg(m, overrideId) {
+  let rawContent = "";
+  let mid = "";
+  if (m && typeof m === 'object') {
+    rawContent = m.content || "";
+    mid = m.id || Math.random().toString(36).slice(2);
+  } else {
+    rawContent = m || "";
+    mid = overrideId || Math.random().toString(36).slice(2);
+  }
   let showBoxFound = false;
   let showData = null;
   const showboxMatch = rawContent.match(/<SHOWBOX(?::(\d+))?>([\s\S]*?)<\/SHOWBOX>/);
-  const mid = m.id || Math.random().toString(36).slice(2);
   
   if (showboxMatch) {
     showBoxFound = true;
@@ -297,6 +327,87 @@ function parseShowboxInMsg(m) {
     }
   }
   return { rawContent, showBoxFound, showData };
+}
+
+function extractThoughtsAndClean(content) {
+  const thoughts = [];
+  const cleaned = content || "";
+  const thinkRegex = /<think>([\s\S]*?)<\/think>/gi;
+  let match;
+  while ((match = thinkRegex.exec(cleaned)) !== null) {
+    if (match[1].trim()) {
+      thoughts.push(match[1].trim());
+    }
+  }
+  const finalCleaned = cleaned.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+  return { thoughts, cleaned: finalCleaned };
+}
+
+function cleanNormalChatMessage(safe) {
+  // Replace WRITE actions
+  safe = safe.replace(/\[WRITE:\s*([^\]\n]+)\]([\s\S]*?)\[\/WRITE\]/gi, function(match, filename, fileContent) {
+    return `<div class="action-summary-badge write-badge">💾 <strong>Datei geschrieben:</strong> <code>${filename.trim()}</code></div>`;
+  });
+  // Replace SHELL actions
+  safe = safe.replace(/\[SHELL:\s*([^\]\n]+)\]/gi, function(match, command) {
+    return `<div class="action-summary-badge shell-badge">💻 <strong>Befehl ausgeführt:</strong> <code>${command.trim()}</code></div>`;
+  });
+  // Replace READ actions
+  safe = safe.replace(/\[READ:\s*([^\]\n]+)\]/gi, function(match, filename) {
+    return `<div class="action-summary-badge read-badge">📖 <strong>Datei gelesen:</strong> <code>${filename.trim()}</code></div>`;
+  });
+  // Replace BROWSER actions
+  safe = safe.replace(/\[BROWSER:\s*([^\]\n]+)\]/gi, function(match, action) {
+    return `<div class="action-summary-badge browser-badge">🌐 <strong>Browser-Aktion:</strong> <code>${action.trim()}</code></div>`;
+  });
+  // Replace IMAGE actions
+  safe = safe.replace(/\[IMAGE:\s*([^\]\n]+)\]/gi, function(match, prompt) {
+    return `<div class="action-summary-badge image-badge">🎨 <strong>Bild generiert:</strong> <code>${prompt.trim()}</code></div>`;
+  });
+  // Wrap code blocks
+  safe = safe.replace(/```(\w*)\n([\s\S]*?)```/g, function(match, lang, code) {
+    return `<details class="chat-code-block" style="margin: 8px 0; border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; background: rgba(0,0,0,0.2);">
+      <summary style="cursor: pointer; padding: 6px 10px; font-size: 0.72rem; color: var(--cyan); user-select: none; font-weight: 500;">💻 Code anzeigen (${lang || 'Text'})</summary>
+      <pre style="margin: 0; padding: 10px; font-family: monospace; font-size: 0.75rem; border-top: 1px solid rgba(255,255,255,0.05); overflow-x: auto; white-space: pre-wrap; color: #a9b1d6; background: rgba(0,0,0,0.3);">${code.trim()}</pre>
+    </details>`;
+  });
+  return safe;
+}
+
+window.thoughtTtsEnabled = false;
+
+function toggleThoughtTTS() {
+  window.thoughtTtsEnabled = !window.thoughtTtsEnabled;
+  const btn = document.getElementById('thought-tts-btn');
+  if (btn) {
+    if (window.thoughtTtsEnabled) {
+      btn.innerHTML = '🔊 TTS An';
+      btn.style.background = 'rgba(57,255,20,0.15)';
+      btn.style.borderColor = 'rgba(57,255,20,0.4)';
+      btn.style.color = 'var(--green)';
+      toast('🗣️ Denkprozess-TTS Aktiviert', 'success');
+    } else {
+      btn.innerHTML = '🔇 TTS Aus';
+      btn.style.background = 'rgba(0,229,255,0.1)';
+      btn.style.borderColor = 'rgba(0,229,255,0.3)';
+      btn.style.color = 'var(--cyan)';
+      stopTTS();
+      toast('🔇 Denkprozess-TTS Deaktiviert', 'info');
+    }
+  }
+}
+
+function renderThoughtMessageHTML(sender, content, timestamp) {
+  const c = agentColor(sender);
+  const time = timestamp ? new Date(timestamp).toLocaleTimeString() : '';
+  const safeContent = esc(content).replace(/\n/g, '<br>');
+  return `<div class="thought-msg" style="border-left: 3px solid ${c}; background: rgba(0, 229, 255, 0.015); border: 1px solid rgba(255, 255, 255, 0.04); border-radius: var(--radius-sm); padding: 8px 10px; margin-bottom: 6px;">
+    <div style="display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px;">
+      <span><strong style="color: ${c}">${esc(sender)}</strong> <span style="background: rgba(0, 229, 255, 0.12); color: var(--cyan); padding: 1px 5px; border-radius: 4px; font-size: 0.55rem; font-weight: bold; margin-left: 4px; letter-spacing: 0.3px;">THINKING</span></span>
+      <span>${time}</span>
+    </div>
+    <div style="font-size: 0.72rem; line-height: 1.35; color: rgba(255,255,255,0.7); font-family: monospace; white-space: pre-wrap; word-break: break-word;">${safeContent}</div>
+  </div>`;
 }
 
 function handleShowboxTrigger(showData, sender) {
@@ -318,7 +429,7 @@ function handleShowboxTrigger(showData, sender) {
   }
 }
 
-function renderChatMessageHTML(m) {
+function renderChatMessageHTML(m, overrideContent) {
   const isUser = m.metadata?.sender === 'user';
   const name = isUser ? 'You' : (m.metadata?.sender || 'System');
   const time = m.timestamp ? new Date(m.timestamp).toLocaleTimeString() : '';
@@ -326,7 +437,8 @@ function renderChatMessageHTML(m) {
   const nameColor = isUser ? 'var(--primary)' : (name.toLowerCase().startsWith('testag') ? '#0066FF' : 'inherit');
   const mid = m.id || Math.random().toString(36).slice(2);
   
-  const { rawContent, showBoxFound, showData } = parseShowboxInMsg(m);
+  const contentToUse = overrideContent !== undefined ? overrideContent : (m.content || "");
+  const { rawContent, showBoxFound, showData } = parseShowboxInMsg(contentToUse, mid);
   let safe = esc(rawContent);
   if (showBoxFound) {
     const targetText = (showData && showData._targetIdx !== undefined) ? ` Button ${showData._targetIdx + 1}` : '';
@@ -335,12 +447,7 @@ function renderChatMessageHTML(m) {
   
   handleShowboxTrigger(showData, name);
 
-  safe = safe.replace(/&lt;think&gt;([\s\S]*?)&lt;\/think&gt;/gi, function(match, p1) {
-    return `<details class="think-block" open>
-      <summary>Denkprozess anzeigen...</summary>
-      <div class="think-content">${p1.trim()}</div>
-    </details>`;
-  });
+  safe = cleanNormalChatMessage(safe);
   safe = safe.replace(/\[SOUL:\s*([\s\S]*?)\]/g, '<div style="font-size:0.6rem; color:var(--bg-surface); opacity:0.5; margin-top:4px;">[SOUL: $1]</div>');
   safe = safe.replace(/\n/g, '<br>');
   return `<div class="chat-msg ${isUser ? 'user' : 'agent'}" style="border-left-color:${c};">
@@ -360,11 +467,68 @@ async function refreshChat() {
   const st = el.scrollTop;
   const wasAtBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 60;
 
-  if (!msgs || !msgs.length) { el.innerHTML = '<div class="empty">No messages yet.</div>'; return; }
+  const thoughtEl = document.getElementById('thought-display');
+  const thoughtSt = thoughtEl ? thoughtEl.scrollTop : 0;
+  const thoughtWasAtBottom = thoughtEl ? (thoughtEl.scrollHeight - thoughtEl.scrollTop - thoughtEl.clientHeight < 60) : false;
+
+  if (!msgs || !msgs.length) { 
+    el.innerHTML = '<div class="empty">No messages yet.</div>'; 
+    if (thoughtEl) thoughtEl.innerHTML = '<div class="empty" style="padding:10px; font-size:0.7rem;">Keine Denkprozesse aktiv.</div>';
+    return; 
+  }
+  
   const sorted = msgs.sort((a, b) => (a.timestamp || '').localeCompare(b.timestamp || ''));
   window._processedShowboxes = window._processedShowboxes || new Set();
 
-  el.innerHTML = sorted.map(renderChatMessageHTML).join('');
+  if (!window._spokenIds) window._spokenIds = new Set();
+  if (!window._spokenThoughtIds) window._spokenThoughtIds = new Set();
+
+  let chatHTML = "";
+  let thoughtHTML = "";
+
+  for (const m of sorted) {
+    const isUser = m.metadata?.sender === 'user';
+    const sender = isUser ? 'You' : (m.metadata?.sender || 'System');
+    const timestamp = m.timestamp;
+    
+    // 1. Extract thoughts
+    const { thoughts, cleaned } = extractThoughtsAndClean(m.content);
+    
+    if (thoughts.length > 0) {
+      for (let i = 0; i < thoughts.length; i++) {
+        const thought = thoughts[i];
+        const thoughtId = m.id + "-" + i;
+        
+        // Render thought entry
+        thoughtHTML += renderThoughtMessageHTML(sender, thought, timestamp);
+        
+        // Speak thought if new and thought TTS is enabled
+        if (!window._spokenThoughtIds.has(thoughtId)) {
+          if (window.thoughtTtsEnabled) {
+            speak(`${sender} denkt: ${thought}`, sender);
+          }
+          window._spokenThoughtIds.add(thoughtId);
+        }
+      }
+    }
+    
+    // 2. Render normal chat
+    chatHTML += renderChatMessageHTML(m, cleaned);
+    
+    // 3. Speak normal message if new and main TTS is enabled
+    if (!isUser && !window._spokenIds.has(m.id)) {
+      window._spokenIds.add(m.id);
+      const speechText = cleaned.replace(/\[WRITE:\s*([^\]\n]+)\]([\s\S]*?)\[\/WRITE\]/gi, 'schreibt Datei $1')
+                                .replace(/\[SHELL:\s*([^\]\n]+)\]/gi, 'führt Befehl $1 aus')
+                                .replace(/<SHOWBOX[\s\S]*?<\/SHOWBOX>/gi, '')
+                                .trim();
+      if (speechText) {
+        speak(`${sender} sagt: ${speechText}`, sender);
+      }
+    }
+  }
+
+  el.innerHTML = chatHTML || '<div class="empty">No messages yet.</div>';
 
   if (wasAtBottom || !window._chatInitialized) {
     el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
@@ -373,11 +537,15 @@ async function refreshChat() {
     el.scrollTop = st;
   }
 
-  if (!window._spokenIds) window._spokenIds = new Set();
-  sorted.filter(m => m.metadata?.sender !== 'user' && !window._spokenIds.has(m.id)).forEach(m => {
-    window._spokenIds.add(m.id);
-    speak(`${m.metadata?.sender || 'System'} sagt: ${m.content}`, m.metadata?.sender || 'System');
-  });
+  if (thoughtEl) {
+    thoughtEl.innerHTML = thoughtHTML || '<div class="empty" style="padding:10px; font-size:0.7rem;">Keine Denkprozesse aktiv.</div>';
+    if (thoughtWasAtBottom || !window._thoughtInitialized) {
+      thoughtEl.scrollTo({ top: thoughtEl.scrollHeight, behavior: 'smooth' });
+      window._thoughtInitialized = true;
+    } else {
+      thoughtEl.scrollTop = thoughtSt;
+    }
+  }
 }
 
 function copyMsg(id) {
@@ -482,7 +650,7 @@ async function updateProjectIndicator() {
     }
   }
   if (expl && p !== 'default') {
-    expl.innerHTML = `🛡️ <strong>Project Mode active: ${p}</strong><br>You are in project <b>${p}</b>. Communications, files, and agent thoughts are saved exclusively for this project. If you return in 10 years, you will find everything exactly as you left it. <i>(Type <code>@project default</code> to exit the project)</i>`;
+    expl.innerHTML = `🛡️ <strong>Project Mode active: ${escapeHtml(p)}</strong><br>You are in project <b>${escapeHtml(p)}</b>. Communications, files, and agent thoughts are saved exclusively for this project. If you return in 10 years, you will find everything exactly as you left it. <i>(Type <code>@project default</code> to exit the project)</i>`;
   }
 }
 

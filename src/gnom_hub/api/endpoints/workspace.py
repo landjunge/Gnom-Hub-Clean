@@ -10,6 +10,16 @@ def get_workspace_dir():
     d = os.path.join(str(WORKSPACE_DIR), proj)
     os.makedirs(d, exist_ok=True); return d
 
+def _safe_path(filename: str):
+    """Validate that filename doesn't escape the workspace directory."""
+    from pathlib import Path
+    workspace = Path(get_workspace_dir()).resolve()
+    target = (workspace / filename).resolve()
+    if not str(target).startswith(str(workspace)):
+        from fastapi import HTTPException
+        raise HTTPException(status_code=403, detail="Zugriff verweigert: Pfad außerhalb des Workspace")
+    return str(target)
+
 @router.get("/api/workspace")
 def list_workspace():
     w = get_workspace_dir()
@@ -17,17 +27,18 @@ def list_workspace():
 
 @router.get("/api/workspace/{filename}")
 def read_workspace_file(filename: str):
-    p = os.path.join(get_workspace_dir(), filename)
+    p = _safe_path(filename)
     return {"content": open(p, "r").read()} if os.path.exists(p) else {"error": "File not found"}
 
 @router.get("/api/workspace/{filename}/serve", response_class=HTMLResponse)
 def serve_workspace_file(filename: str):
-    p = os.path.join(get_workspace_dir(), filename)
+    p = _safe_path(filename)
     return HTMLResponse(open(p, "r").read()) if os.path.exists(p) else HTMLResponse("<h1>Datei nicht gefunden</h1>", status_code=404)
 
 @router.post("/api/workspace/{filename}/run")
 def run_workspace_file(filename: str):
-    w, p = get_workspace_dir(), os.path.join(get_workspace_dir(), filename)
+    p = _safe_path(filename)
+    w = get_workspace_dir()
     if not os.path.exists(p): return {"error": "File not found"}
     if not filename.endswith(".py"): return {"error": "Nur .py Dateien können ausgeführt werden."}
     try:

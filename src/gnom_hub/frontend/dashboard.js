@@ -1101,6 +1101,37 @@ window.runRoutingWithProgress = async function(agents, routeActionPromise) {
   }
 };
 
+// Shared agent priority and model scoring for LLM assignment
+const AGENT_PRIORITY = {
+  'coderag': 1, 'researcherag': 2, 'writerag': 3, 'editorag': 4,
+  'generalag': 5, 'securityag': 6, 'soulag': 7, 'watchdogag': 8
+};
+
+function modelScore(m) {
+  const ml = m.toLowerCase();
+  if (/405b/.test(ml)) return 900;
+  if (/120b/.test(ml)) return 800;
+  if (/80b/.test(ml)) return 750;
+  if (/70b/.test(ml)) return 700;
+  if (/31b|30b|26b/.test(ml)) return 600;
+  if (/24b/.test(ml)) return 550;
+  if (/20b/.test(ml)) return 500;
+  if (/12b/.test(ml)) return 400;
+  if (/9b/.test(ml)) return 350;
+  if (/7b|8b/.test(ml)) return 300;
+  if (/3b/.test(ml)) return 200;
+  if (/1\.2b|1b/.test(ml)) return 100;
+  return 350;
+}
+
+function sortAgentsByPriority(agents) {
+  return [...agents].sort((a, b) => {
+    const pa = AGENT_PRIORITY[a.name.toLowerCase()] || 99;
+    const pb = AGENT_PRIORITY[b.name.toLowerCase()] || 99;
+    return pa - pb;
+  });
+}
+
 window.assignFreeModels = async function() {
   const agents = window.llmAgentsListGlobal || [];
   if (!agents.length) return;
@@ -1113,40 +1144,8 @@ window.assignFreeModels = async function() {
     return;
   }
 
-  const agentPriority = {
-    'coderag': 1,
-    'researcherag': 2,
-    'writerag': 3,
-    'editorag': 4,
-    'generalag': 5,
-    'securityag': 6,
-    'soulag': 7,
-    'watchdogag': 8
-  };
-
-  function modelScore(m) {
-    const ml = m.toLowerCase();
-    if (/405b/.test(ml)) return 900;
-    if (/120b/.test(ml)) return 800;
-    if (/80b/.test(ml)) return 750;
-    if (/70b/.test(ml)) return 700;
-    if (/31b|30b|26b/.test(ml)) return 600;
-    if (/24b/.test(ml)) return 550;
-    if (/20b/.test(ml)) return 500;
-    if (/12b/.test(ml)) return 400;
-    if (/9b/.test(ml)) return 350;
-    if (/7b|8b/.test(ml)) return 300;
-    if (/3b/.test(ml)) return 200;
-    if (/1\.2b|1b/.test(ml)) return 100;
-    return 350;
-  }
-
   const sorted = [...workingModels].sort((a, b) => modelScore(b) - modelScore(a));
-  const sortedAgents = [...agents].sort((a, b) => {
-    const pa = agentPriority[a.name.toLowerCase()] || 99;
-    const pb = agentPriority[b.name.toLowerCase()] || 99;
-    return pa - pb;
-  });
+  const sortedAgents = sortAgentsByPriority(agents);
 
   let config = {};
   sortedAgents.forEach((a, i) => {
@@ -1162,40 +1161,8 @@ window.assignLocalModels = async function() {
 
   const workingLocalModels = ['mistral:latest', 'gemma2:2b', 'llama3:latest', 'qwen2:7b'];
 
-  const agentPriority = {
-    'coderag': 1,
-    'researcherag': 2,
-    'writerag': 3,
-    'editorag': 4,
-    'generalag': 5,
-    'securityag': 6,
-    'soulag': 7,
-    'watchdogag': 8
-  };
-
-  function modelScore(m) {
-    const ml = m.toLowerCase();
-    if (/405b/.test(ml)) return 900;
-    if (/120b/.test(ml)) return 800;
-    if (/80b/.test(ml)) return 750;
-    if (/70b/.test(ml)) return 700;
-    if (/31b|30b|26b/.test(ml)) return 600;
-    if (/24b/.test(ml)) return 550;
-    if (/20b/.test(ml)) return 500;
-    if (/12b/.test(ml)) return 400;
-    if (/9b/.test(ml)) return 350;
-    if (/7b|8b/.test(ml)) return 300;
-    if (/3b/.test(ml)) return 200;
-    if (/1\.2b|1b/.test(ml)) return 100;
-    return 350;
-  }
-
   const sorted = [...workingLocalModels].sort((a, b) => modelScore(b) - modelScore(a));
-  const sortedAgents = [...agents].sort((a, b) => {
-    const pa = agentPriority[a.name.toLowerCase()] || 99;
-    const pb = agentPriority[b.name.toLowerCase()] || 99;
-    return pa - pb;
-  });
+  const sortedAgents = sortAgentsByPriority(agents);
 
   let config = {};
   sortedAgents.forEach((a, i) => {

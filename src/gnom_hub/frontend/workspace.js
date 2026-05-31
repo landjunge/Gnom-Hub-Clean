@@ -99,8 +99,8 @@ async function runWorkspaceFile(name) {
   modal.innerHTML = `
     <div class="panel" style="width:70%; max-height:80%; display:flex; flex-direction:column;">
       <h2>▶ ${name} <span style="color:${statusColor};font-size:0.8em;">Exit: ${res.code}</span> <button onclick="this.parentElement.parentElement.parentElement.remove()" style="float:right">X</button></h2>
-      <pre style="flex-grow:1; overflow:auto; background:var(--bg-input); color:var(--text); border:1px solid var(--border); border-radius:var(--radius); padding:10px; font-family:monospace; white-space:pre-wrap; max-height:60vh;">${res.stdout || '(keine Ausgabe)'}</pre>
-      ${hasErr ? `<pre style="margin-top:8px; background:#1a0000; color:#ff6666; border:1px solid #ff4444; border-radius:var(--radius); padding:10px; font-family:monospace; white-space:pre-wrap; max-height:20vh; overflow:auto;">STDERR:\n${res.stderr}</pre>` : ''}
+      <pre style="flex-grow:1; overflow:auto; background:var(--bg-input); color:var(--text); border:1px solid var(--border); border-radius:var(--radius); padding:10px; font-family:monospace; white-space:pre-wrap; max-height:60vh;">${escapeHtml(res.stdout) || '(keine Ausgabe)'}</pre>
+      ${hasErr ? `<pre style="margin-top:8px; background:#1a0000; color:#ff6666; border:1px solid #ff4444; border-radius:var(--radius); padding:10px; font-family:monospace; white-space:pre-wrap; max-height:20vh; overflow:auto;">STDERR:\n${escapeHtml(res.stderr)}</pre>` : ''}
     </div>
   `;
   document.body.appendChild(modal);
@@ -114,7 +114,7 @@ async function readWorkspaceFile(name) {
     modal.innerHTML = `
       <div class="panel" style="width:80%; height:80%; display:flex; flex-direction:column;">
         <h2>${name} <button onclick="this.parentElement.parentElement.parentElement.remove()" style="float:right">X</button></h2>
-        <textarea readonly style="flex-grow:1; background:var(--bg-input); color:var(--text); border:1px solid var(--border); border-radius:var(--radius); padding:10px; font-family:monospace; resize:none;">${res.content}</textarea>
+        <textarea readonly style="flex-grow:1; background:var(--bg-input); color:var(--text); border:1px solid var(--border); border-radius:var(--radius); padding:10px; font-family:monospace; resize:none;">${escapeHtml(res.content)}</textarea>
       </div>
     `;
     document.body.appendChild(modal);

@@ -23,7 +23,7 @@ def get_agent_memory(a_id: str):
     return [dict(m.__dict__) for m in SQLiteChatRepository().get_agent_memories(a_id, 100)]
 
 @router.get("/api/agents/{a_id}/memory/count")
-def count_memory(a_id: str): return {"count": SQLiteChatRepository().count_messages(a_id)}
+def count_memory(a_id: str): return {"count": SQLiteChatRepository().count_messages_for_agent(a_id)}
 
 @router.put("/api/memory/{m_id}")
 async def update_memory(m_id: str, request: Request):

@@ -1,7 +1,6 @@
 import json
 from pathlib import Path
 from datetime import datetime
-import glob
 from gnom_hub.core.config import PROJECT_ROOT
 
 BACKUP_DIR = PROJECT_ROOT / ".backups" / "swarm"

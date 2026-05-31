@@ -2,6 +2,7 @@ import sqlite3
 from pathlib import Path
 from datetime import datetime
 from typing import Optional
+from contextlib import contextmanager
 from gnom_hub.core.config import Config
 
 class Await:
@@ -32,7 +33,14 @@ def get_db_connection() -> sqlite3.Connection:
     conn.row_factory = sqlite3.Row
     return conn
 
-get_db_conn = get_db_connection
+@contextmanager
+def get_db_conn():
+    """Context manager that yields a DB connection and ensures it is closed."""
+    conn = get_db_connection()
+    try:
+        yield conn
+    finally:
+        conn.close()
 
 async def get_db_connection_async() -> sqlite3.Connection:
     return get_db_connection()

@@ -1,5 +1,4 @@
 """Role Prompt Implanter — schreibt System-Prompt in Agent-Dateien."""
-import os
 from pathlib import Path
 HOME = Path.home()
 TARGETS = ["soul.md", "SOUL.md", "system.md", "core.md"]

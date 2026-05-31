@@ -132,7 +132,18 @@ def wait_for_decision(agent_name, action_type, detail, content, rule) -> bool:
     # 8. Pause agent and wait for user input
     set_agent_status(agent_name, "paused")
     
+    max_wait_seconds = 300  # 5 minute timeout
+    start_time = time.time()
     while True:
+        if time.time() - start_time > max_wait_seconds:
+            # Auto-reject on timeout
+            set_agent_status(agent_name, "busy")
+            add_chat_message(
+                get_active_project(), "System", "system", "chat",
+                f"⏰ [TIMEOUT] Entscheidung für {agent_name} ({action_type}: {detail}) nach 5 Minuten automatisch abgelehnt."
+            )
+            return False
+
         pending = get_state_value("pending_decisions", {})
         d = pending.get(decision_id)
         if d:

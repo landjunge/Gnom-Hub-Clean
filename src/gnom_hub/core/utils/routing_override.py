@@ -11,7 +11,6 @@ def load_routing_from_txt() -> dict:
     paths_to_check = [
         Path(PROJECT_ROOT) / "config" / "routing.txt",
         Path(PROJECT_ROOT) / "routing.txt",
-        Path("/Users/landjunge/Desktop/routing.txt"),
         Path.home() / "Desktop" / "routing.txt"
     ]
     

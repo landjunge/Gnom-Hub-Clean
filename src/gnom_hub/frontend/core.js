@@ -610,6 +610,12 @@ async function api(method, path, body) {
 }
 window.api = api;
 
+/** Escape HTML to prevent XSS when inserting dynamic content. */
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+}
+
 // ── Preset Display and Activation ──
 function showPresetInShowbox(preset) {
   const focusMap = {

@@ -2,7 +2,10 @@ import asyncio, os, requests; from gnom_hub.soul import get_soul; from gnom_hub.
 HUB_URL = f"http://127.0.0.1:{os.environ.get('GNOM_HUB_PORT', '3002')}"
 class BaseAgent:
     def __init__(self, name, desc, trigger, sys_prompt=None, poll=5, model="deepseek-chat"):
-        self.n, self.d, self.t, self.sys, self.p, self.seen = name, desc, trigger, sys_prompt, poll, set()
+        from collections import deque
+        self.n, self.d, self.t, self.sys, self.p = name, desc, trigger, sys_prompt, poll
+        self._seen_deque = deque(maxlen=1000)
+        self.seen = set()
         from gnom_hub.agents.tool_registry import format_tools_prompt
         t_p = format_tools_prompt(get_soul(name), name)
         self.sys = (self.sys + "\n\n" + t_p) if self.sys else t_p
@@ -12,17 +15,23 @@ class BaseAgent:
             if r.status_code == 200: return r.json()
         except Exception: pass
         return None
+    def _mark_seen(self, msg_id):
+        self._seen_deque.append(msg_id)
+        self.seen.add(msg_id)
+        # Keep the set in sync with deque to bound memory
+        if len(self.seen) > 1200:
+            self.seen = set(self._seen_deque)
     async def run(self):
         while not self._req("post", "/api/agents/register", {"name": self.n, "port": 0, "description": self.d, "status": "online", "capabilities": [self.t]}):
             print(f"⚠️ {self.n}: Hub nicht erreichbar. Reconnect in 5s..."); await asyncio.sleep(5)
-        for m in (self._req("get", "/api/chat?limit=10") or []): self.seen.add(m.get("id"))
+        for m in (self._req("get", "/api/chat?limit=10") or []): self._mark_seen(m.get("id"))
         print(f"🚀 {self.n} aktiv")
         while True:
             c = self._req("get", "/api/chat?limit=10")
             if c is None: print(f"⚠️ {self.n}: Hub offline. Versuche Reconnect..."); await asyncio.sleep(5); continue
             self._req("post", f"/api/agents/{self.n}/heartbeat")
             new = [m for m in c if m.get("id") not in self.seen and m.get("metadata",{}).get("sender","") in ("user", "GeneralAG") and (self.t.lower() in m.get("content", "").lower() or "@all" in m.get("content", "").lower())]
-            for m in c: self.seen.add(m.get("id"))
+            for m in c: self._mark_seen(m.get("id"))
             if new:
                 self._req("put", f"/api/agents/{self.n}/status?status=busy")
                 try:

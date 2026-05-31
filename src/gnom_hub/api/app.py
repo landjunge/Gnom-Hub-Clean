@@ -71,9 +71,9 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="GNOM-HUB", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:*", "http://127.0.0.1:*"],
-    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
-    allow_methods=["*"], allow_headers=["*"]
+    allow_origins=["http://localhost:3002", "http://127.0.0.1:3002", "http://localhost:8000", "http://127.0.0.1:8000"],
+    allow_methods=["*"],
+    allow_headers=["*"]
 )
 
 app.include_router(api_router)

@@ -1,4 +1,4 @@
-import json, subprocess, re as _re
+import json, re as _re
 SHELL_BLOCK = _re.compile(r"rm\s+-rf\s+/|curl.*\|\s*sh|wget.*\|\s*sh|dd\s+if=|mkfs|>\s*/etc/|:(){ :|:& };:", _re.I)
 def handle_shell(ans, ms, ag, perms, bs, wd):
     for m in ms:

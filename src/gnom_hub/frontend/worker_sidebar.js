@@ -172,7 +172,7 @@ function renderMemories(el, mems) {
         <button onclick="editMem('${m.id}')">✏</button>
         <button class="btn-danger" onclick="deleteMem('${m.id}')">✕</button>
       </div></div>
-      <div class="mem-content" id="mc-${m.id}">${m.content || ''}</div>
+      <div class="mem-content" id="mc-${m.id}">${escapeHtml(m.content)}</div>
     </div>`;
   }).join('');
 }
@@ -292,7 +292,7 @@ async function doNudge(id) {
 // ── Agent Inspector & Live Optimizer Helpers ──
 async function loadAgentOptimizerData(agentId) {
   try {
-    const settings = await api('GET', `/api/agents/${agentId}/settings`);
+    const settings = await api('GET', `/agents/${agentId}/settings`);
     if (settings) {
       document.getElementById('opt-personality').value = settings.personality ?? 3;
       document.getElementById('opt-response').value = settings.response_style ?? 3;
@@ -307,7 +307,7 @@ async function loadAgentOptimizerData(agentId) {
       updateOptSliderLabel('creativity', settings.creativity ?? 3);
       updateOptSliderLabel('risk', settings.risk_tolerance ?? 3);
     }
-    const stats = await api('GET', `/api/agents/${agentId}/stats`);
+    const stats = await api('GET', `/agents/${agentId}/stats`);
     if (stats) {
       document.getElementById('stat-calls').innerText = stats.total_calls ?? 0;
       document.getElementById('stat-errors').innerText = stats.errors ?? 0;
@@ -350,7 +350,7 @@ async function saveAgentOptimizerSettings(agentId) {
   const risk_tolerance = parseInt(document.getElementById('opt-risk').value);
   const custom_prompt = document.getElementById('opt-custom-prompt').value;
   try {
-    const res = await fetch(API + `/api/agents/${agentId}/settings`, {
+    const res = await fetch(API + `/agents/${agentId}/settings`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ personality, response_style, memory_strength, creativity, risk_tolerance, custom_prompt })
@@ -368,7 +368,7 @@ async function saveAgentOptimizerSettings(agentId) {
 
 async function exportAgentConfig(agentId) {
   try {
-    const res = await api('GET', `/api/agents/${agentId}/export`);
+    const res = await api('GET', `/agents/${agentId}/export`);
     if (res) {
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(res, null, 2));
       const dlAnchorElem = document.createElement('a');
@@ -389,7 +389,7 @@ async function importAgentConfig(agentId, input) {
   reader.onload = async function(e) {
     try {
       const data = JSON.parse(e.target.result);
-      const res = await fetch(API + `/api/agents/${agentId}/import`, {
+      const res = await fetch(API + `/agents/${agentId}/import`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -422,7 +422,7 @@ async function doSavePreset() {
   const description = document.getElementById('preset-desc').value.trim();
   if (!name || !description) { toast('Name und Beschreibung sind erforderlich.', 'error'); return; }
   try {
-    const res = await fetch(API + '/api/presets/save', {
+    const res = await fetch(API + '/presets/save', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, description })

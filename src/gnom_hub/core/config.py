@@ -23,6 +23,19 @@ class Config:
     SUPERGNOM_MODE = os.getenv("SUPERGNOM_MODE", "False").lower() == "true"
     SUPERGNOM_CONFIG = os.getenv("SUPERGNOM_CONFIG", "")
 
+    @classmethod
+    def get_supergnom_template(cls) -> str:
+        import json
+        config_path = cls.BASE_DIR / "supergnom_config.json"
+        if config_path.exists():
+            try:
+                with open(config_path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    return data.get("template", "chat")
+            except Exception:
+                pass
+        return "chat"
+
     # OpenRouter Free-Modelle (zentral verwaltet)
     OPENROUTER_FREE_MODELS = [
         "baidu/cobuddy:free",

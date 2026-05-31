@@ -10,6 +10,13 @@ def handle_clear(q=""):
     if q == "@projekt":
         from gnom_hub.db.legacy_db import clear_project_chat; clear_project_chat(p)
         import os, shutil; from gnom_hub.core.config import Config; wd = os.path.join(str(Config.WORKSPACE_DIR), p)
+        # Path traversal protection
+        from pathlib import Path
+        wd_resolved = Path(wd).resolve()
+        ws_root = Path(str(Config.WORKSPACE_DIR)).resolve()
+        if not str(wd_resolved).startswith(str(ws_root)):
+            return {"status": "error", "message": "Ungültiger Projektpfad"}
+        wd = str(wd_resolved)
         for f in os.listdir(wd):
             fp = os.path.join(wd, f)
             if os.path.isfile(fp): os.unlink(fp)

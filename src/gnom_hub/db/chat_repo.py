@@ -49,3 +49,34 @@ class SQLiteChatRepository(ChatRepository):
         with get_db_connection() as conn: return Await([_row_to_msg(r) for r in conn.execute("SELECT * FROM chat ORDER BY timestamp DESC LIMIT ?", (limit,)).fetchall()])
     def count_messages(self) -> Await:
         with get_db_connection() as conn: return Await(conn.execute("SELECT COUNT(*) FROM chat").fetchone()[0])
+    def add_message(self, m) -> Await:
+        """Alias for save_message, used by memory_crud.py."""
+        return self.save_message(m)
+    def get_agent_memories(self, agent_id, limit: int = 100) -> Await:
+        """Get memories for a specific agent."""
+        with get_db_connection() as conn:
+            rows = conn.execute("SELECT * FROM chat WHERE agent_id = ? OR sender = ? ORDER BY timestamp DESC LIMIT ?", (str(agent_id), str(agent_id), limit)).fetchall()
+            return Await([_row_to_msg(r) for r in rows])
+    def count_messages_for_agent(self, agent_id) -> Await:
+        """Count messages for a specific agent."""
+        with get_db_connection() as conn:
+            return Await(conn.execute("SELECT COUNT(*) FROM chat WHERE agent_id = ? OR sender = ?", (str(agent_id), str(agent_id))).fetchone()[0])
+    def update_message_content(self, msg_id: str, content: str) -> Await:
+        """Update the content of a specific message."""
+        with get_db_connection() as conn:
+            conn.execute("UPDATE chat SET content = ? WHERE id = ?", (content, msg_id))
+            conn.commit()
+            r = conn.execute("SELECT * FROM chat WHERE id = ?", (msg_id,)).fetchone()
+            return Await(_row_to_msg(r) if r else None)
+    def delete_by_id(self, msg_id: str) -> Await:
+        """Delete a specific message by ID."""
+        with get_db_connection() as conn:
+            conn.execute("DELETE FROM chat WHERE id = ?", (msg_id,))
+            conn.commit()
+            return Await(True)
+    def delete_by_agent(self, agent_id: str) -> Await:
+        """Delete all messages for a specific agent."""
+        with get_db_connection() as conn:
+            conn.execute("DELETE FROM chat WHERE agent_id = ? OR sender = ?", (str(agent_id), str(agent_id)))
+            conn.commit()
+            return Await(True)
